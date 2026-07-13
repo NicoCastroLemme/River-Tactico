@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizarra Táctica - River Plate</title>
+  
+  <meta name="description" content="Armá y compartí tu 11 ideal de River Plate. Pizarra táctica interactiva con el plantel de Primera y Reserva 2026.">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rivertactico.com/">
+  <meta property="og:title" content="River Táctico - Armá tu Formación">
+  <meta property="og:description" content="Elegí a los titulares, armá tu esquema y compartí tu equipo ideal.">
+  <meta property="og:image" content="https://rivertactico.com/miniatura.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://rivertactico.com/">
+  <meta name="twitter:title" content="River Táctico - Armá tu Formación">
+  <meta name="twitter:description" content="Elegí a los titulares, armá tu esquema y compartí tu equipo ideal.">
+  <meta name="twitter:image" content="https://rivertactico.com/miniatura.png">
+  
+  <link rel="stylesheet" href="styles.css">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <div id="overlay-plantel-movil" class="mobile-overlay"></div>
+  <header class="main-header">
+    <div class="header-container">
+      <div class="header-logo">
+        <span class="logo-badge">CARP</span>
+        <h1>River Táctico</h1>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-btn active" id="btn-pizarra">Pizarra</button>
+        <button class="nav-btn" id="btn-puntuar" style="display: none;">Puntuar Partido</button>
+      </nav>
+    </div>
+  </header>
+
+  <button id="btn-flotante-jugadores" class="fab-btn">🔍 VER PLANTEL</button>
+
+  <div class="app-layout" id="view-pizarra">
+    <div class="left-panel">
+      <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
+      <div class="info-card">
+        <h2>RIVER PLATE</h2>
+        <h3>2° semestre 2026</h3>
+      </div>
+      <div class="squad-tabs">
+        <button class="squad-tab active" onclick="cambiarPlantel('primera', this)">PRIMERA</button>
+        <button class="squad-tab" onclick="cambiarPlantel('reserva', this)">RESERVA</button>
+        <!-- NUEVO BOTÓN DE RUMORES -->
+        <button class="squad-tab" onclick="cambiarPlantel('rumores', this)">RUMORES</button>
+      </div>
+      <input type="text" id="search-player" class="search-input" placeholder="Buscar jugador por apellido...">
+      <div class="position-filters" id="filtros-posicion">
+        <button class="filter-btn" data-categoria="arqueros">ARQ</button>
+        <button class="filter-btn" data-categoria="defensores">DEF</button>
+        <button class="filter-btn" data-categoria="mediocampistas">MED</button>
+        <button class="filter-btn" data-categoria="delanteros">DEL</button>
+      </div>
+      <div class="player-list-header">Elige un jugador</div>
+      <div class="player-list" id="player-list"></div>
+    </div>
+
+    <div class="center-column">
+      <div class="pitch-container" id="pitch">
+        <div class="line mid-line"></div>
+        <div class="circle center-circle"></div>
+        <div class="circle center-dot"></div>
+        
+        <div class="area penalty-area top-area"></div>
+        <div class="area goal-area top-area"></div>
+        <div class="penalty-spot top"></div>
+        <div class="medialuna-wrapper top"><div class="medialuna-circle"></div></div>
+        
+        <div class="area penalty-area bottom-area"></div>
+        <div class="area goal-area bottom-area"></div>
+        <div class="penalty-spot bottom"></div>
+        <div class="medialuna-wrapper bottom"><div class="medialuna-circle"></div></div>
+
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+
+        <div class="watermark">RIVERTACTICO.COM</div>
+      </div>
+
+      <div class="pitch-actions">
+        <button class="icon-btn theme-toggle-btn" title="Cambiar Tema">
+          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        
+        <button class="icon-btn" id="btn-toggle-nombres" title="Ocultar Nombres">
+          <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <svg class="icon-eye-off" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </button>
+
+        <button class="icon-btn" id="btn-limpiar" title="Limpiar Cancha">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+        
+        <button class="icon-btn" id="btn-compartir" disabled title="Compartir Formación">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <h4 style="margin-top: 20px;">Tácticas</h4>
+      <div class="formations-list" id="formations-container"> 
+        <button class="btn-formation active" onclick="cambiarFormacion('4-4-2', this)">4-4-2</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-3-3', this)">4-3-3</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-2-3-1', this)">4-2-3-1</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-3-1-2', this)">4-3-1-2</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-1-4-1', this)">4-1-4-1</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-4-1-1', this)">4-4-1-1</button>
+        <button class="btn-formation" onclick="cambiarFormacion('4-3-2-1', this)">4-3-2-1</button>
+        <button class="btn-formation" onclick="cambiarFormacion('3-5-2', this)">3-5-2</button>
+        <button class="btn-formation" onclick="cambiarFormacion('3-4-3', this)">3-4-3</button>
+        <button class="btn-formation" onclick="cambiarFormacion('3-4-2-1', this)">3-4-2-1</button>
+        <button class="btn-formation" onclick="cambiarFormacion('5-3-2', this)">5-3-2</button>
+        <button class="btn-formation" onclick="cambiarFormacion('5-4-1', this)">5-4-1</button>
+      </div>
+
+      <h4>Box Score · 0/11</h4>
+      <div class="tabs">
+        <div class="tab active">ATAQUE</div>
+        <div class="tab">DEFENSA</div>
+      </div>
+      <div class="box-score-list" id="box-score-container"></div>
+    </div>
+  </div> 
+
+  <div class="app-layout" id="view-puntuar" style="display: none;">
+    <div class="left-panel">
+      <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
+      <div class="info-card">
+        <h2>RIVER PLATE</h2>
+        <h3>VS BELGRANO</h3>
+        <h4>FINAL CAMPEONATO APERTURA 2026</h4>
+        <h4>24-05-2026</h4>
+      </div>
+      <h2 style="font-size: 14px; text-align: left; margin-bottom: -10px;">SUPLENTES</h2>
+      <div class="player-list" id="bench-list">
+        <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 20px;">Cargando suplentes...</p>
+      </div>
+    </div>
+
+    <!-- === NUEVA COLUMNA CENTRAL (Vista Puntuar) === -->
+    <div class="center-column">
+      <div class="pitch-container" id="pitch-rating">
+        <div class="line mid-line"></div>
+        <div class="circle center-circle"></div>
+        <div class="circle center-dot"></div>
+        
+        <div class="area penalty-area top-area"></div>
+        <div class="area goal-area top-area"></div>
+        <div class="penalty-spot top"></div>
+        <div class="medialuna-wrapper top"><div class="medialuna-circle"></div></div>
+        
+        <div class="area penalty-area bottom-area"></div>
+        <div class="area goal-area bottom-area"></div>
+        <div class="penalty-spot bottom"></div>
+        <div class="medialuna-wrapper bottom"><div class="medialuna-circle"></div></div>
+
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+
+        <div class="watermark">RIVERTACTICO.COM</div>
+      </div>
+
+      <!-- Solo el botón de Modo Oscuro en esta vista -->
+      <div class="pitch-actions">
+        <button class="icon-btn theme-toggle-btn" title="Cambiar Tema">
+          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- === PANEL DERECHO LIMPIO === -->
+    <div class="right-panel">
+      <div class="source-tabs-wrapper">
+        <button class="source-tab active main-tab" data-source="mis_puntajes">Mi Puntajes</button>
+        <div class="source-row">
+          <button class="source-tab" data-source="sofascore">SofaScore</button>
+          <button class="source-tab" data-source="millostats">MilloStats</button>
+          <button class="source-tab" data-source="promedio_usuarios">Comunidad</button>
+        </div>
+      </div>
+
+      <div class="info-card" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+        <div class="boleta-stats">
+          <div class="stat-row">
+            <span class="stat-label">Progreso</span>
+            <span class="stat-value" id="boleta-progreso">0/0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Promedio</span>
+            <span class="stat-value" id="boleta-promedio">-</span>
+          </div>
+        </div>
+
+        <div class="boleta-mvp" id="boleta-mvp-container" style="display: none; margin-bottom: 10px;">
+          <span class="mvp-label">⭐ LA FIGURA</span>
+          <div class="mvp-content">
+            <img id="boleta-mvp-img" src="" alt="MVP" class="mvp-photo" onerror="this.src='fotos/default2.png'">
+            <div class="mvp-info">
+              <span class="mvp-name" id="boleta-mvp-name">-</span>
+              <span class="mvp-rating" id="boleta-mvp-rating">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="boleta-sort-controls" style="display: none; margin-bottom: 5px;">
+          <div class="sort-tabs">
+            <button class="sort-tab active" data-sort="puntaje">Por Puntaje</button>
+            <button class="sort-tab" data-sort="posicion">Por Posición</button>
+          </div>
+        </div>
+
+        <div id="rated-players-container" style="flex-grow: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; min-height: 0;">
+        </div>
+
+        <div style="margin-top: auto;">
+          <button id="btn-enviar-boleta" class="action-btn" disabled style="background-color: var(--river-red); color: white; border: none; opacity: 1; margin-bottom: 0;">ENVIAR PUNTAJES</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-puntaje">
+    <div class="rating-modal">
+      <h3 id="modal-nombre-jugador">Nombre Jugador</h3>
+      <div class="slider-container">
+        <input type="text" id="slider-value-input" class="slider-value-display" value="6.0" maxlength="4" autocomplete="off">
+        <input type="range" id="nota-slider" min="1" max="10" step="0.1" value="6.0">
+        <div class="slider-labels">
+          <span>1</span>
+          <span>10</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-cerrar-modal" style="background: var(--border-color); color: var(--text-main);" id="btn-cancelar-modal">Cancelar</button>
+        <button class="btn-cerrar-modal" style="background: var(--river-red);" id="btn-guardar-modal">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-seleccion">
+    <div class="selection-modal">
+      <h3 id="modal-seleccion-titulo">Elegir Jugador</h3>
+      <div class="modal-squad-tabs">
+        <button class="modal-squad-tab active" data-plantel="primera">Primera</button>
+        <button class="modal-squad-tab" data-plantel="reserva">Reserva</button>
+      </div>
+      <div class="selection-section">
+        <h4 class="selection-subtitle">Sugerencias</h4>
+        <div class="selection-list" id="lista-recomendados"></div>
+      </div>
+      <div class="selection-section" style="margin-top: 15px;">
+        <h4 class="selection-subtitle">Resto del plantel</h4>
+        <div class="selection-list" id="lista-resto"></div>
+      </div>
+      <button class="btn-cerrar-modal" id="btn-cerrar-seleccion" style="margin-top: 20px; background: var(--border-color); color: var(--text-main);">Cancelar</button>
+    </div>
+  </div>
+  
+  <div class="modal-overlay" id="modal-advertencia">
+    <div class="rating-modal">
+      <h3>Boleta Incompleta</h3>
+      <p id="modal-advertencia-texto" style="margin: 20px 0; font-size: 13px; line-height: 1.5; color: var(--text-main); font-weight: bold;"></p>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-cerrar-modal" style="background: var(--border-color); color: var(--text-main);" id="btn-cancelar-envio">Volver</button>
+        <button class="btn-cerrar-modal" style="background: var(--river-red); color: white;" id="btn-confirmar-envio">Enviar igual</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-exito">
+    <div class="rating-modal">
+      <h3 style="color: #00b853;">¡Envío Exitoso!</h3>
+      <p style="margin: 20px 0; font-size: 13px; line-height: 1.5; color: var(--text-main); font-weight: bold;">
+        ¡Boleta enviada con éxito!<br>
+        <span style="font-weight: normal; color: var(--text-muted); font-size: 11px;">(Listo para conectar con la base de datos)</span>
+      </p>
+      <button class="btn-cerrar-modal" style="background: var(--text-main); color: var(--bg-color);" id="btn-cerrar-exito">Aceptar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
