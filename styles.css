@@ -68,37 +68,21 @@ body {
 
 .injury-icon { color: var(--river-red); font-size: 14px; margin-left: 5px; position: relative; top: -2px; cursor: help; }
 
-/* --- COLUMNA CENTRAL --- */
 .pitch-container {
-  background: repeating-linear-gradient(to bottom, var(--pitch-green-1), var(--pitch-green-1) 10%, var(--pitch-green-2) 10%, var(--pitch-green-2) 20%);
-  border: 6px solid #e0d5be; position: relative; width: 100%; flex: 1;
-  box-shadow: inset 0 0 0 2px var(--pitch-lines); overflow: hidden;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  aspect-ratio: 2 / 3;
+  
+  background-image: url('fotos/cancha.png');
+  background-size: 100% 100%; 
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px; /* Si también querés que las esquinas sean rectas y no redondeadas, borrá esta línea */
 }
-.line { position: absolute; background-color: var(--pitch-lines); }
-.mid-line { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
-.circle { position: absolute; border: 2px solid var(--pitch-lines); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-.center-circle { width: 146px; height: 146px; }
-.center-dot { width: 6px; height: 6px; background-color: var(--pitch-lines); border-radius: 50%; }
-.area { position: absolute; border: 2px solid var(--pitch-lines); left: 50%; transform: translateX(-50%); }
-.penalty-area { width: 322px; height: 132px; }
-.goal-area { width: 146px; height: 44px; }
-.penalty-spot { position: absolute; width: 6px; height: 6px; background-color: var(--pitch-lines); border-radius: 50%; left: 50%; transform: translateX(-50%); }
-.penalty-spot.top { top: 85px; }
-.penalty-spot.bottom { bottom: 85px; }
-.top-area { top: 0; border-top: none; }
-.bottom-area { bottom: 0; border-bottom: none; }
-.medialuna-wrapper { position: absolute; width: 146px; height: 29px; left: 50%; transform: translateX(-50%); overflow: hidden; }
-.medialuna-wrapper.top { top: 132px; }
-.medialuna-wrapper.bottom { bottom: 132px; }
-.medialuna-circle { position: absolute; width: 146px; height: 146px; border: 2px solid var(--pitch-lines); border-radius: 50%; box-sizing: border-box; left: 0; }
-.medialuna-wrapper.top .medialuna-circle { top: -117px; }
-.medialuna-wrapper.bottom .medialuna-circle { bottom: -117px; }
-.corner { position: absolute; width: 32px; height: 32px; border: 2px solid var(--pitch-lines); border-radius: 50%; }
-.corner.tl { top: -16px; left: -16px; } 
-.corner.tr { top: -16px; right: -16px; } 
-.corner.bl { bottom: -16px; left: -16px; } 
-.corner.br { bottom: -16px; right: -16px; }
-.watermark { position: absolute; bottom: 10px; right: 15px; color: rgba(0, 0, 0, 0.45); font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; z-index: 2; pointer-events: none; user-select: none; }
 
 .placeholder { 
   position: absolute; 
@@ -241,7 +225,6 @@ body.dark-mode .player-row:hover { background-color: #2a2a2a; }
 body.dark-mode .squad-tab:hover, body.dark-mode .btn-formation:hover { background-color: #333; }
 body.dark-mode .player-list::-webkit-scrollbar-track { background: #1e1e1e; border-left-color: var(--border-color); }
 body.dark-mode .player-list::-webkit-scrollbar-thumb { background: #444; }
-body.dark-mode .pitch-container { border-color: #222; }
 body.dark-mode .squad-tab, body.dark-mode .btn-formation, body.dark-mode .tab { color: var(--text-main); }
 body.dark-mode .btn-formation.active { background-color: var(--text-main); color: var(--bg-color); }
 body.dark-mode .on-pitch { background-color: #121212; border-bottom-color: #222; }
@@ -270,10 +253,25 @@ body.dark-mode .action-btn { color: var(--text-main); }
 body.dark-mode .main-header { background-color: #1e1e1e; }
 
 @media (max-width: 650px) {
-  .main-header { padding: 12px 0; }
-  .header-container { flex-direction: column; gap: 12px; text-align: center; }
-  .header-logo h1 { font-size: 16px; }
-  .header-nav { width: 100%; justify-content: center; gap: 25px; }
+  .main-header { 
+    padding: 10px 0; 
+    margin-bottom: 10px; /* Acá está el margen que queríamos achicar antes */
+  }
+  .header-container { 
+    flex-direction: row; /* CLAVE: Mantiene título y botón en la misma línea horizontal */
+    justify-content: space-between; /* Tira el título a la izquierda y el botón a la derecha */
+    align-items: center; 
+    text-align: left;
+    gap: 10px; 
+  }
+  .header-logo h1 { 
+    font-size: 14px; /* Un poco más chico para que no choque con el botón */
+  }
+  .header-nav { 
+    width: auto; 
+    justify-content: flex-end; 
+    gap: 15px; 
+  }
   .nav-btn { font-size: 11px; }
 }
 
@@ -418,7 +416,7 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   .app-layout {
     grid-template-columns: 1fr;
     height: auto; 
-    gap: 20px;
+    gap: 5px;
   }
 
   .fab-btn {
@@ -475,12 +473,12 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
 
   .center-column { 
     order: -1; 
-    margin: 20px 0; 
+    margin: 0; 
   }
   .pitch-container { 
-    min-height: 500px; 
     width: 100%; 
-    margin: 0;
+    margin: 0 auto;
+    /* Ya no hace falta min-height, el aspect-ratio hace la magia */
   }
   
   .mobile-overlay {
@@ -503,21 +501,8 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   }
 
   /* ==========================================
-     FASE 2: ESCALA DE LA CANCHA Y JUGADORES
+     FASE 2: ESCALA DE LA CANCHA Y JUGADORESs
      ========================================== */
-  
-  .center-circle { width: 110px; height: 110px; }
-  .penalty-area { width: 240px; height: 100px; }
-  .goal-area { width: 110px; height: 33px; }
-  .penalty-spot.top { top: 75px; }
-  .penalty-spot.bottom { bottom: 75px; }
-  
-  .medialuna-wrapper { width: 110px; height: 22px; }
-  .medialuna-wrapper.top { top: 100px; }
-  .medialuna-wrapper.bottom { bottom: 100px; }
-  .medialuna-circle { width: 110px; height: 110px; }
-  .medialuna-wrapper.top .medialuna-circle { top: -88px; }
-  .medialuna-wrapper.bottom .medialuna-circle { bottom: -88px; }
 
   .player-token { width: 50px; height: 50px; }
   .token-name { font-size: 8px; padding: 2px 4px; margin-top: 2px; }

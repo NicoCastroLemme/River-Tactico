@@ -6,21 +6,21 @@ let plantelRumores = []; // <--- AGREGAR ESTA
 const coleccionFormaciones = {
   '4-4-2': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '87%' }],
+    'LD':  [{ top: '63%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '13%' }],
+    'LI':  [{ top: '63%', left: '15%' }],
     'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
-    'MD':  [{ top: '38%', left: '87%' }],
-    'MI':  [{ top: '38%', left: '13%' }],
+    'MD':  [{ top: '38%', left: '85%' }],
+    'MI':  [{ top: '38%', left: '15%' }],
     'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
   },  
   '4-3-3': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '60%', left: '87%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '60%', left: '13%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
     'MCD': [{ top: '45%', left: '50%' }],
-    'MC':  [{ top: '40%', left: '72%' }, { top: '40%', left: '28%' }],
+    'MC':  [{ top: '40%', left: '75%' }, { top: '40%', left: '25%' }],
     'ED':  [{ top: '20%', left: '85%' }],
     'DC':  [{ top: '18%', left: '50%' }],
     'EI':  [{ top: '20%', left: '15%' }]
@@ -36,9 +36,9 @@ const coleccionFormaciones = {
   },
   '4-2-3-1': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '87%' }],
+    'LD':  [{ top: '63%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '13%' }],
+    'LI':  [{ top: '63%', left: '15%' }],
     'MC':  [{ top: '48%', left: '35%' }, { top: '48%', left: '65%' }],
     'MCO': [{ top: '33%', left: '50%' }],
     'ED':  [{ top: '33%', left: '80%' }],
@@ -66,19 +66,19 @@ const coleccionFormaciones = {
   },
   '4-3-1-2': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '87%' }],
+    'LD':  [{ top: '63%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '13%' }],
+    'LI':  [{ top: '63%', left: '15%' }],
     'MCD': [{ top: '53%', left: '50%' }],
-    'MC':  [{ top: '45%', left: '72%' }, { top: '45%', left: '28%' }],
+    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
     'MCO': [{ top: '33%', left: '50%' }],
     'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
   },
   '4-1-4-1': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '87%' }],
+    'LD':  [{ top: '63%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '13%' }],
+    'LI':  [{ top: '63%', left: '15%' }],
     'MCD': [{ top: '53%', left: '50%' }],
     'MC':  [{ top: '35%', left: '40%' }, { top: '35%', left: '60%' }],
     'MI':  [{ top: '35%', left: '18%' }],
@@ -96,12 +96,12 @@ const coleccionFormaciones = {
   },
   '4-4-1-1': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '87%' }],
+    'LD':  [{ top: '63%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '13%' }],
+    'LI':  [{ top: '63%', left: '15%' }],
     'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
-    'MD':  [{ top: '38%', left: '87%' }],
-    'MI':  [{ top: '38%', left: '13%' }],
+    'MD':  [{ top: '38%', left: '85%' }],
+    'MI':  [{ top: '38%', left: '15%' }],
     'MCO': [{ top: '30%', left: '50%' }],
     'DC':  [{ top: '15%', left: '50%' }]
   },
@@ -117,11 +117,11 @@ const coleccionFormaciones = {
   },
   '4-3-2-1': {
     'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '60%', left: '87%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
     'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '60%', left: '13%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
     'MCD': [{ top: '50%', left: '50%' }],
-    'MC':  [{ top: '45%', left: '72%' }, { top: '45%', left: '28%' }],
+    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
     'MCO': [{ top: '30%', left: '38%' }, { top: '30%', left: '62%' }],
     'DC':  [{ top: '18%', left: '50%' }]
   }
@@ -679,9 +679,9 @@ if(btnCompartir) {
     btnCompartir.innerHTML = '⏳';
     
     html2canvas(cancha, {
-      scale: 2, 
-      useCORS: true, 
-      backgroundColor: null,
+      scale: 3,                   // Aumentado a 3 para máxima calidad (HD)
+      useCORS: true,              // Ya lo tenías perfecto
+      backgroundColor: '#ffffff', // CAMBIO CLAVE: Reemplazamos 'null' por fondo blanco para matar el bug de la imagen negra
       width: cancha.offsetWidth,
       height: cancha.offsetHeight
     }).then(canvas => {
