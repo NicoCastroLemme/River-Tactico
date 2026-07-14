@@ -682,8 +682,7 @@ if(btnCompartir) {
       scale: 3,                   // Aumentado a 3 para máxima calidad (HD)
       useCORS: true,              // Ya lo tenías perfecto
       backgroundColor: '#ffffff', // CAMBIO CLAVE: Reemplazamos 'null' por fondo blanco para matar el bug de la imagen negra
-      width: cancha.offsetWidth,
-      height: cancha.offsetHeight
+      
     }).then(canvas => {
       canvas.toBlob(function(blob) {
         const file = new File([blob], "Mi_11_River.png", { type: "image/png" });
