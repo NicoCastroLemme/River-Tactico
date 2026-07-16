@@ -1486,16 +1486,6 @@ document.querySelectorAll('.player-list').forEach(lista => {
   });
 });
 
-// --- LÓGICA PARA MOSTRAR/OCULTAR NOMBRES EN LA CANCHA ---
-const btnToggleNombres = document.getElementById('btn-toggle-nombres');
-
-if (btnToggleNombres) {
-  btnToggleNombres.addEventListener('click', () => {
-    // Le ponemos o sacamos la clase al body
-    document.body.classList.toggle('hide-names');
-  });
-}
-
 // --- LÓGICA DEL INTERRUPTOR DE SUPLENTES ---
 const toggleSuplentes = document.getElementById('toggle-suplentes');
 

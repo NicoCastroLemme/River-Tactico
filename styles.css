@@ -698,11 +698,6 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   
 }
 
-/* --- LÓGICA DE OCULTAR NOMBRES --- */
-body.hide-names .token-name { display: none !important; }
-body.hide-names .icon-eye { display: none !important; }
-body.hide-names .icon-eye-off { display: block !important; }
-
 /* --- INTERRUPTOR DE SUPLENTES (SWITCH) --- */
 .toggle-switch-container {
   display: flex;
