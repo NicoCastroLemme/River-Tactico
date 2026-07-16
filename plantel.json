@@ -104,6 +104,16 @@
       "lesionado": true
     },
     {
+      "id": 29,
+      "nombre": "G. Montiel",
+      "posicion": [
+        "LD"
+      ],
+      "numero": 29,
+      "valor": 81,
+      "lesionado": true
+    },
+    {
       "id": 16,
       "nombre": "F. Bustos",
       "posicion": [
@@ -115,14 +125,15 @@
       "lesionado": false
     },
     {
-      "id": 29,
-      "nombre": "G. Montiel",
+      "id": 49,
+      "nombre": "G. González",
       "posicion": [
-        "LD"
+        "LD",
+        "MD"
       ],
-      "numero": 29,
-      "valor": 81,
-      "lesionado": true
+      "numero": 49,
+      "valor": 79,
+      "lesionado": false
     },
     {
       "id": 6,
@@ -347,17 +358,6 @@
         "MCO"
       ],
       "numero": 48,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 49,
-      "nombre": "G. González",
-      "posicion": [
-        "LD",
-        "MD"
-      ],
-      "numero": 49,
       "valor": 79,
       "lesionado": false
     }
