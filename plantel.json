@@ -1,22 +1,22 @@
 {
   "primera": [
     {
-      "id": 33,
-      "nombre": "E. Centurión",
-      "posicion": [
-        "ARQ"
-      ],
-      "numero": 33,
-      "valor": 78,
-      "lesionado": false
-    },
-    {
       "id": 41,
       "nombre": "S. Beltrán",
       "posicion": [
         "ARQ"
       ],
       "numero": 41,
+      "valor": 78,
+      "lesionado": false
+    },
+    {
+      "id": 33,
+      "nombre": "E. Centurión",
+      "posicion": [
+        "ARQ"
+      ],
+      "numero": 33,
       "valor": 78,
       "lesionado": false
     },
@@ -354,9 +354,8 @@
       "id": 49,
       "nombre": "G. González",
       "posicion": [
-        "DC",
-        "MP",
-        "MCO"
+        "LD",
+        "MD"
       ],
       "numero": 49,
       "valor": 79,
