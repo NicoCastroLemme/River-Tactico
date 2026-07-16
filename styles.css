@@ -116,7 +116,7 @@ body {
 
 .player-token { position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%); z-index: 10; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
 .token-img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.4)); }
-.token-name { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 5px; background-color: #fff; color: var(--text-main); font-size: 9px; font-weight: 900; letter-spacing: 0.5px; padding: 3px 6px; border-radius: 0; border: 1px solid var(--text-main); white-space: nowrap; text-transform: uppercase; box-shadow: 2px 2px 0px rgba(0, 0, 0, 1); pointer-events: none; }
+.token-name { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 5px; background-color: #fff; color: var(--text-main); font-size: 9px; font-weight: 900; letter-spacing: 0.5px; padding: 3px 6px; border-radius: 0; border: 1px solid var(--text-main); white-space: nowrap; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); pointer-events: none; }
 
 /* --- COLUMNA DERECHA --- */
 .right-panel { display: flex; flex-direction: column; min-height: 0; height: calc(100% - 44px); }
@@ -476,6 +476,49 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
 
 .mobile-overlay { display: none; }
 
+/* Botón de "+" para agregar suplente */
+.btn-suplente {
+  position: absolute;
+  top: calc(100% + 28px); /* Lo empujamos más abajo que el cartel del titular */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e51a23; /* Rojo River */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 15;
+  box-shadow: 1px 1px 0px rgba(0,0,0,0.8);
+}
+
+/* El cartelito del suplente (sin foto) */
+.nombre-suplente {
+  position: absolute;
+  top: calc(100% + 28px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f0f0f0; /* Un gris clarito para diferenciarlo del titular */
+  color: #333;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border: 1px solid #999;
+  white-space: nowrap;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 15;
+}
+
+/* Clase de utilidad para esconder cosas */
+.oculto {
+  display: none !important;
+}
+
 /* ==========================================
    MODO RESPONSIVO (TABLETS Y CELULARES)
    ========================================== */
@@ -642,3 +685,86 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
 body.hide-names .token-name { display: none !important; }
 body.hide-names .icon-eye { display: none !important; }
 body.hide-names .icon-eye-off { display: block !important; }
+
+/* --- INTERRUPTOR DE SUPLENTES (SWITCH) --- */
+.toggle-switch-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 0 12px;
+  border-radius: 20px; /* Bordes redondeados tipo píldora */
+  height: 32px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.toggle-label {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+}
+
+/* Ocultamos el checkbox real */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* El fondo del interruptor */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+}
+
+/* La bolita del interruptor */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Cuando está en "SÍ" (Activado) */
+input:checked + .slider {
+  background-color: var(--river-red);
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px); /* Lo desliza a la derecha */
+}
+
+/* Redondeo del switch */
+.slider.round {
+  border-radius: 18px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+body.dark-mode .slider {
+  background-color: #555; /* Un gris más oscuro para el switch inactivo en modo oscuro */
+}
+
+/* LA REGLA MÁGICA QUE OCULTA LOS SUPLENTES */
+body.hide-subs .btn-suplente,
+body.hide-subs .nombre-suplente {
+  display: none !important;
+}

@@ -1,7 +1,10 @@
+let eligiendoSuplente = false;
+let jugadorTitularElegido = null; // Para saber a qué jugador le estamos metiendo el suplente
+
 // Variables globales que ahora arrancan vacías y se llenan con el JSON
 let plantelPrimera = [];
 let plantelReserva = [];
-let plantelRumores = []; // <--- AGREGAR ESTA
+let plantelRumores = [];
 
 const coleccionFormaciones = {
   '4-4-2': {
@@ -222,12 +225,19 @@ function guardarEstadoPizarra() {
     jugadores: []
   };
   
-  // Anotamos qué jugador está en qué coordenada
+  // Anotamos qué jugador está en qué coordenada (incluido el suplente si lo tiene)
   document.querySelectorAll('.player-token').forEach(token => {
+    let idSuplente = null;
+    const cartelSuplente = token.querySelector('.nombre-suplente');
+    if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
+       idSuplente = cartelSuplente.dataset.id;
+    }
+
     estado.jugadores.push({
       id: parseInt(token.id.replace('token-', '')),
       top: token.style.top,
-      left: token.style.left
+      left: token.style.left,
+      idSuplente: idSuplente // Guardamos el ID del suplente
     });
   });
   
@@ -251,6 +261,21 @@ function cargarEstadoPizarra() {
       if (jugador) {
         jugadorSeleccionado = jugador;
         ubicarJugadorLibre({ top: j.top, left: j.left });
+        
+        // Si tenía un suplente guardado, lo restauramos también
+        if (j.idSuplente) {
+           const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
+           if (suplente) {
+               const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
+               const cartelSuplente = tokenRecienCreado.querySelector('.nombre-suplente');
+               const btnSuplente = tokenRecienCreado.querySelector('.btn-suplente');
+               
+               cartelSuplente.textContent = suplente.nombre;
+               cartelSuplente.dataset.id = suplente.id;
+               cartelSuplente.classList.remove('oculto');
+               btnSuplente.classList.add('oculto');
+           }
+        }
       }
     });
   }
@@ -266,7 +291,11 @@ function renderizarListaJugadores(plantelSeleccionado) {
     row.id = `row-${jugador.id}`;
     row.dataset.posicion = jugador.posicion[0];
 
-    if (document.getElementById(`token-${jugador.id}`)) {
+    // Chequeamos si ya está como titular o como suplente para marcarlo gris
+    const estaComoTitular = document.getElementById(`token-${jugador.id}`);
+    const estaComoSuplente = document.querySelector(`.nombre-suplente[data-id="${jugador.id}"]`);
+    
+    if (estaComoTitular || estaComoSuplente) {
       row.classList.add('on-pitch');
     }
 
@@ -277,7 +306,7 @@ function renderizarListaJugadores(plantelSeleccionado) {
     row.innerHTML = `
       <span class="num">${jugador.numero}</span>
       <span class="name">${jugador.nombre}${iconoLesion}${iconoNuevo}</span>
-      <span class="pos">${jugador.posicion[0]}</span>         
+      <span class="pos">${jugador.posicion[0]}</span>        
       <span class="rating">${jugador.valor}</span>
     `;
     
@@ -296,7 +325,7 @@ function cambiarPlantel(tipo, botonClicked) {
   
   if (tipo === 'primera') renderizarListaJugadores(plantelPrimera);
   else if (tipo === 'reserva') renderizarListaJugadores(plantelReserva);
-  else if (tipo === 'rumores') renderizarListaJugadores(plantelRumores); // <--- AGREGAR ESTA
+  else if (tipo === 'rumores') renderizarListaJugadores(plantelRumores); 
 }
 
 function marcarJugadorEnLista(jugador, fila) {
@@ -359,12 +388,19 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     return;
   }
 
-  // Recolectamos a los jugadores que están actualmente en la cancha
+  // Recolectamos a los jugadores que están actualmente en la cancha (guardando si tenían suplente)
   const jugadoresEnCancha = [];
   document.querySelectorAll('.player-token').forEach(token => {
     const id = token.id.replace('token-', '');
     const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
-    if (jugador) jugadoresEnCancha.push(jugador);
+    if (jugador) {
+       let idSuplente = null;
+       const cartelSuplente = token.querySelector('.nombre-suplente');
+       if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
+          idSuplente = cartelSuplente.dataset.id;
+       }
+       jugadoresEnCancha.push({ titular: jugador, idSuplente: idSuplente });
+    }
   });
 
   document.querySelectorAll('.btn-formation').forEach(btn => btn.classList.remove('active'));
@@ -385,7 +421,8 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   });
 
   // 2. PRIMERA PASADA: Ubicamos a los jugadores que SÍ coinciden con su posición natural
-  jugadoresEnCancha.forEach(jugador => {
+  jugadoresEnCancha.forEach(pack => {
+    const jugador = pack.titular;
     jugador.ubicado = false;
     jugador.slotAsignado = null;
     for (let i = 0; i < jugador.posicion.length; i++) {
@@ -402,7 +439,8 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
 
   // 3. SEGUNDA PASADA: Los que quedaron colgados, rellenan espacios libres
   // REGLA: Jugadores de campo no van al arco, arqueros no van al campo.
-  jugadoresEnCancha.forEach(jugador => {
+  jugadoresEnCancha.forEach(pack => {
+    const jugador = pack.titular;
     if (!jugador.ubicado) {
       const esArquero = jugador.posicion.includes('ARQ');
 
@@ -425,7 +463,8 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   });
 
   // 4. Imprimimos los tokens en la cancha en base al slot que se les asignó
-  jugadoresEnCancha.forEach(jugador => {
+  jugadoresEnCancha.forEach(pack => {
+    const jugador = pack.titular;
     if (jugador.slotAsignado) {
       const coords = jugador.slotAsignado.coords;
       
@@ -435,14 +474,53 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
       token.style.cursor = 'pointer'; 
       token.onclick = () => ubicarJugadorLibre(coords); 
 
+      // AGREGAMOS LOS ELEMENTOS DEL SUPLENTE ACÁ TAMBIÉN
       token.innerHTML = `
         <img src="${obtenerRutaFoto(jugador.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
         <div class="token-name">${jugador.nombre}</div>
+        <button class="btn-suplente">+</button>
+        <div class="nombre-suplente oculto"></div>
       `;
       
       token.style.top = coords.top;
       token.style.left = coords.left;
       pitch.appendChild(token);
+
+      // Le damos vida al botón "+" del suplente
+      const btnSuplente = token.querySelector('.btn-suplente');
+      const cartelSuplente = token.querySelector('.nombre-suplente');
+      
+      btnSuplente.onclick = (e) => {
+        e.stopPropagation(); // Para que no se active el click del titular
+        eligiendoSuplente = true;
+        jugadorTitularElegido = token;
+        const posAbreviada = jugador.slotAsignado.puesto; // Usamos el puesto del slot asignado
+        abrirModalSeleccion(posAbreviada, coords);
+      };
+
+      // Si el titular ya tenía un suplente antes de cambiar la táctica, lo restauramos
+      if (pack.idSuplente) {
+         const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == pack.idSuplente);
+         if (suplente) {
+             cartelSuplente.textContent = suplente.nombre;
+             cartelSuplente.dataset.id = suplente.id;
+             cartelSuplente.classList.remove('oculto');
+             btnSuplente.classList.add('oculto');
+         }
+      }
+
+      // Funcionalidad para borrar al suplente haciéndole clic
+      cartelSuplente.onclick = (e) => {
+         e.stopPropagation();
+         const idSuplente = cartelSuplente.dataset.id;
+         const filaSuplente = document.getElementById(`row-${idSuplente}`);
+         if (filaSuplente) filaSuplente.classList.remove('on-pitch');
+         
+         cartelSuplente.classList.add('oculto');
+         cartelSuplente.dataset.id = '';
+         btnSuplente.classList.remove('oculto');
+         guardarEstadoPizarra();
+      };
 
       const placeholder = Array.from(document.querySelectorAll('.placeholder'))
         .find(p => p.style.top === coords.top && p.style.left === coords.left);
@@ -476,10 +554,18 @@ function ubicarJugadorLibre(coords) {
 
   if (!jugadorSeleccionado) {
     if (tokenExistente) {
-      // Comportamiento original: Si ya hay un jugador, lo saca de la cancha
+      // Comportamiento original: Si ya hay un jugador, lo saca de la cancha (y a su suplente también)
       const oldId = tokenExistente.id.replace('token-', '');
       const filaVieja = document.getElementById(`row-${oldId}`);
       if (filaVieja) filaVieja.classList.remove('on-pitch');
+      
+      // Liberamos al suplente en la lista si tenía uno
+      const cartelSuplente = tokenExistente.querySelector('.nombre-suplente');
+      if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
+          const filaSuplenteViejo = document.getElementById(`row-${cartelSuplente.dataset.id}`);
+          if (filaSuplenteViejo) filaSuplenteViejo.classList.remove('on-pitch');
+      }
+
       tokenExistente.remove();
       
       if (placeholderExistente) placeholderExistente.style.opacity = '1';
@@ -489,16 +575,62 @@ function ubicarJugadorLibre(coords) {
       return;
     }
     
-    // ¡NUEVO COMPORTAMIENTO! Si el lugar está vacío y no agarraste a nadie de la lista, se abre el menú
+    // Si el lugar está vacío y no agarraste a nadie de la lista, se abre el menú para el titular
+    eligiendoSuplente = false;
     abrirModalSeleccion(posAbreviada, coords);
     return;
   }
 
-  // Si llegamos acá, es porque SI había un jugadorSeleccionado. Lo ubicamos normal.
+  // === LÓGICA SI ESTAMOS ELIGIENDO UN SUPLENTE ===
+  if (eligiendoSuplente && jugadorTitularElegido) {
+      const btnSuplente = jugadorTitularElegido.querySelector('.btn-suplente');
+      const cartelSuplente = jugadorTitularElegido.querySelector('.nombre-suplente');
+      
+      btnSuplente.classList.add('oculto');
+      cartelSuplente.textContent = jugadorSeleccionado.nombre;
+      cartelSuplente.dataset.id = jugadorSeleccionado.id; // Guardamos el ID para poder liberarlo después
+      cartelSuplente.classList.remove('oculto');
+
+      // Funcionalidad para borrar al suplente haciéndole clic
+      cartelSuplente.onclick = (e) => {
+         e.stopPropagation();
+         const idSuplente = cartelSuplente.dataset.id;
+         const filaSuplente = document.getElementById(`row-${idSuplente}`);
+         if (filaSuplente) filaSuplente.classList.remove('on-pitch');
+         
+         cartelSuplente.classList.add('oculto');
+         cartelSuplente.dataset.id = '';
+         btnSuplente.classList.remove('oculto');
+         guardarEstadoPizarra();
+      };
+
+      // Lo marcamos como "en cancha" en la lista izquierda
+      const filaJugador = document.getElementById(`row-${jugadorSeleccionado.id}`);
+      if (filaJugador) {
+        filaJugador.classList.remove('selected');
+        filaJugador.classList.add('on-pitch');
+      }
+
+      eligiendoSuplente = false;
+      jugadorTitularElegido = null;
+      jugadorSeleccionado = null;
+      guardarEstadoPizarra();
+      return;
+  }
+
+  // === LÓGICA ORIGINAL: ELIGIENDO TITULAR ===
   if (tokenExistente) {
     const oldId = tokenExistente.id.replace('token-', '');
     const filaVieja = document.getElementById(`row-${oldId}`);
     if (filaVieja) filaVieja.classList.remove('on-pitch');
+    
+    // Liberamos al suplente viejo si había uno
+    const cartelSuplenteViejo = tokenExistente.querySelector('.nombre-suplente');
+    if (cartelSuplenteViejo && !cartelSuplenteViejo.classList.contains('oculto')) {
+        const filaSuplenteViejo = document.getElementById(`row-${cartelSuplenteViejo.dataset.id}`);
+        if (filaSuplenteViejo) filaSuplenteViejo.classList.remove('on-pitch');
+    }
+
     tokenExistente.remove();
   }
 
@@ -509,14 +641,26 @@ function ubicarJugadorLibre(coords) {
   token.style.cursor = 'pointer';
   token.onclick = () => ubicarJugadorLibre(coords);
 
+  // INYECTAMOS EL BOTÓN Y EL CARTEL DEL SUPLENTE AL CREAR AL TITULAR
   token.innerHTML = `
     <img src="${obtenerRutaFoto(jugadorSeleccionado.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
     <div class="token-name">${jugadorSeleccionado.nombre}</div>
+    <button class="btn-suplente">+</button>
+    <div class="nombre-suplente oculto"></div>
   `;
   
   token.style.top = coords.top;
   token.style.left = coords.left;
   pitch.appendChild(token);
+
+  // Le damos vida al botón "+" del suplente
+  const btnSuplente = token.querySelector('.btn-suplente');
+  btnSuplente.onclick = (e) => {
+    e.stopPropagation(); // Para que no se active el click del titular y lo borre
+    eligiendoSuplente = true;
+    jugadorTitularElegido = token;
+    abrirModalSeleccion(posAbreviada, coords);
+  };
 
   if (placeholderExistente) placeholderExistente.style.opacity = '0';
 
@@ -535,7 +679,12 @@ function ubicarJugadorLibre(coords) {
 // --- FUNCIÓN ACTUALIZADA: MODAL DE SELECCIÓN CON PESTAÑAS ---
 function abrirModalSeleccion(posAbreviada, coords) {
   const modal = document.getElementById('modal-seleccion');
-  document.getElementById('modal-seleccion-titulo').innerText = `ELEGIR: ${posAbreviada}`;
+  
+  if (eligiendoSuplente) {
+      document.getElementById('modal-seleccion-titulo').innerText = `ELEGIR SUPLENTE: ${posAbreviada}`;
+  } else {
+      document.getElementById('modal-seleccion-titulo').innerText = `ELEGIR TITULAR: ${posAbreviada}`;
+  }
 
   const tabsModal = document.querySelectorAll('.modal-squad-tab');
   
@@ -546,10 +695,16 @@ function abrirModalSeleccion(posAbreviada, coords) {
     listaRecomendados.innerHTML = '';
     listaResto.innerHTML = '';
 
-    // Filtramos a los que ya están en cancha
-    const idsEnCancha = Array.from(document.querySelectorAll('.player-token'))
+    // Filtramos a los titulares y a los suplentes que ya están en cancha
+    const idsTitulares = Array.from(document.querySelectorAll('.player-token'))
       .map(t => parseInt(t.id.replace('token-', '')));
-    const disponibles = plantelSeleccionado.filter(p => !idsEnCancha.includes(p.id));
+      
+    const idsSuplentes = Array.from(document.querySelectorAll('.nombre-suplente:not(.oculto)'))
+      .map(s => parseInt(s.dataset.id));
+      
+    const idsOcupados = [...idsTitulares, ...idsSuplentes];
+
+    const disponibles = plantelSeleccionado.filter(p => !idsOcupados.includes(p.id));
 
     const recomendados = [];
     const resto = [];
@@ -626,6 +781,8 @@ function abrirModalSeleccion(posAbreviada, coords) {
   // Botón cancelar
   document.getElementById('btn-cerrar-seleccion').onclick = () => {
     modal.classList.remove('active');
+    eligiendoSuplente = false;
+    jugadorTitularElegido = null;
   };
 
   modal.classList.add('active');
@@ -664,7 +821,7 @@ if(btnLimpiar) {
     dibujarEsquema();
     verificarOnce();
     actualizarBoxScore(); 
-    guardarEstadoPizarra(); // <--- AGREGAR ESTA LÍNEA ACÁ
+    guardarEstadoPizarra(); 
   });
 }
 
@@ -679,7 +836,7 @@ if(btnCompartir) {
     btnCompartir.innerHTML = '⏳';
     
     html2canvas(cancha, {
-      scale: 3,                   // Aumentado a 3 para máxima calidad (HD)
+      scale: 3,                  // Aumentado a 3 para máxima calidad (HD)
       useCORS: true,              // Ya lo tenías perfecto
       backgroundColor: '#ffffff', // CAMBIO CLAVE: Reemplazamos 'null' por fondo blanco para matar el bug de la imagen negra
       
@@ -690,7 +847,7 @@ if(btnCompartir) {
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
           navigator.share({
             title: '¡Mirá mi 11 ideal de River!',
-            text: 'Armé mi formación en RiverTáctico.com 🐔',
+            text: 'Armé mi formación en mi11river.com 🐔',
             files: [file]
           }).then(() => {
             btnCompartir.innerHTML = contenidoOriginal; // Restauramos el SVG
@@ -818,6 +975,12 @@ function actualizarBoxScore() {
         nombreMostrar = token.querySelector('.token-name').innerText;
         estiloNombre = 'color: var(--text-main); font-weight: bold;';
         contEnCancha++;
+        
+        // ¡NUEVO! Agregamos el nombre del suplente al Box Score si existe
+        const cartelSuplente = token.querySelector('.nombre-suplente');
+        if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
+            nombreMostrar += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${cartelSuplente.textContent})</span>`;
+        }
       }
 
       const row = document.createElement('div');
@@ -1243,6 +1406,8 @@ if (fondoModalSeleccion) {
   fondoModalSeleccion.addEventListener('click', function(e) {
     if (e.target === this) {
       this.classList.remove('active');
+      eligiendoSuplente = false;
+      jugadorTitularElegido = null;
     }
   });
 }
@@ -1328,5 +1493,23 @@ if (btnToggleNombres) {
   btnToggleNombres.addEventListener('click', () => {
     // Le ponemos o sacamos la clase al body
     document.body.classList.toggle('hide-names');
+  });
+}
+
+// --- LÓGICA DEL INTERRUPTOR DE SUPLENTES ---
+const toggleSuplentes = document.getElementById('toggle-suplentes');
+
+if (toggleSuplentes) {
+  // Le decimos que arranque ocultando los suplentes por defecto
+  document.body.classList.add('hide-subs');
+
+  toggleSuplentes.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      // Si está en SÍ (derecha), le sacamos la clase al body
+      document.body.classList.remove('hide-subs');
+    } else {
+      // Si está en NO (izquierda), le ponemos la clase para ocultarlos
+      document.body.classList.add('hide-subs');
+    }
   });
 }
