@@ -258,6 +258,50 @@ body.dark-mode .action-btn { color: var(--text-main); }
 .nav-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background-color: var(--river-red); }
 body.dark-mode .main-header { background-color: #1e1e1e; }
 
+.logo-img {
+  height: 40px; /* Esta es la altura estándar para barras de navegación */
+  width: auto;  /* Mantiene las proporciones de tu logo sin deformarlo */
+  display: block;
+}
+
+/* Contenedor principal del logo y el texto */
+.header-logo {
+  display: flex;
+  align-items: center; /* Centra la imagen y el texto verticalmente */
+  gap: 10px; /* Separación entre el logo y las letras */
+}
+
+/* La imagen de la banda roja */
+.logo-img {
+  height: 40px; 
+  width: auto;
+  border-radius: 4px; /* Opcional: redondea apenitas las puntas si es cuadrado */
+}
+
+/* La caja que apila los textos */
+.logo-text {
+  display: flex;
+  flex-direction: column; /* Apila los textos uno arriba del otro */
+  justify-content: center;
+  line-height: 1; /* Junta las dos líneas para que no queden muy separadas */
+}
+
+/* Estilo para "MI 11" */
+.text-top {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-color); /* Usa el color que ya tenés en tu tema */
+  letter-spacing: 1px;
+}
+
+/* Estilo para "RIVER" */
+.text-bottom {
+  font-size: 18px;
+  font-weight: 900;
+  color: #e51a23; /* El clásico rojo River para que resalte */
+  letter-spacing: 2px;
+}
+
 @media (max-width: 650px) {
   .main-header { 
     padding: 10px 0; 
@@ -279,6 +323,24 @@ body.dark-mode .main-header { background-color: #1e1e1e; }
     gap: 15px; 
   }
   .nav-btn { font-size: 11px; }
+  .logo-img {
+    height: 30px; 
+  }
+  .logo-img {
+    height: 30px; /* Achicamos la imagen */
+  }
+  
+  .header-logo {
+    gap: 8px; /* Juntamos un poquito más el texto a la imagen */
+  }
+
+  .text-top {
+    font-size: 12px;
+  }
+
+  .text-bottom {
+    font-size: 15px;
+  }
 }
 
 /* --- MODAL DE PUNTUACIÓN HÍBRIDO --- */
