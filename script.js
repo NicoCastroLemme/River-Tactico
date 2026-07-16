@@ -1513,3 +1513,24 @@ if (toggleSuplentes) {
     }
   });
 }
+
+// --- LÓGICA PARA ALTERNAR FOTOS / CAMISETAS ---
+const btnToggleFotos = document.getElementById('btn-toggle-fotos');
+const iconUser = document.querySelector('.icon-user');
+const iconShirt = document.querySelector('.icon-shirt');
+
+if (btnToggleFotos) {
+  btnToggleFotos.addEventListener('click', () => {
+    // Ponemos o sacamos la clase del body
+    document.body.classList.toggle('modo-camisetas');
+    
+    // Cambiamos el ícono del botón según el estado
+    if (document.body.classList.contains('modo-camisetas')) {
+      iconUser.style.display = 'none';
+      iconShirt.style.display = 'block';
+    } else {
+      iconUser.style.display = 'block';
+      iconShirt.style.display = 'none';
+    }
+  });
+}

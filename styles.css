@@ -785,3 +785,11 @@ body.hide-subs .btn-suplente,
 body.hide-subs .nombre-suplente {
   display: none !important;
 }
+
+/* --- LÓGICA PARA MODO CAMISETAS --- */
+/* Cambiá 'fotos/camiseta.png' por el nombre real de tu imagen flat */
+body.modo-camisetas .token-img {
+  content: url('fotos/camiseta.png'); 
+  filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.3)); /* Sombra más suave para el diseño flat */
+  transform: scale(0.9); /* Achicamos apenitas la camiseta para que quede elegante */
+}
