@@ -678,6 +678,23 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
     height: auto;
   }
 
+  /* Acercar el suplente al titular en celulares */
+  .btn-suplente,
+  .nombre-suplente {
+    top: calc(100% + 15px); /* Reducimos la caída casi a la mitad */
+  }
+
+  /* Achicamos un pelín el botón y cartel para que no queden toscos */
+  .btn-suplente {
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+  }
+  
+  .nombre-suplente {
+    font-size: 7px;
+    padding: 1px 3px;
+  }
   
 }
 
