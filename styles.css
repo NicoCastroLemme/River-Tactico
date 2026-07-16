@@ -681,7 +681,7 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   /* Acercar el suplente al titular en celulares */
   .btn-suplente,
   .nombre-suplente {
-    top: calc(100% + 15px); /* Reducimos la caída casi a la mitad */
+    top: calc(100% + 20px); /* Reducimos la caída casi a la mitad */
   }
 
   /* Achicamos un pelín el botón y cartel para que no queden toscos */
