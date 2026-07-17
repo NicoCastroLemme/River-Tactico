@@ -233,6 +233,9 @@ function guardarEstadoPizarra() {
       id: parseInt(token.id.replace('token-', '')),
       top: token.style.top,
       left: token.style.left,
+      // NUEVO: Guardamos exactamente a qué círculo pertenecían
+      slotTop: token.dataset.slotTop || token.style.top, 
+      slotLeft: token.dataset.slotLeft || token.style.left,
       idSuplente: idSuplente 
     });
   });
@@ -255,10 +258,18 @@ function cargarEstadoPizarra() {
         jugadorSeleccionado = jugador;
         ubicarJugadorLibre({ top: j.top, left: j.left });
         
+        // NUEVO: Apenas creamos al jugador, le devolvemos la memoria de su círculo
+        const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
+        if (tokenRecienCreado) {
+            if (j.slotTop && j.slotLeft) {
+                tokenRecienCreado.dataset.slotTop = j.slotTop;
+                tokenRecienCreado.dataset.slotLeft = j.slotLeft;
+            }
+        }
+
         if (j.idSuplente) {
            const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
            if (suplente) {
-               const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
                const cartelSuplente = tokenRecienCreado.querySelector('.nombre-suplente');
                const btnSuplente = tokenRecienCreado.querySelector('.btn-suplente');
                
@@ -270,6 +281,10 @@ function cargarEstadoPizarra() {
         }
       }
     });
+    
+    // Forzamos la actualización visual para que se oculten los círculos
+    actualizarPlaceholders();
+    actualizarBoxScore();
   }
 }
 
@@ -1412,47 +1427,6 @@ if (fondoModalExito) {
     }
   });
 }
-
-const btnFlotante = document.getElementById('btn-flotante-jugadores');
-const panelesIzquierdos = document.querySelectorAll('.left-panel');
-const botonesCerrarPanel = document.querySelectorAll('.btn-cerrar-panel-movil');
-const overlayMovil = document.getElementById('overlay-plantel-movil');
-
-if (btnFlotante && overlayMovil) {
-  btnFlotante.addEventListener('click', () => {
-    const vistaActiva = document.querySelector('.app-layout[style*="display: grid"]') || document.querySelector('.app-layout:not([style*="display: none"])');
-    if (vistaActiva) {
-      const panel = vistaActiva.querySelector('.left-panel');
-      if (panel) {
-        panel.classList.add('active-mobile');
-        overlayMovil.classList.add('active'); 
-      }
-    }
-  });
-}
-
-function cerrarPanelMovil() {
-  panelesIzquierdos.forEach(panel => panel.classList.remove('active-mobile'));
-  if (overlayMovil) overlayMovil.classList.remove('active'); 
-}
-
-botonesCerrarPanel.forEach(btn => {
-  btn.addEventListener('click', cerrarPanelMovil);
-});
-
-if (overlayMovil) {
-  overlayMovil.addEventListener('click', cerrarPanelMovil);
-}
-
-document.querySelectorAll('.player-list').forEach(lista => {
-  lista.addEventListener('click', (e) => {
-    if (e.target.closest('.player-row') && window.innerWidth <= 992) {
-      setTimeout(() => {
-        cerrarPanelMovil();
-      }, 150);
-    }
-  });
-});
 
 const toggleSuplentes = document.getElementById('toggle-suplentes');
 
