@@ -3,702 +3,834 @@
     {
       "id": 41,
       "nombre": "S. Beltrán",
-      "posicion": [
-        "ARQ"
-      ],
+      "posicion": ["ARQ"],
       "numero": 41,
-      "valor": 78,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
     },
     {
       "id": 33,
       "nombre": "E. Centurión",
-      "posicion": [
-        "ARQ"
-      ],
+      "posicion": ["ARQ"],
       "numero": 33,
-      "valor": 78,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
     },
     {
       "id": 21,
       "nombre": "M. Acuña",
-      "posicion": [
-        "LI",
-        "MI"
-      ],
+      "posicion": ["LI", "MI"],
       "numero": 21,
-      "valor": 81,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 18,
       "nombre": "M. Viña",
-      "posicion": [
-        "LI"
-      ],
+      "posicion": ["LI"],
       "numero": 18,
-      "valor": 81,
-      "lesionado": true
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 45,
       "nombre": "N. Otamendi",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": 30,
-      "valor": 82,
+      "puntaje_promedio": 0,
       "lesionado": false,
-      "nuevo": true
+      "nuevo": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 2,
       "nombre": "T. Ramírez",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": 2,
-      "valor": 75,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 5,
       "nombre": "J. Portillo",
-      "posicion": [
-        "DFC",
-        "MCD"
-      ],
+      "posicion": ["DFC", "MCD"],
       "numero": 5,
-      "valor": 75,
-      "lesionado": true
+      "puntaje_promedio": 0,
+      "lesionado": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 13,
       "nombre": "L. Rivero",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": 13,
-      "valor": 75,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 20,
       "nombre": "G. Pezzella",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": 20,
-      "valor": 82,
-      "lesionado": true
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 28,
       "nombre": "M. Quarta",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": 28,
-      "valor": 83,
-      "lesionado": true
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 29,
       "nombre": "G. Montiel",
-      "posicion": [
-        "LD"
-      ],
+      "posicion": ["LD"],
       "numero": 29,
-      "valor": 81,
-      "lesionado": true
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 16,
       "nombre": "F. Bustos",
-      "posicion": [
-        "LD",
-        "MD"
-      ],
+      "posicion": ["LD", "MD"],
       "numero": 16,
-      "valor": 81,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 49,
       "nombre": "G. González",
-      "posicion": [
-        "LD",
-        "MD"
-      ],
+      "posicion": ["LD", "MD"],
       "numero": 49,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 6,
-      "nombre": "A. Moreno",
-      "posicion": [
-        "MCD",
-        "MC"
-      ],
-      "numero": 6,
-      "valor": 76,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 44,
       "nombre": "L. Silva",
-      "posicion": [
-        "MCD",
-        "MC"
-      ],
+      "posicion": ["MCD", "MC"],
       "numero": 44,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "A. Moreno",
+      "posicion": ["MCD", "MC"],
+      "numero": 6,
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 46,
       "nombre": "M. Arambarri",
-      "posicion": [
-        "MC",
-        "MCD"
-      ],
+      "posicion": ["MC", "MCD"],
       "numero": 14,
-      "valor": 80,
+      "puntaje_promedio": 0,
       "lesionado": false,
-      "nuevo": true
+      "nuevo": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 15,
       "nombre": "F. Vera",
-      "posicion": [
-        "MC",
-        "MCD",
-        "MD"
-      ],
+      "posicion": ["MC", "MCD", "MD"],
       "numero": 15,
-      "valor": 76,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 22,
       "nombre": "K. Castaño",
-      "posicion": [
-        "MC",
-        "MD",
-        "MCD"
-      ],
+      "posicion": ["MC", "MD", "MCD"],
       "numero": 22,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 34,
       "nombre": "G. Galoppo",
-      "posicion": [
-        "MC"
-      ],
+      "posicion": ["MC"],
       "numero": 34,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 10,
       "nombre": "J. F. Quintero",
-      "posicion": [
-        "MCO",
-        "ED",
-        "MD",
-        "MC"
-      ],
+      "posicion": ["MCO", "ED", "MD", "MC"],
       "numero": 10,
-      "valor": 77,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 24,
       "nombre": "J. C. Meza",
-      "posicion": [
-        "MCO",
-        "MC",
-        "MI"
-      ],
+      "posicion": ["MCO", "MC", "MI"],
       "numero": 24,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 26,
       "nombre": "T. Galván",
-      "posicion": [
-        "MCO",
-        "MI",
-        "MC"
-      ],
+      "posicion": ["MCO", "MI", "MC"],
       "numero": 26,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 39,
       "nombre": "S. Lencina",
-      "posicion": [
-        "MCO",
-        "MD",
-        "ED",
-        "MC"
-      ],
+      "posicion": ["MCO", "MD", "ED", "MC"],
       "numero": 39,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 25,
       "nombre": "L. Pereyra",
-      "posicion": [
-        "MCO",
-        "MI",
-        "MC"
-      ],
+      "posicion": ["MCO", "MI", "MC"],
       "numero": 25,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 11,
       "nombre": "F. Colidio",
-      "posicion": [
-        "MP",
-        "EI",
-        "DC"
-      ],
+      "posicion": ["MP", "EI", "DC"],
       "numero": 11,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 35,
       "nombre": "J. Freitas",
-      "posicion": [
-        "MP",
-        "DC",
-        "ED",
-        "EI"
-      ],
+      "posicion": ["MP", "DC", "ED", "EI"],
       "numero": 35,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 38,
       "nombre": "I. Subiabre",
-      "posicion": [
-        "MP",
-        "MCO",
-        "EI",
-        "ED"
-      ],
+      "posicion": ["MP", "MCO", "EI", "ED"],
       "numero": 38,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 7,
-      "nombre": "M. Salas",
-      "posicion": [
-        "DC",
-        "EI",
-        "ED"
-      ],
-      "numero": 7,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 9,
-      "nombre": "S. Driussi",
-      "posicion": [
-        "DC",
-        "MP",
-        "MCO"
-      ],
-      "numero": 9,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 32,
-      "nombre": "A. Ruberto",
-      "posicion": [
-        "DC"
-      ],
-      "numero": 32,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 47,
       "nombre": "L. Beltran",
-      "posicion": [
-        "DC",
-        "MP",
-        "MCO"
-      ],
+      "posicion": ["DC", "MP", "MCO"],
       "numero": 47,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 48,
       "nombre": "S. Borré",
-      "posicion": [
-        "DC",
-        "MP",
-        "MCO"
-      ],
+      "posicion": ["DC", "MP", "MCO"],
       "numero": 48,
-      "valor": 79,
-      "lesionado": false
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "S. Driussi",
+      "posicion": ["DC", "MP", "MCO"],
+      "numero": 9,
+      "puntaje_promedio": 0,
+      "lesionado": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "M. Salas",
+      "posicion": ["DC", "EI", "ED"],
+      "numero": 7,
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 32,
+      "nombre": "A. Ruberto",
+      "posicion": ["DC"],
+      "numero": 32,
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     }
   ],
   "reserva": [
     {
       "id": 100,
       "nombre": "F. Jaroszewicz",
-      "posicion": [
-        "ARQ"
-      ],
+      "posicion": ["ARQ"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
     },
     {
       "id": 101,
       "nombre": "J. Martinet",
-      "posicion": [
-        "ARQ"
-      ],
+      "posicion": ["ARQ"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
     },
     {
       "id": 102,
       "nombre": "M. Barcia",
-      "posicion": [
-        "ARQ"
-      ],
+      "posicion": ["ARQ"],
       "numero": "-",
-      "valor": 65
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
     },
     {
       "id": 103,
       "nombre": "L. Flores",
-      "posicion": [
-        "LI"
-      ],
+      "posicion": ["LI"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 104,
       "nombre": "V. Lucero",
-      "posicion": [
-        "LI",
-        "MI"
-      ],
+      "posicion": ["LI", "MI"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 105,
       "nombre": "A. Susano",
-      "posicion": [
-        "DFC",
-        "LD"
-      ],
+      "posicion": ["DFC", "LD"],
       "numero": "-",
-      "valor": 66
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 106,
       "nombre": "B. Gutiérrez",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 107,
       "nombre": "C. Pereyra",
-      "posicion": [
-        "DFC",
-        "LI"
-      ],
+      "posicion": ["DFC", "LI"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 108,
       "nombre": "F. González",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": "-",
-      "valor": 69
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 109,
       "nombre": "J. Miretti",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 110,
       "nombre": "Q. Robinho",
-      "posicion": [
-        "DFC",
-        "LI"
-      ],
+      "posicion": ["DFC", "LI"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 111,
       "nombre": "T. Pellegrini",
-      "posicion": [
-        "DFC"
-      ],
+      "posicion": ["DFC"],
       "numero": "-",
-      "valor": 72
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 112,
       "nombre": "U. Giménez",
-      "posicion": [
-        "DFC",
-        "LD"
-      ],
+      "posicion": ["DFC", "LD"],
       "numero": "-",
-      "valor": 70
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 113,
       "nombre": "M. Unyicio",
-      "posicion": [
-        "LD"
-      ],
+      "posicion": ["LD"],
       "numero": "-",
-      "valor": 66
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 114,
       "nombre": "T. Salvatierra",
-      "posicion": [
-        "LD",
-        "MD"
-      ],
+      "posicion": ["LD", "MD"],
       "numero": "-",
-      "valor": 66
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 115,
       "nombre": "A. De la Cuesta",
-      "posicion": [
-        "MCD",
-        "MC"
-      ],
+      "posicion": ["MCD", "MC"],
       "numero": "-",
-      "valor": 69
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 116,
       "nombre": "S. Espíndola",
-      "posicion": [
-        "MCD",
-        "MC"
-      ],
+      "posicion": ["MCD", "MC"],
       "numero": "-",
-      "valor": 69
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 117,
       "nombre": "A. Obregón",
-      "posicion": [
-        "MC",
-        "MD",
-        "LD"
-      ],
+      "posicion": ["MC", "MD", "LD"],
       "numero": "-",
-      "valor": 70
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 118,
       "nombre": "G. Costantini",
-      "posicion": [
-        "MC",
-        "MCD"
-      ],
+      "posicion": ["MC", "MCD"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 119,
       "nombre": "I. Zaballa",
-      "posicion": [
-        "MC"
-      ],
+      "posicion": ["MC"],
       "numero": "-",
-      "valor": 65
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 120,
       "nombre": "M. Soria",
-      "posicion": [
-        "MC",
-        "MCO",
-        "MP"
-      ],
+      "posicion": ["MC", "MCO", "MP"],
       "numero": "-",
-      "valor": 65
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 121,
       "nombre": "E. Núñez",
-      "posicion": [
-        "MCO",
-        "MD"
-      ],
+      "posicion": ["MCO", "MD"],
       "numero": "-",
-      "valor": 72
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 122,
       "nombre": "T. Acosta",
-      "posicion": [
-        "MCO",
-        "MP"
-      ],
+      "posicion": ["MCO", "MP"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 123,
       "nombre": "J. Flores",
-      "posicion": [
-        "EI",
-        "DC"
-      ],
+      "posicion": ["EI", "DC"],
       "numero": "-",
-      "valor": 70
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 124,
       "nombre": "A. Woiski",
-      "posicion": [
-        "MP",
-        "EI",
-        "DC"
-      ],
+      "posicion": ["MP", "EI", "DC"],
       "numero": "-",
-      "valor": 67
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 125,
       "nombre": "D. Gerez",
-      "posicion": [
-        "DC"
-      ],
+      "posicion": ["DC"],
       "numero": "-",
-      "valor": 72
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 126,
       "nombre": "J. Spiff",
-      "posicion": [
-        "DC"
-      ],
+      "posicion": ["DC"],
       "numero": "-",
-      "valor": 69
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 127,
       "nombre": "O. Valencia",
-      "posicion": [
-        "DC"
-      ],
+      "posicion": ["DC"],
       "numero": "-",
-      "valor": 72
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 128,
       "nombre": "S. Meloni",
-      "posicion": [
-        "DC"
-      ],
+      "posicion": ["DC"],
       "numero": "-",
-      "valor": 72
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 129,
       "nombre": "F. Esquivel",
-      "posicion": [
-        "ED"
-      ],
+      "posicion": ["ED"],
       "numero": "-",
-      "valor": 71
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 130,
       "nombre": "G. Pereyra",
-      "posicion": [
-        "ED",
-        "MP"
-      ],
+      "posicion": ["ED", "MP"],
       "numero": "-",
-      "valor": 66
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 131,
       "nombre": "L. Jaime",
-      "posicion": [
-        "ED",
-        "EI",
-        "MCO"
-      ],
+      "posicion": ["ED", "EI", "MCO"],
       "numero": "-",
-      "valor": 68
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     }
   ],
   "rumores": [
     {
       "id": 201,
       "nombre": "T. Almada",
-      "posicion": [
-        "MCO",
-        "MP",
-        "MC"
-      ],
+      "posicion": ["MCO", "MP", "MC"],
       "numero": "-",
-      "valor": 80,
-      "nuevo": false
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     },
     {
       "id": 202,
       "nombre": "A. Correa",
-      "posicion": [
-        "MCO",
-        "MP",
-        "MC",
-        "MD",
-        "MI"
-      ],
+      "posicion": ["MCO", "MP", "MC", "MD", "MI"],
       "numero": "-",
-      "valor": 81,
-      "nuevo": false
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
     }
   ]
 }

@@ -219,6 +219,7 @@ async function inicializarApp() {
 function guardarEstadoPizarra() {
   const estado = {
     formacion: formacionActual,
+    layoutCustom: posicionesTacticas, // NUEVO: Guardamos la táctica deformada por el usuario
     jugadores: []
   };
   
@@ -233,7 +234,6 @@ function guardarEstadoPizarra() {
       id: parseInt(token.id.replace('token-', '')),
       top: token.style.top,
       left: token.style.left,
-      // NUEVO: Guardamos exactamente a qué círculo pertenecían
       slotTop: token.dataset.slotTop || token.style.top, 
       slotLeft: token.dataset.slotLeft || token.style.left,
       idSuplente: idSuplente 
@@ -248,6 +248,12 @@ function cargarEstadoPizarra() {
   if (guardado) {
     const estado = JSON.parse(guardado);
     
+    // --- NUEVO: Restauramos la cancha deformada antes de dibujar ---
+    if (estado.layoutCustom) {
+       coleccionFormaciones[estado.formacion] = estado.layoutCustom;
+    }
+    // --------------------------------------------------------------
+
     const btnFormacion = Array.from(document.querySelectorAll('.btn-formation'))
       .find(btn => btn.innerText === estado.formacion);
     if (btnFormacion) cambiarFormacion(estado.formacion, btnFormacion);
@@ -258,7 +264,6 @@ function cargarEstadoPizarra() {
         jugadorSeleccionado = jugador;
         ubicarJugadorLibre({ top: j.top, left: j.left });
         
-        // NUEVO: Apenas creamos al jugador, le devolvemos la memoria de su círculo
         const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
         if (tokenRecienCreado) {
             if (j.slotTop && j.slotLeft) {
@@ -282,7 +287,6 @@ function cargarEstadoPizarra() {
       }
     });
     
-    // Forzamos la actualización visual para que se oculten los círculos
     actualizarPlaceholders();
     actualizarBoxScore();
   }
@@ -312,7 +316,7 @@ function renderizarListaJugadores(plantelSeleccionado) {
       <span class="num">${jugador.numero}</span>
       <span class="name">${jugador.nombre}${iconoLesion}${iconoNuevo}</span>
       <span class="pos">${jugador.posicion[0]}</span>        
-      <span class="rating">${jugador.valor}</span>
+      <span class="rating">${jugador.puntaje_promedio}</span>
     `;
     
     row.onclick = () => marcarJugadorEnLista(jugador, row);
@@ -975,24 +979,33 @@ function actualizarBoxScore() {
 
          if (jugador) {
              const esArquero = jugador.posicion.includes('ARQ') || jugador.posicion === 'ARQ';
-             const minutos = 0; 
+             
+             // --- NUEVO: Extraemos los datos del JSON de forma segura ---
+             // Si el jugador no tiene el bloque "estadisticas", usamos un objeto vacío {}
+             const stats = jugador.estadisticas || {}; 
+             const minutos = stats.minutos || 0; // Si no hay minutos, pone 0
              
              let htmlStats = '';
              if (esArquero) {
+                const golesRecibidos = stats.goles_recibidos || 0;
+                const vallasInvictas = stats.vallas_invictas || 0;
                 htmlStats = `
                   <div class="stat-item" title="Minutos">⏱️ ${minutos}'</div>
-                  <div class="stat-item" title="Goles Recibidos">🥅 0</div>
-                  <div class="stat-item" title="Vallas Invictas">🧤 0</div>
+                  <div class="stat-item" title="Goles Recibidos">🥅 ${golesRecibidos}</div>
+                  <div class="stat-item" title="Vallas Invictas">🧤 ${vallasInvictas}</div>
                 `;
              } else {
+                const goles = stats.goles || 0;
+                const asistencias = stats.asistencias || 0;
                 htmlStats = `
                   <div class="stat-item" title="Minutos">⏱️ ${minutos}'</div>
-                  <div class="stat-item" title="Goles">⚽ 0</div>
-                  <div class="stat-item" title="Asistencias">👟 0</div>
+                  <div class="stat-item" title="Goles">⚽ ${goles}</div>
+                  <div class="stat-item" title="Asistencias">👟 ${asistencias}</div>
                 `;
              }
 
-             const promedioFinal = "0.0";
+             // Leemos el puntaje_promedio del JSON. Si tiene 0, le forzamos el formato "0.0" para que se vea lindo
+             const promedioFinal = parseFloat(jugador.puntaje_promedio).toFixed(1);
              const estiloNombre = 'color: var(--text-main); font-weight: bold;';
 
              const row = document.createElement('div');
@@ -1535,6 +1548,39 @@ function hacerArrastrable(token) {
     if (isDragging) {
       token.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
       token.style.zIndex = 10;
+      
+      // --- MAGIA: MOVER EL CÍRCULO INVISIBLE CON EL JUGADOR ---
+      const oldTop = token.dataset.slotTop;
+      const oldLeft = token.dataset.slotLeft;
+      const newTop = token.style.top;
+      const newLeft = token.style.left;
+      
+      if (oldTop && oldLeft) {
+          // 1. Movemos el círculo físico en la cancha
+          const placeholder = Array.from(document.querySelectorAll('.placeholder'))
+            .find(p => p.style.top === oldTop && p.style.left === oldLeft);
+          
+          if (placeholder) {
+             placeholder.style.top = newTop;
+             placeholder.style.left = newLeft;
+          }
+          
+          // 2. Modificamos la táctica maestra para que se aprenda la nueva ubicación
+          const pos = token.dataset.pos;
+          if (posicionesTacticas[pos]) {
+             const coordObj = posicionesTacticas[pos].find(c => c.top === oldTop && c.left === oldLeft);
+             if (coordObj) {
+                coordObj.top = newTop;
+                coordObj.left = newLeft;
+             }
+          }
+          
+          // 3. Le decimos al jugador cuál es su nuevo "hogar"
+          token.dataset.slotTop = newTop;
+          token.dataset.slotLeft = newLeft;
+      }
+      // --------------------------------------------------------
+      
       guardarEstadoPizarra(); 
       actualizarPlaceholders(); 
       
