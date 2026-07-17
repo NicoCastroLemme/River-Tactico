@@ -472,7 +472,11 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
       token.id = `token-${jugador.id}`;
       token.className = 'player-token';
       token.style.cursor = 'pointer'; 
-      token.onclick = () => ubicarJugadorLibre(coords); 
+      token.dataset.pos = jugador.slotAsignado.puesto; // Guardamos su posición
+      token.onclick = () => {
+        if (window.estaArrastrando) return; // Si lo soltó de arrastrar, que no haga clic
+        ubicarJugadorLibre({ top: token.style.top, left: token.style.left });
+      }; 
 
       // AGREGAMOS LOS ELEMENTOS DEL SUPLENTE ACÁ TAMBIÉN
       token.innerHTML = `
@@ -485,6 +489,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
       token.style.top = coords.top;
       token.style.left = coords.left;
       pitch.appendChild(token);
+      hacerArrastrable(token);
 
       // Le damos vida al botón "+" del suplente
       const btnSuplente = token.querySelector('.btn-suplente');
@@ -549,8 +554,7 @@ function ubicarJugadorLibre(coords) {
   const placeholderExistente = Array.from(document.querySelectorAll('.placeholder'))
     .find(p => p.style.top === coords.top && p.style.left === coords.left);
 
-  // MAGIA: Leemos qué posición es mirando el texto del circulito punteado
-  const posAbreviada = placeholderExistente ? placeholderExistente.dataset.pos : '';
+  const posAbreviada = tokenExistente ? tokenExistente.dataset.pos : (placeholderExistente ? placeholderExistente.dataset.pos : '');
 
   if (!jugadorSeleccionado) {
     if (tokenExistente) {
@@ -639,7 +643,11 @@ function ubicarJugadorLibre(coords) {
   token.id = idToken;
   token.className = 'player-token';
   token.style.cursor = 'pointer';
-  token.onclick = () => ubicarJugadorLibre(coords);
+  token.dataset.pos = posAbreviada;
+  token.onclick = () => {
+    if (window.estaArrastrando) return;
+    ubicarJugadorLibre({ top: token.style.top, left: token.style.left });
+  };
 
   // INYECTAMOS EL BOTÓN Y EL CARTEL DEL SUPLENTE AL CREAR AL TITULAR
   token.innerHTML = `
@@ -674,6 +682,8 @@ function ubicarJugadorLibre(coords) {
   verificarOnce();
   actualizarBoxScore();
   guardarEstadoPizarra();
+  hacerArrastrable(token);
+  actualizarPlaceholders();
 }
 
 // --- FUNCIÓN ACTUALIZADA: MODAL DE SELECCIÓN CON PESTAÑAS ---
@@ -1559,4 +1569,125 @@ if (btnToggleFotos) {
       iconShirt.style.display = 'none';
     }
   });
+}
+
+// --- LÓGICA DE MOVIMIENTO LIBRE (DRAG & DROP) ---
+window.estaArrastrando = false;
+
+function hacerArrastrable(token) {
+  let isDragging = false;
+  let startX, startY;
+  let initialLeft, initialTop;
+  let pitchRect;
+
+  token.addEventListener('mousedown', dragStart);
+  token.addEventListener('touchstart', dragStart, { passive: false });
+
+  function dragStart(e) {
+    // Ignorar si hace clic en el botón de suplente o cartelito
+    if (e.target.closest('.btn-suplente') || e.target.closest('.nombre-suplente')) return;
+
+    // No arrastrar si estamos en medio de una selección
+    if (eligiendoSuplente || jugadorSeleccionado) return;
+
+    if (!token.dataset.slotTop) {
+      token.dataset.slotTop = token.style.top;
+      token.dataset.slotLeft = token.style.left;
+    }
+
+    const evt = e.type.includes('mouse') ? e : e.touches[0];
+    startX = evt.clientX;
+    startY = evt.clientY;
+
+    initialLeft = parseFloat(token.style.left);
+    initialTop = parseFloat(token.style.top);
+    pitchRect = document.getElementById('pitch').getBoundingClientRect();
+
+    isDragging = false;
+    window.estaArrastrando = false;
+
+    document.addEventListener('mousemove', dragMove);
+    document.addEventListener('touchmove', dragMove, { passive: false });
+    document.addEventListener('mouseup', dragEnd);
+    document.addEventListener('touchend', dragEnd);
+  }
+
+  function dragMove(e) {
+    const evt = e.type.includes('mouse') ? e : e.touches[0];
+    const dx = evt.clientX - startX;
+    const dy = evt.clientY - startY;
+
+    // Si se mueve más de 3 píxeles, es un arrastre, no un clic
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      isDragging = true;
+      window.estaArrastrando = true;
+      token.style.transition = 'none'; // Quitar animación para máxima fluidez
+      token.style.zIndex = 1000;       // Traer al frente
+      
+      if (e.type.includes('touch')) e.preventDefault(); // Evitar scroll
+    }
+
+    if (isDragging) {
+      let moveXPct = (dx / pitchRect.width) * 100;
+      let moveYPct = (dy / pitchRect.height) * 100;
+
+      let newLeft = initialLeft + moveXPct;
+      let newTop = initialTop + moveYPct;
+
+      // Limitar para que no se escape de la cancha (0% a 100%)
+      newLeft = Math.max(0, Math.min(100, newLeft));
+      newTop = Math.max(0, Math.min(100, newTop));
+
+      token.style.left = `${newLeft}%`;
+      token.style.top = `${newTop}%`;
+    }
+  }
+
+  function dragEnd(e) {
+    document.removeEventListener('mousemove', dragMove);
+    document.removeEventListener('touchmove', dragMove);
+    document.removeEventListener('mouseup', dragEnd);
+    document.removeEventListener('touchend', dragEnd);
+
+    if (isDragging) {
+      token.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+      token.style.zIndex = 10;
+      guardarEstadoPizarra(); // Guardamos la táctica asimétrica
+      actualizarPlaceholders(); // Encendemos los puntitos de fondo si la ficha se fue de ahí
+      
+      // Micro-delay para no disparar el clic por accidente al soltar
+      setTimeout(() => {
+        window.estaArrastrando = false;
+        isDragging = false;
+      }, 50);
+    }
+  }
+}
+
+// --- FUNCIÓN ACTUALIZADA: Control inteligente de círculos de fondo ---
+function actualizarPlaceholders() {
+  document.querySelectorAll('.placeholder').forEach(p => {
+     const tokenEncima = Array.from(document.querySelectorAll('.player-token')).find(t => {
+        // Chequeamos si hay un jugador posicionado ahí, o si SALIÓ de ahí (fue arrastrado)
+        const topToken = t.dataset.slotTop || t.style.top;
+        const leftToken = t.dataset.slotLeft || t.style.left;
+        return topToken === p.style.top && leftToken === p.style.left;
+     });
+     
+     // Si el hueco tiene dueño, lo ocultamos y desactivamos sus clics para que no estorbe
+     p.style.opacity = tokenEncima ? '0' : '1';
+     p.style.pointerEvents = tokenEncima ? 'none' : 'auto'; 
+  });
+}
+
+// --- NUEVO: Observador Inteligente (Mutation Observer) ---
+// Vigila la cancha automáticamente. Si borrás o agregás a un jugador, 
+// actualiza los círculos sin que tengamos que hacer nada más.
+const canchaObserver = document.querySelector('.pitch-container');
+if (canchaObserver) {
+  const observer = new MutationObserver(() => {
+    actualizarPlaceholders();
+  });
+  // Le decimos que solo avise si se agregan o quitan elementos hijos (jugadores)
+  observer.observe(canchaObserver, { childList: true, subtree: true });
 }

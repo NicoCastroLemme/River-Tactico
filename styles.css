@@ -812,3 +812,13 @@ body.modo-camisetas .token-img {
 body.dark-mode .logo-img {
   content: url('fotos/logo-inverso.png');
 }
+
+/* --- MEJORAS PARA ARRASTRE DE JUGADORES (DRAG & DROP) --- */
+.player-token {
+  touch-action: none; /* CRUCIAL: Evita que la pantalla haga scroll al arrastrar en el celu */
+  user-select: none;
+}
+
+.token-img {
+  pointer-events: none; /* Evita que el click se trabe en la imagen en vez de la ficha */
+}
