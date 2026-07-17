@@ -147,16 +147,14 @@
       "lesionado": false
     },
     {
-      "id": 10,
-      "nombre": "J. F. Quintero",
+      "id": 44,
+      "nombre": "L. Silva",
       "posicion": [
-        "MCO",
-        "ED",
-        "MD",
+        "MCD",
         "MC"
       ],
-      "numero": 10,
-      "valor": 77,
+      "numero": 44,
+      "valor": 79,
       "lesionado": false
     },
     {
@@ -196,6 +194,29 @@
       "lesionado": false
     },
     {
+      "id": 34,
+      "nombre": "G. Galoppo",
+      "posicion": [
+        "MC"
+      ],
+      "numero": 34,
+      "valor": 79,
+      "lesionado": false
+    },
+    {
+      "id": 10,
+      "nombre": "J. F. Quintero",
+      "posicion": [
+        "MCO",
+        "ED",
+        "MD",
+        "MC"
+      ],
+      "numero": 10,
+      "valor": 77,
+      "lesionado": false
+    },
+    {
       "id": 24,
       "nombre": "J. C. Meza",
       "posicion": [
@@ -220,16 +241,6 @@
       "lesionado": false
     },
     {
-      "id": 34,
-      "nombre": "G. Galoppo",
-      "posicion": [
-        "MC"
-      ],
-      "numero": 34,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
       "id": 39,
       "nombre": "S. Lencina",
       "posicion": [
@@ -239,17 +250,6 @@
         "MC"
       ],
       "numero": 39,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 44,
-      "nombre": "L. Silva",
-      "posicion": [
-        "MCD",
-        "MC"
-      ],
-      "numero": 44,
       "valor": 79,
       "lesionado": false
     },
@@ -266,30 +266,6 @@
       "lesionado": false
     },
     {
-      "id": 7,
-      "nombre": "M. Salas",
-      "posicion": [
-        "DC",
-        "EI",
-        "ED"
-      ],
-      "numero": 7,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 9,
-      "nombre": "S. Driussi",
-      "posicion": [
-        "DC",
-        "MP",
-        "MCO"
-      ],
-      "numero": 9,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
       "id": 11,
       "nombre": "F. Colidio",
       "posicion": [
@@ -298,16 +274,6 @@
         "DC"
       ],
       "numero": 11,
-      "valor": 79,
-      "lesionado": false
-    },
-    {
-      "id": 32,
-      "nombre": "A. Ruberto",
-      "posicion": [
-        "DC"
-      ],
-      "numero": 32,
       "valor": 79,
       "lesionado": false
     },
@@ -338,6 +304,40 @@
       "lesionado": false
     },
     {
+      "id": 7,
+      "nombre": "M. Salas",
+      "posicion": [
+        "DC",
+        "EI",
+        "ED"
+      ],
+      "numero": 7,
+      "valor": 79,
+      "lesionado": false
+    },
+    {
+      "id": 9,
+      "nombre": "S. Driussi",
+      "posicion": [
+        "DC",
+        "MP",
+        "MCO"
+      ],
+      "numero": 9,
+      "valor": 79,
+      "lesionado": false
+    },
+    {
+      "id": 32,
+      "nombre": "A. Ruberto",
+      "posicion": [
+        "DC"
+      ],
+      "numero": 32,
+      "valor": 79,
+      "lesionado": false
+    },
+    {
       "id": 47,
       "nombre": "L. Beltran",
       "posicion": [
@@ -362,7 +362,7 @@
       "lesionado": false
     }
   ],
-"reserva": [
+  "reserva": [
     {
       "id": 100,
       "nombre": "F. Jaroszewicz",
