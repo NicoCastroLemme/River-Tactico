@@ -946,6 +946,10 @@ function aplicarFiltroVisual() {
   });
 }
 
+// --- LÓGICA DE PESTAÑAS: TITULARES / SUPLENTES ---
+let pestanaMisJugadores = 'titulares';
+
+// --- FUNCIÓN ACTUALIZADA: TITULARES CON LÍNEAS FINAS UNIFORMES ---
 function actualizarBoxScore() {
   const container = document.getElementById('box-score-container');
   if (!container) return;
@@ -961,40 +965,72 @@ function actualizarBoxScore() {
     return pesoA - pesoB;
   });
 
-  let contEnCancha = 0;
+  let contTitulares = 0;
 
+  // Conteo para el título
+  posicionesOrdenadas.forEach(pos => {
+    posicionesTacticas[pos].forEach(coords => {
+      const token = Array.from(document.querySelectorAll('.player-token'))
+        .find(t => t.style.top === coords.top && t.style.left === coords.left);
+      
+      if (token) {
+        contTitulares++;
+      }
+    });
+  });
+
+  const tituloEl = document.getElementById('titulo-mis-jugadores');
+  if (tituloEl) {
+    tituloEl.innerText = `Mis Jugadores · ${contTitulares}/11`;
+  }
+
+  // Dibujamos la lista con todos los titulares
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
       const token = Array.from(document.querySelectorAll('.player-token'))
         .find(t => t.style.top === coords.top && t.style.left === coords.left);
 
-      let nombreMostrar = '—'; 
-      let estiloNombre = '';
-
       if (token) {
-        nombreMostrar = token.querySelector('.token-name').innerText;
-        estiloNombre = 'color: var(--text-main); font-weight: bold;';
-        contEnCancha++;
-        
-        // ¡NUEVO! Agregamos el nombre del suplente al Box Score si existe
-        const cartelSuplente = token.querySelector('.nombre-suplente');
-        if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
-            nombreMostrar += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${cartelSuplente.textContent})</span>`;
-        }
+         const idToken = token.id.replace('token-', '');
+         const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == idToken);
+         const nombreMostrar = token.querySelector('.token-name').innerText;
+
+         if (jugador) {
+             // Estadísticas (Iniciadas en 0)
+             const esArquero = jugador.posicion.includes('ARQ') || jugador.posicion === 'ARQ';
+             const minutos = 0; 
+             
+             let htmlStats = '';
+             if (esArquero) {
+                htmlStats = `
+                  <div class="stat-item" title="Minutos">⏱️ ${minutos}'</div>
+                  <div class="stat-item" title="Goles Recibidos">🥅 0</div>
+                  <div class="stat-item" title="Vallas Invictas">🧤 0</div>
+                `;
+             } else {
+                htmlStats = `
+                  <div class="stat-item" title="Minutos">⏱️ ${minutos}'</div>
+                  <div class="stat-item" title="Goles">⚽ 0</div>
+                  <div class="stat-item" title="Asistencias">👟 0</div>
+                `;
+             }
+
+             // Promedio inicializado
+             const promedioFinal = "0.0";
+
+             const estiloNombre = 'color: var(--text-main); font-weight: bold;';
+
+             const row = document.createElement('div');
+             row.className = 'box-score-row';
+             row.innerHTML = `
+               <span style="${estiloNombre} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 5px;">${nombreMostrar}</span>
+               <span class="avg-score">${promedioFinal}</span>
+               <div class="box-score-stats">${htmlStats}</div>
+             `;
+             container.appendChild(row);
+         }
       }
-
-      const row = document.createElement('div');
-      row.className = 'box-score-row';
-      row.innerHTML = `<span>${pos}</span><span style="${estiloNombre}">${nombreMostrar}</span>`;
-      container.appendChild(row);
     });
-  });
-
-  const titulos = document.querySelectorAll('#view-pizarra .right-panel h4');
-  titulos.forEach(h4 => {
-    if (h4.innerText.includes('Box Score')) {
-      h4.innerText = `Box Score · ${contEnCancha}/11`;
-    }
   });
 }
 

@@ -130,7 +130,26 @@ body {
 .tab.active { color: var(--text-main); position: relative; }
 .tab.active::after { content: ''; position: absolute; bottom: -11px; left: 0; width: 100%; height: 2px; background-color: var(--river-red); }
 .box-score-list { display: flex; flex-direction: column; gap: 15px; }
-.box-score-row { display: grid; grid-template-columns: 40px 1fr; border-bottom: 1px solid #e8e0cc; padding-bottom: 5px; font-size: 12px; color: var(--text-muted); }
+
+/* --- ESTILOS EXACTOS PARA MIS JUGADORES --- */
+.box-score-row {
+  display: grid;
+  grid-template-columns: 1fr 30px auto; /* Nombre, Promedio, Stats */
+  align-items: center;
+  border-bottom: 1px solid #e8e0cc;
+  padding-bottom: 5px; /* Exactamente el mismo padding original */
+  font-size: 12px; /* Exactamente el mismo tamaño original */
+  color: var(--text-muted);
+}
+
+body.dark-mode .box-score-row {
+  border-bottom-color: #333;
+}
+
+.avg-score { font-weight: 900; color: var(--river-red); text-align: center; }
+.box-score-stats { display: flex; gap: 4px; font-size: 9px; }
+.stat-item { display: flex; align-items: center; gap: 2px; background: rgba(0,0,0,0.04); padding: 2px 4px; border-radius: 3px; font-weight: bold; color: var(--text-main); }
+body.dark-mode .stat-item { background: rgba(255,255,255,0.05); color: #ddd; }
 
 /* --- PANEL TU BOLETA EN VIVO --- */
 .boleta-stats { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
