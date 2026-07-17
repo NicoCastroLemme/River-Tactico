@@ -959,7 +959,7 @@ function aplicarFiltroVisual() {
 // --- LÓGICA DE PESTAÑAS: TITULARES / SUPLENTES ---
 let pestanaMisJugadores = 'titulares';
 
-// --- FUNCIÓN ACTUALIZADA: TITULARES CON LÍNEAS FINAS UNIFORMES ---
+// --- FUNCIÓN ACTUALIZADA: TITULARES CON LÍNEAS FINAS Y RADAR ---
 function actualizarBoxScore() {
   const container = document.getElementById('box-score-container');
   if (!container) return;
@@ -977,15 +977,16 @@ function actualizarBoxScore() {
 
   let contTitulares = 0;
 
-  // Conteo para el título
+  // Conteo para el título (usando la posición original, no la arrastrada)
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
       const token = Array.from(document.querySelectorAll('.player-token'))
-        .find(t => t.style.top === coords.top && t.style.left === coords.left);
-      
-      if (token) {
-        contTitulares++;
-      }
+        .find(t => {
+           const sTop = t.dataset.slotTop || t.style.top;
+           const sLeft = t.dataset.slotLeft || t.style.left;
+           return sTop === coords.top && sLeft === coords.left;
+        });
+      if (token) contTitulares++;
     });
   });
 
@@ -994,11 +995,15 @@ function actualizarBoxScore() {
     tituloEl.innerText = `Mis Jugadores · ${contTitulares}/11`;
   }
 
-  // Dibujamos la lista con todos los titulares
+  // Dibujamos la lista
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
       const token = Array.from(document.querySelectorAll('.player-token'))
-        .find(t => t.style.top === coords.top && t.style.left === coords.left);
+        .find(t => {
+           const sTop = t.dataset.slotTop || t.style.top;
+           const sLeft = t.dataset.slotLeft || t.style.left;
+           return sTop === coords.top && sLeft === coords.left;
+        });
 
       if (token) {
          const idToken = token.id.replace('token-', '');
@@ -1006,7 +1011,6 @@ function actualizarBoxScore() {
          const nombreMostrar = token.querySelector('.token-name').innerText;
 
          if (jugador) {
-             // Estadísticas (Iniciadas en 0)
              const esArquero = jugador.posicion.includes('ARQ') || jugador.posicion === 'ARQ';
              const minutos = 0; 
              
@@ -1025,9 +1029,7 @@ function actualizarBoxScore() {
                 `;
              }
 
-             // Promedio inicializado
              const promedioFinal = "0.0";
-
              const estiloNombre = 'color: var(--text-main); font-weight: bold;';
 
              const row = document.createElement('div');
@@ -1668,26 +1670,63 @@ function hacerArrastrable(token) {
 function actualizarPlaceholders() {
   document.querySelectorAll('.placeholder').forEach(p => {
      const tokenEncima = Array.from(document.querySelectorAll('.player-token')).find(t => {
-        // Chequeamos si hay un jugador posicionado ahí, o si SALIÓ de ahí (fue arrastrado)
         const topToken = t.dataset.slotTop || t.style.top;
         const leftToken = t.dataset.slotLeft || t.style.left;
         return topToken === p.style.top && leftToken === p.style.left;
      });
      
-     // Si el hueco tiene dueño, lo ocultamos y desactivamos sus clics para que no estorbe
      p.style.opacity = tokenEncima ? '0' : '1';
      p.style.pointerEvents = tokenEncima ? 'none' : 'auto'; 
   });
 }
 
-// --- NUEVO: Observador Inteligente (Mutation Observer) ---
-// Vigila la cancha automáticamente. Si borrás o agregás a un jugador, 
-// actualiza los círculos sin que tengamos que hacer nada más.
+// --- NUEVA LÓGICA: Radar de proximidad estricto (1 a 1) ---
+function vincularJugadoresAHuecos() {
+  const placeholders = Array.from(document.querySelectorAll('.placeholder'));
+  const tokens = Array.from(document.querySelectorAll('.player-token'));
+  
+  // 1. Armamos una lista solo con los círculos que están LIBRES
+  let huecosDisponibles = placeholders.filter(p => {
+     return !tokens.some(t => t.dataset.slotTop === p.style.top && t.dataset.slotLeft === p.style.left);
+  });
+
+  tokens.forEach(token => {
+    // Si este jugador no sabe cuál es su círculo original...
+    if (!token.dataset.slotTop) {
+      let huecoMasCercano = null;
+      let distanciaMinima = Infinity;
+      
+      // 2. Compara su posición SOLO contra los círculos que siguen libres
+      huecosDisponibles.forEach(p => {
+        const dx = parseFloat(p.style.left) - parseFloat(token.style.left);
+        const dy = parseFloat(p.style.top) - parseFloat(token.style.top);
+        const distancia = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distancia < distanciaMinima) {
+          distanciaMinima = distancia;
+          huecoMasCercano = p;
+        }
+      });
+      
+      // 3. Si encontró uno, se lo apropia y lo saca del mercado
+      if (huecoMasCercano) {
+        token.dataset.slotTop = huecoMasCercano.style.top;
+        token.dataset.slotLeft = huecoMasCercano.style.left;
+        
+        // Eliminamos este hueco de los disponibles para que NINGÚN otro jugador se lo robe
+        huecosDisponibles = huecosDisponibles.filter(p => p !== huecoMasCercano);
+      }
+    }
+  });
+}
+
+// --- OBSERVADOR INTELIGENTE MÁXIMO ---
 const canchaObserver = document.querySelector('.pitch-container');
 if (canchaObserver) {
   const observer = new MutationObserver(() => {
-    actualizarPlaceholders();
+    vincularJugadoresAHuecos(); // 1. Vincula a los jugadores cargados a sus círculos
+    actualizarPlaceholders();   // 2. Oculta los círculos recién encontrados
+    actualizarBoxScore();       // 3. Refresca la tabla de estadísticas
   });
-  // Le decimos que solo avise si se agregan o quitan elementos hijos (jugadores)
   observer.observe(canchaObserver, { childList: true, subtree: true });
 }
