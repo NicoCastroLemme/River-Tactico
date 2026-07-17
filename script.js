@@ -311,12 +311,17 @@ function renderizarListaJugadores(plantelSeleccionado) {
 
     const iconoLesion = jugador.lesionado ? '<span class="injury-icon" title="Lesionado">✚</span>' : '';
     const iconoNuevo = jugador.nuevo ? '<span class="new-badge">NEW</span>' : '';
+    
+    // NUEVO: Solo creamos la etiqueta del puntaje si es mayor a 0
+    const htmlPuntaje = parseFloat(jugador.puntaje_promedio) > 0 
+      ? `<span class="rating">${jugador.puntaje_promedio}</span>` 
+      : '';
 
     row.innerHTML = `
       <span class="num">${jugador.numero}</span>
       <span class="name">${jugador.nombre}${iconoLesion}${iconoNuevo}</span>
       <span class="pos">${jugador.posicion[0]}</span>        
-      <span class="rating">${jugador.puntaje_promedio}</span>
+      ${htmlPuntaje} 
     `;
     
     row.onclick = () => marcarJugadorEnLista(jugador, row);
@@ -1004,15 +1009,19 @@ function actualizarBoxScore() {
                 `;
              }
 
-             // Leemos el puntaje_promedio del JSON. Si tiene 0, le forzamos el formato "0.0" para que se vea lindo
-             const promedioFinal = parseFloat(jugador.puntaje_promedio).toFixed(1);
+             // NUEVO: Control visual para ocultar el 0.0 en la tabla derecha
+             const valorPuntaje = parseFloat(jugador.puntaje_promedio);
+             const htmlPromedioFinal = valorPuntaje > 0 
+                ? `<span class="avg-score">${valorPuntaje.toFixed(1)}</span>` 
+                : ''; 
+
              const estiloNombre = 'color: var(--text-main); font-weight: bold;';
 
              const row = document.createElement('div');
              row.className = 'box-score-row';
              row.innerHTML = `
                <span style="${estiloNombre} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 5px;">${nombreMostrar}</span>
-               <span class="avg-score">${promedioFinal}</span>
+               ${htmlPromedioFinal}
                <div class="box-score-stats">${htmlStats}</div>
              `;
              container.appendChild(row);

@@ -66,6 +66,12 @@ body {
 .player-row .pos { font-size: 11px; color: var(--text-muted); }
 .player-row .rating { font-weight: 900; font-size: 16px; text-align: right; }
 
+/* Si la posición es el último elemento (no hay puntaje), ocupa 2 columnas y se pega a la derecha */
+.player-row .pos:last-child {
+  grid-column: span 2;
+  text-align: right;
+}
+
 .injury-icon { color: var(--river-red); font-size: 14px; margin-left: 5px; position: relative; top: -2px; cursor: help; }
 
 .pitch-container {
@@ -147,8 +153,8 @@ body.dark-mode .box-score-row {
 }
 
 .avg-score { font-weight: 900; color: var(--river-red); text-align: center; }
-.box-score-stats { display: flex; gap: 4px; font-size: 9px; }
-.stat-item { display: flex; align-items: center; gap: 2px; background: rgba(0,0,0,0.04); padding: 2px 4px; border-radius: 3px; font-weight: bold; color: var(--text-main); }
+.box-score-stats { display: flex; gap: 4px; font-size: 9px; justify-content: flex-end;} /* Alineamos stats a la derecha */
+.stat-item { display: flex; align-items: center; gap: 2px; background: rgba(0,0,0,0.04); padding: 2px 4px; border-radius: 3px; font-weight: bold; color: var(--text-main); white-space: nowrap; }
 body.dark-mode .stat-item { background: rgba(255,255,255,0.05); color: #ddd; }
 
 /* --- PANEL TU BOLETA EN VIVO --- */
