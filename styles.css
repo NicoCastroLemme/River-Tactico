@@ -815,10 +815,17 @@ body.dark-mode .logo-img {
 
 /* --- MEJORAS PARA ARRASTRE DE JUGADORES (DRAG & DROP) --- */
 .player-token {
-  touch-action: none; /* CRUCIAL: Evita que la pantalla haga scroll al arrastrar en el celu */
+  touch-action: none; 
   user-select: none;
+  
+  /* --- NUEVAS REGLAS ANTI-DESTELLO MÓVIL --- */
+  -webkit-tap-highlight-color: transparent; /* Elimina el cuadrado azul al tocar */
+  -webkit-touch-callout: none; /* Bloquea el menú de "Guardar imagen" al mantener presionado */
+  -webkit-user-select: none; /* Soporte extra para Safari */
+  -moz-user-select: none; /* Soporte extra para Firefox */
 }
 
 .token-img {
-  pointer-events: none; /* Evita que el click se trabe en la imagen en vez de la ficha */
+  pointer-events: none; 
+  -webkit-user-drag: none; /* Evita que el celular intente arrastrar la foto como un archivo */
 }
