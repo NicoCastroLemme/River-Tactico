@@ -150,13 +150,13 @@ let modoPuntajeActual = 'mis_puntajes'; // Arranca siempre en tu boleta
 const sofaScoreData = { 41: 7.2, 16: 6.8, 13: 7.0, 28: 6.5, 21: 5.5, 6: 7.5, 15: 7.1, 24: 6.9, 26: 8.8, 11: 9.6, 35: 8.2, 20: 6.5, 10: 7.0, 19: 6.8 };
 const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15: 7.0, 24: 6.5, 26: 9.0, 11: 10.0, 35: 8.5, 20: 6.0, 10: 7.5, 19: 6.5 };
 
-// NUEVO: Promedio simulado de los usuarios de tu web (un intermedio racional)
+// Promedio simulado de los usuarios de tu web (un intermedio racional)
 const promedioUsuariosData = { 41: 6.8, 16: 6.3, 13: 7.3, 28: 6.0, 21: 4.5, 6: 7.8, 15: 7.0, 24: 6.7, 26: 8.9, 11: 9.8, 35: 8.4, 20: 6.2, 10: 7.2, 19: 6.6 };
 
 function obtenerDatosActivos() {
   if (modoPuntajeActual === 'sofascore') return sofaScoreData;
   if (modoPuntajeActual === 'millostats') return milloStatsData;
-  if (modoPuntajeActual === 'promedio_usuarios') return promedioUsuariosData; // ¡Acá lo conectamos!
+  if (modoPuntajeActual === 'promedio_usuarios') return promedioUsuariosData;
   return boletaPuntajes;
 }
 
@@ -175,7 +175,7 @@ function obtenerColorExacto(nota) {
   const n = parseFloat(nota);
   if (isNaN(n)) return 'var(--text-muted)';
 
-  const colorRojo = [218, 41, 28];       
+  const colorRojo = [218, 41, 28];        
   const colorAmarillo = [229, 164, 0];   
   const colorVerde = [0, 184, 83];       
 
@@ -200,16 +200,13 @@ function obtenerColorExacto(nota) {
 
 async function inicializarApp() {
   try {
-    // 1. Vamos a buscar el archivo JSON
     const respuesta = await fetch('plantel.json');
     const datos = await respuesta.json();
     
-    // 2. Cargamos los datos en nuestras variables globales
     plantelPrimera = datos.primera;
     plantelReserva = datos.reserva;
     plantelRumores = datos.rumores || [];
 
-    // 3. Recién cuando tenemos los datos, dibujamos la interfaz
     dibujarEsquema();
     renderizarListaJugadores(plantelPrimera);
     cargarEstadoPizarra(); 
@@ -225,7 +222,6 @@ function guardarEstadoPizarra() {
     jugadores: []
   };
   
-  // Anotamos qué jugador está en qué coordenada (incluido el suplente si lo tiene)
   document.querySelectorAll('.player-token').forEach(token => {
     let idSuplente = null;
     const cartelSuplente = token.querySelector('.nombre-suplente');
@@ -237,11 +233,10 @@ function guardarEstadoPizarra() {
       id: parseInt(token.id.replace('token-', '')),
       top: token.style.top,
       left: token.style.left,
-      idSuplente: idSuplente // Guardamos el ID del suplente
+      idSuplente: idSuplente 
     });
   });
   
-  // Lo guardamos en el navegador
   localStorage.setItem('rivertactico_estado', JSON.stringify(estado));
 }
 
@@ -250,19 +245,16 @@ function cargarEstadoPizarra() {
   if (guardado) {
     const estado = JSON.parse(guardado);
     
-    // 1. Restauramos la táctica
     const btnFormacion = Array.from(document.querySelectorAll('.btn-formation'))
       .find(btn => btn.innerText === estado.formacion);
     if (btnFormacion) cambiarFormacion(estado.formacion, btnFormacion);
 
-    // 2. Restauramos a los jugadores uno por uno
     estado.jugadores.forEach(j => {
       const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id === j.id);
       if (jugador) {
         jugadorSeleccionado = jugador;
         ubicarJugadorLibre({ top: j.top, left: j.left });
         
-        // Si tenía un suplente guardado, lo restauramos también
         if (j.idSuplente) {
            const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
            if (suplente) {
@@ -291,7 +283,6 @@ function renderizarListaJugadores(plantelSeleccionado) {
     row.id = `row-${jugador.id}`;
     row.dataset.posicion = jugador.posicion[0];
 
-    // Chequeamos si ya está como titular o como suplente para marcarlo gris
     const estaComoTitular = document.getElementById(`token-${jugador.id}`);
     const estaComoSuplente = document.querySelector(`.nombre-suplente[data-id="${jugador.id}"]`);
     
@@ -300,7 +291,6 @@ function renderizarListaJugadores(plantelSeleccionado) {
     }
 
     const iconoLesion = jugador.lesionado ? '<span class="injury-icon" title="Lesionado">✚</span>' : '';
-
     const iconoNuevo = jugador.nuevo ? '<span class="new-badge">NEW</span>' : '';
 
     row.innerHTML = `
@@ -340,16 +330,13 @@ function marcarJugadorEnLista(jugador, fila) {
   fila.classList.add('selected');
 }
 
-// Función inteligente para saber de qué carpeta sacar la foto
 function obtenerRutaFoto(idJugador) {
-  // Convertimos a número por si acaso
   const idNum = parseInt(idJugador); 
   
   if (plantelPrimera.find(p => p.id === idNum)) return `fotos/primera/${idNum}.png`;
   if (plantelReserva.find(p => p.id === idNum)) return `fotos/reserva/${idNum}.png`;
   if (plantelRumores.find(p => p.id === idNum)) return `fotos/rumores/${idNum}.png`;
   
-  // Si no lo encuentra en ningún lado, devuelve la silueta por defecto
   return `fotos/default2.png`; 
 }
 
@@ -368,8 +355,8 @@ function dibujarEsquema() {
       placeholder.className = 'placeholder';
       placeholder.style.top = coords.top;
       placeholder.style.left = coords.left;
-      placeholder.innerText = '+'; // Ponemos el símbolo más para probar el diseño
-      placeholder.dataset.pos = pos; // Guardamos la posición real escondida de fondo
+      placeholder.innerText = '+'; 
+      placeholder.dataset.pos = pos; 
       placeholder.onclick = () => ubicarJugadorLibre(coords);
       pitch.appendChild(placeholder);
 
@@ -388,7 +375,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     return;
   }
 
-  // Recolectamos a los jugadores que están actualmente en la cancha (guardando si tenían suplente)
   const jugadoresEnCancha = [];
   document.querySelectorAll('.player-token').forEach(token => {
     const id = token.id.replace('token-', '');
@@ -412,7 +398,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   document.querySelectorAll('.player-token').forEach(el => el.remove());
   dibujarEsquema(); 
 
-  // 1. Armamos un mapa con todos los "huecos" libres de la nueva táctica
   let slotsDisponibles = [];
   Object.entries(posicionesTacticas).forEach(([puesto, coordsArray]) => {
     coordsArray.forEach(coords => {
@@ -420,7 +405,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     });
   });
 
-  // 2. PRIMERA PASADA: Ubicamos a los jugadores que SÍ coinciden con su posición natural
   jugadoresEnCancha.forEach(pack => {
     const jugador = pack.titular;
     jugador.ubicado = false;
@@ -437,20 +421,18 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     }
   });
 
-  // 3. SEGUNDA PASADA: Los que quedaron colgados, rellenan espacios libres
-  // REGLA: Jugadores de campo no van al arco, arqueros no van al campo.
   jugadoresEnCancha.forEach(pack => {
     const jugador = pack.titular;
     if (!jugador.ubicado) {
       const esArquero = jugador.posicion.includes('ARQ');
 
       const slotVacio = slotsDisponibles.find(s => {
-        if (s.ocupado) return false; // Si está ocupado, lo saltamos
+        if (s.ocupado) return false; 
         
         if (esArquero) {
-          return s.puesto === 'ARQ'; // El arquero solo puede rellenar el arco
+          return s.puesto === 'ARQ'; 
         } else {
-          return s.puesto !== 'ARQ'; // El jugador de campo rellena cualquier cosa MENOS el arco
+          return s.puesto !== 'ARQ'; 
         }
       });
 
@@ -462,7 +444,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     }
   });
 
-  // 4. Imprimimos los tokens en la cancha en base al slot que se les asignó
   jugadoresEnCancha.forEach(pack => {
     const jugador = pack.titular;
     if (jugador.slotAsignado) {
@@ -472,13 +453,12 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
       token.id = `token-${jugador.id}`;
       token.className = 'player-token';
       token.style.cursor = 'pointer'; 
-      token.dataset.pos = jugador.slotAsignado.puesto; // Guardamos su posición
+      token.dataset.pos = jugador.slotAsignado.puesto; 
       token.onclick = () => {
-        if (window.estaArrastrando) return; // Si lo soltó de arrastrar, que no haga clic
+        if (window.estaArrastrando) return; 
         ubicarJugadorLibre({ top: token.style.top, left: token.style.left });
       }; 
 
-      // AGREGAMOS LOS ELEMENTOS DEL SUPLENTE ACÁ TAMBIÉN
       token.innerHTML = `
         <img src="${obtenerRutaFoto(jugador.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
         <div class="token-name">${jugador.nombre}</div>
@@ -491,19 +471,17 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
       pitch.appendChild(token);
       hacerArrastrable(token);
 
-      // Le damos vida al botón "+" del suplente
       const btnSuplente = token.querySelector('.btn-suplente');
       const cartelSuplente = token.querySelector('.nombre-suplente');
       
       btnSuplente.onclick = (e) => {
-        e.stopPropagation(); // Para que no se active el click del titular
+        e.stopPropagation(); 
         eligiendoSuplente = true;
         jugadorTitularElegido = token;
-        const posAbreviada = jugador.slotAsignado.puesto; // Usamos el puesto del slot asignado
+        const posAbreviada = jugador.slotAsignado.puesto; 
         abrirModalSeleccion(posAbreviada, coords);
       };
 
-      // Si el titular ya tenía un suplente antes de cambiar la táctica, lo restauramos
       if (pack.idSuplente) {
          const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == pack.idSuplente);
          if (suplente) {
@@ -514,7 +492,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
          }
       }
 
-      // Funcionalidad para borrar al suplente haciéndole clic
       cartelSuplente.onclick = (e) => {
          e.stopPropagation();
          const idSuplente = cartelSuplente.dataset.id;
@@ -546,7 +523,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   guardarEstadoPizarra();
 }
 
-// --- FUNCIÓN ACTUALIZADA: REPARTIR Y SACAR JUGADORES ---
 function ubicarJugadorLibre(coords) {
   const tokenExistente = Array.from(document.querySelectorAll('.player-token'))
     .find(token => token.style.top === coords.top && token.style.left === coords.left);
@@ -558,12 +534,10 @@ function ubicarJugadorLibre(coords) {
 
   if (!jugadorSeleccionado) {
     if (tokenExistente) {
-      // Comportamiento original: Si ya hay un jugador, lo saca de la cancha (y a su suplente también)
       const oldId = tokenExistente.id.replace('token-', '');
       const filaVieja = document.getElementById(`row-${oldId}`);
       if (filaVieja) filaVieja.classList.remove('on-pitch');
       
-      // Liberamos al suplente en la lista si tenía uno
       const cartelSuplente = tokenExistente.querySelector('.nombre-suplente');
       if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
           const filaSuplenteViejo = document.getElementById(`row-${cartelSuplente.dataset.id}`);
@@ -579,23 +553,20 @@ function ubicarJugadorLibre(coords) {
       return;
     }
     
-    // Si el lugar está vacío y no agarraste a nadie de la lista, se abre el menú para el titular
     eligiendoSuplente = false;
     abrirModalSeleccion(posAbreviada, coords);
     return;
   }
 
-  // === LÓGICA SI ESTAMOS ELIGIENDO UN SUPLENTE ===
   if (eligiendoSuplente && jugadorTitularElegido) {
       const btnSuplente = jugadorTitularElegido.querySelector('.btn-suplente');
       const cartelSuplente = jugadorTitularElegido.querySelector('.nombre-suplente');
       
       btnSuplente.classList.add('oculto');
       cartelSuplente.textContent = jugadorSeleccionado.nombre;
-      cartelSuplente.dataset.id = jugadorSeleccionado.id; // Guardamos el ID para poder liberarlo después
+      cartelSuplente.dataset.id = jugadorSeleccionado.id; 
       cartelSuplente.classList.remove('oculto');
 
-      // Funcionalidad para borrar al suplente haciéndole clic
       cartelSuplente.onclick = (e) => {
          e.stopPropagation();
          const idSuplente = cartelSuplente.dataset.id;
@@ -608,7 +579,6 @@ function ubicarJugadorLibre(coords) {
          guardarEstadoPizarra();
       };
 
-      // Lo marcamos como "en cancha" en la lista izquierda
       const filaJugador = document.getElementById(`row-${jugadorSeleccionado.id}`);
       if (filaJugador) {
         filaJugador.classList.remove('selected');
@@ -622,13 +592,11 @@ function ubicarJugadorLibre(coords) {
       return;
   }
 
-  // === LÓGICA ORIGINAL: ELIGIENDO TITULAR ===
   if (tokenExistente) {
     const oldId = tokenExistente.id.replace('token-', '');
     const filaVieja = document.getElementById(`row-${oldId}`);
     if (filaVieja) filaVieja.classList.remove('on-pitch');
     
-    // Liberamos al suplente viejo si había uno
     const cartelSuplenteViejo = tokenExistente.querySelector('.nombre-suplente');
     if (cartelSuplenteViejo && !cartelSuplenteViejo.classList.contains('oculto')) {
         const filaSuplenteViejo = document.getElementById(`row-${cartelSuplenteViejo.dataset.id}`);
@@ -649,7 +617,6 @@ function ubicarJugadorLibre(coords) {
     ubicarJugadorLibre({ top: token.style.top, left: token.style.left });
   };
 
-  // INYECTAMOS EL BOTÓN Y EL CARTEL DEL SUPLENTE AL CREAR AL TITULAR
   token.innerHTML = `
     <img src="${obtenerRutaFoto(jugadorSeleccionado.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
     <div class="token-name">${jugadorSeleccionado.nombre}</div>
@@ -661,10 +628,9 @@ function ubicarJugadorLibre(coords) {
   token.style.left = coords.left;
   pitch.appendChild(token);
 
-  // Le damos vida al botón "+" del suplente
   const btnSuplente = token.querySelector('.btn-suplente');
   btnSuplente.onclick = (e) => {
-    e.stopPropagation(); // Para que no se active el click del titular y lo borre
+    e.stopPropagation(); 
     eligiendoSuplente = true;
     jugadorTitularElegido = token;
     abrirModalSeleccion(posAbreviada, coords);
@@ -686,7 +652,6 @@ function ubicarJugadorLibre(coords) {
   actualizarPlaceholders();
 }
 
-// --- FUNCIÓN ACTUALIZADA: MODAL DE SELECCIÓN CON PESTAÑAS ---
 function abrirModalSeleccion(posAbreviada, coords) {
   const modal = document.getElementById('modal-seleccion');
   
@@ -698,14 +663,12 @@ function abrirModalSeleccion(posAbreviada, coords) {
 
   const tabsModal = document.querySelectorAll('.modal-squad-tab');
   
-  // Sub-función que se encarga de pintar a los jugadores según el plantel que le pasemos
   function dibujarListasModal(plantelSeleccionado) {
     const listaRecomendados = document.getElementById('lista-recomendados');
     const listaResto = document.getElementById('lista-resto');
     listaRecomendados.innerHTML = '';
     listaResto.innerHTML = '';
 
-    // Filtramos a los titulares y a los suplentes que ya están en cancha
     const idsTitulares = Array.from(document.querySelectorAll('.player-token'))
       .map(t => parseInt(t.id.replace('token-', '')));
       
@@ -732,7 +695,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
       const row = document.createElement('div');
       row.className = 'modal-player-row';
       const iconoLesion = jugador.lesionado ? '<span class="injury-icon" style="font-size:10px;">✚</span>' : '';
-      
       const iconoNuevo = jugador.nuevo ? '<span class="new-badge" style="font-size: 7px; padding: 1px 3px;">NEW</span>' : '';
       
       row.innerHTML = `
@@ -741,7 +703,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
         <span class="m-pos">${Array.isArray(jugador.posicion) ? jugador.posicion[0] : jugador.posicion}</span>
       `;
       
-      // Al tocar al jugador se auto-ubica y se cierra el modal
       row.onclick = () => {
         modal.classList.remove('active');
         jugadorSeleccionado = jugador;
@@ -763,32 +724,38 @@ function abrirModalSeleccion(posAbreviada, coords) {
     }
   }
 
-  // Le damos vida a los dos botoncitos nuevos
+  // --- LÓGICA DE LAS PESTAÑAS (CORREGIDA PARA INCLUIR RUMORES) ---
   tabsModal.forEach(btn => {
     btn.onclick = (e) => {
-      // Cambiamos el color rojo al botón tocado
       tabsModal.forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
       
-      // Dibujamos el plantel correspondiente
-      const esReserva = e.target.dataset.plantel === 'reserva';
-      dibujarListasModal(esReserva ? plantelReserva : plantelPrimera);
+      const plantelElegido = e.target.dataset.plantel;
+      if (plantelElegido === 'reserva') {
+         dibujarListasModal(plantelReserva);
+      } else if (plantelElegido === 'rumores') {
+         dibujarListasModal(plantelRumores);
+      } else {
+         dibujarListasModal(plantelPrimera);
+      }
     };
   });
 
-  // Detalle de fluidez: Miramos qué panel tenés abierto a la izquierda para arrancar el modal en esa pestaña
-  const esReservaPanelIzquierdo = document.querySelector('.squad-tab.active').innerText.includes('RESERVA');
+  // Chequeo inicial según el panel activo de la izquierda
+  const tabActivaIzquierda = document.querySelector('.squad-tab.active').innerText;
   tabsModal.forEach(b => b.classList.remove('active'));
   
-  if (esReservaPanelIzquierdo) {
+  if (tabActivaIzquierda.includes('RESERVA')) {
     document.querySelector('.modal-squad-tab[data-plantel="reserva"]').classList.add('active');
     dibujarListasModal(plantelReserva);
+  } else if (tabActivaIzquierda.includes('RUMORES')) {
+    document.querySelector('.modal-squad-tab[data-plantel="rumores"]').classList.add('active');
+    dibujarListasModal(plantelRumores);
   } else {
     document.querySelector('.modal-squad-tab[data-plantel="primera"]').classList.add('active');
     dibujarListasModal(plantelPrimera);
   }
 
-  // Botón cancelar
   document.getElementById('btn-cerrar-seleccion').onclick = () => {
     modal.classList.remove('active');
     eligiendoSuplente = false;
@@ -800,7 +767,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
 
 document.addEventListener('DOMContentLoaded', inicializarApp);
 
-// --- LÓGICA DEL MODO OSCURO (Sincronizada para ambas vistas) ---
 const themeBtns = document.querySelectorAll('.theme-toggle-btn');
 
 themeBtns.forEach(btn => {
@@ -809,7 +775,6 @@ themeBtns.forEach(btn => {
   });
 });
 
-// 1. Controlador inteligente de 11 jugadores
 function verificarOnce() {
   const cantidadEnCancha = document.querySelectorAll('.player-token').length;
   const btnCompartir = document.getElementById('btn-compartir');
@@ -822,7 +787,6 @@ function verificarOnce() {
   }
 }
 
-// 2. Botón Limpiar Cancha
 const btnLimpiar = document.getElementById('btn-limpiar');
 if(btnLimpiar) {
   btnLimpiar.addEventListener('click', () => {
@@ -835,20 +799,18 @@ if(btnLimpiar) {
   });
 }
 
-// 3. Botón Compartir (Captura de pantalla y Share API nativa)
 const btnCompartir = document.getElementById('btn-compartir');
 if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
     const cancha = document.getElementById('pitch');
     
-    // Guardamos el SVG entero y ponemos un relojito
     const contenidoOriginal = btnCompartir.innerHTML;
     btnCompartir.innerHTML = '⏳';
     
     html2canvas(cancha, {
-      scale: 3,                  // Aumentado a 3 para máxima calidad (HD)
-      useCORS: true,              // Ya lo tenías perfecto
-      backgroundColor: '#ffffff', // CAMBIO CLAVE: Reemplazamos 'null' por fondo blanco para matar el bug de la imagen negra
+      scale: 3,                 
+      useCORS: true,              
+      backgroundColor: '#ffffff', 
       
     }).then(canvas => {
       canvas.toBlob(function(blob) {
@@ -860,7 +822,7 @@ if(btnCompartir) {
             text: 'Armé mi formación en mi11river.com 🐔',
             files: [file]
           }).then(() => {
-            btnCompartir.innerHTML = contenidoOriginal; // Restauramos el SVG
+            btnCompartir.innerHTML = contenidoOriginal; 
           }).catch(error => {
             btnCompartir.innerHTML = contenidoOriginal;
           });
@@ -869,19 +831,17 @@ if(btnCompartir) {
           enlace.download = 'Mi_Formacion_River.png';
           enlace.href = canvas.toDataURL('image/png');
           enlace.click();
-          btnCompartir.innerHTML = contenidoOriginal; // Restauramos el SVG
+          btnCompartir.innerHTML = contenidoOriginal; 
         }
       });
     });
   });
 }
 
-// Función maestra para borrar tildes, diéresis y dejar todo en minúsculas
 function normalizarTexto(texto) {
   return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// --- LÓGICA DE FILTRADO DOBLE ---
 let filtroActivo = null;
 let textoBusqueda = ''; 
 
@@ -916,25 +876,18 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 function aplicarFiltroVisual() {
-  // Normalizamos el texto que escribió el usuario en el buscador
   const busquedaNormalizada = normalizarTexto(textoBusqueda);
 
   document.querySelectorAll('.player-row').forEach(row => {
     const posJugador = row.dataset.posicion;
-    
-    // Obtenemos el ID real del jugador mirando el ID de la fila
     const idJugador = parseInt(row.id.replace('row-', ''));
-    
-    // Buscamos al jugador en nuestras bases de datos para leer su nombre original
     const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id === idJugador);
     let nombreParaBuscar = jugador ? jugador.nombre : '';
 
-    // ¡CASO ESPECIAL! Si es Martínez Quarta (ID 28), le sumamos el apellido completo al buscador
     if (idJugador === 28) {
       nombreParaBuscar += " Martinez Quarta";
     }
 
-    // Normalizamos el nombre del jugador (ej: "S. Beltrán" pasa a ser "s. beltran")
     const nombreNormalizado = normalizarTexto(nombreParaBuscar);
 
     let pasaPosicion = false;
@@ -947,7 +900,6 @@ function aplicarFiltroVisual() {
       pasaBusqueda = true;
     }
 
-    // Si pasa ambos filtros, se muestra; si no, se esconde
     if (pasaPosicion && pasaBusqueda) {
       row.style.display = ''; 
     } else {
@@ -956,10 +908,8 @@ function aplicarFiltroVisual() {
   });
 }
 
-// --- LÓGICA DE PESTAÑAS: TITULARES / SUPLENTES ---
 let pestanaMisJugadores = 'titulares';
 
-// --- FUNCIÓN ACTUALIZADA: TITULARES CON LÍNEAS FINAS Y RADAR ---
 function actualizarBoxScore() {
   const container = document.getElementById('box-score-container');
   if (!container) return;
@@ -977,7 +927,6 @@ function actualizarBoxScore() {
 
   let contTitulares = 0;
 
-  // Conteo para el título (usando la posición original, no la arrastrada)
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
       const token = Array.from(document.querySelectorAll('.player-token'))
@@ -995,7 +944,6 @@ function actualizarBoxScore() {
     tituloEl.innerText = `Mis Jugadores · ${contTitulares}/11`;
   }
 
-  // Dibujamos la lista
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
       const token = Array.from(document.querySelectorAll('.player-token'))
@@ -1046,7 +994,6 @@ function actualizarBoxScore() {
   });
 }
 
-// --- LÓGICA DE NAVEGACIÓN ---
 const btnPizarra = document.getElementById('btn-pizarra');
 const btnPuntuar = document.getElementById('btn-puntuar');
 const viewPizarra = document.getElementById('view-pizarra');
@@ -1069,7 +1016,6 @@ if(btnPizarra && btnPuntuar) {
   });
 }
 
-// --- MOCK DEL PARTIDO ---
 const ultimoPartido = {
   titulares: [
     { id: 41, name: "S. Beltrán", pos: "ARQ", top: 85, left: 50 },
@@ -1098,11 +1044,10 @@ const ultimoPartido = {
   ]
 };
 
-// --- VISTA PUNTUACIÓN (AHORA MULTI-DATOS) ---
 function cargarVistaPuntuacion() {
   const pitchRating = document.getElementById('pitch-rating');
   const benchList = document.getElementById('bench-list');
-  const datosActivos = obtenerDatosActivos(); // ACÁ LE PREGUNTA QUÉ DATOS USAR
+  const datosActivos = obtenerDatosActivos(); 
 
   const fichasViejas = pitchRating.querySelectorAll('.token');
   fichasViejas.forEach(f => f.remove());
@@ -1148,7 +1093,6 @@ function cargarVistaPuntuacion() {
       <div class="token-name">${p.name} ${notaCancha}</div>
     `;
 
-    // Bloqueamos clics si estamos mirando datos ajenos
     if (modoPuntajeActual === 'mis_puntajes') {
       token.style.cursor = 'pointer';
       token.onclick = () => abrirModalNota(p.id, p.name);
@@ -1197,7 +1141,6 @@ function cargarVistaPuntuacion() {
   actualizarBoletaEnVivo();
 }
 
-// --- LÓGICA DEL MODAL ---
 const modalPuntaje = document.getElementById('modal-puntaje');
 const sliderNota = document.getElementById('nota-slider');
 const sliderValueInput = document.getElementById('slider-value-input');
@@ -1266,7 +1209,6 @@ function registrarNotaTeclado(texto) {
   return n;
 }
 
-// --- LÓGICA DEL PANEL "TU BOLETA" EN VIVO (Con Lista Dinámica) ---
 let boletaSortMode = 'puntaje'; 
 
 document.querySelectorAll('.sort-tab').forEach(btn => {
@@ -1278,7 +1220,6 @@ document.querySelectorAll('.sort-tab').forEach(btn => {
   });
 });
 
-// --- PANEL BOLETA EN VIVO (AHORA MULTI-DATOS) ---
 function actualizarBoletaEnVivo() {
   const progresoEl = document.getElementById('boleta-progreso');
   const btnEnviar = document.getElementById('btn-enviar-boleta');
@@ -1286,7 +1227,7 @@ function actualizarBoletaEnVivo() {
   const listContainer = document.getElementById('rated-players-container');
   const promElement = document.getElementById('boleta-promedio');
   const mvpContainer = document.getElementById('boleta-mvp-container');
-  const datosActivos = obtenerDatosActivos(); // ACÁ LE PREGUNTA DE NUEVO
+  const datosActivos = obtenerDatosActivos(); 
   
   if (!progresoEl || !btnEnviar) return; 
 
@@ -1296,7 +1237,6 @@ function actualizarBoletaEnVivo() {
   
   progresoEl.innerText = `${puntuados} / ${totalAEvaluar}`;
   
-  // Control visual del botón de enviar
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
     btnEnviar.disabled = true;
@@ -1383,7 +1323,6 @@ function actualizarBoletaEnVivo() {
   }
 }
 
-// --- BOTÓN FINAL: ENVIAR BOLETA (Con Modal de Estilo Propio) ---
 const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
 const modalAdvertencia = document.getElementById('modal-advertencia');
 const btnCancelarEnvio = document.getElementById('btn-cancelar-envio');
@@ -1395,31 +1334,26 @@ if (btnEnviarBoleta) {
     const totalAEvaluar = ultimoPartido.titulares.length + suplentesQueJugaron;
     const puntuados = Object.keys(boletaPuntajes).length;
 
-    // Caso A: Faltan jugadores por puntuar -> Abrimos el modal personalizado
     if (puntuados < totalAEvaluar) {
       const faltantes = totalAEvaluar - puntuados;
       
-      // Inyectamos el texto con el número correcto de desertores
       document.getElementById('modal-advertencia-texto').innerText = 
         `Ojo: Te faltó puntuar a ${faltantes} jugador(es).\n\n¿Querés enviar tu boleta de todos modos?`;
       
       modalAdvertencia.classList.add('active');
-      return; // Frenamos acá a la espera de la decisión del usuario
+      return; 
     }
 
-    // Caso B: La boleta está 14/14 perfecta -> Envía directo
     ejecutarEnvioFinal();
   };
 }
 
-// ACCIÓN 1: El usuario se arrepiente y toca "Volver"
 if (btnCancelarEnvio) {
   btnCancelarEnvio.onclick = () => {
     modalAdvertencia.classList.remove('active');
   };
 }
 
-// ACCIÓN 2: El usuario confirma que la manda incompleta igual
 if (btnConfirmarEnvio) {
   btnConfirmarEnvio.onclick = () => {
     modalAdvertencia.classList.remove('active');
@@ -1427,7 +1361,6 @@ if (btnConfirmarEnvio) {
   };
 }
 
-// Actualizamos la función para que abra el modal propio
 function ejecutarEnvioFinal() {
   const modalExito = document.getElementById('modal-exito');
   if (modalExito) {
@@ -1435,20 +1368,15 @@ function ejecutarEnvioFinal() {
   }
 }
 
-// --- MEJORA DE UX: CERRAR MODALES TOCANDO AFUERA (Fondo Oscuro) ---
-
-// 1. Para el modal de poner puntajes
 const fondoModalPuntaje = document.getElementById('modal-puntaje');
 if (fondoModalPuntaje) {
   fondoModalPuntaje.addEventListener('click', function(e) {
-    // "this" es el fondo oscuro. Si tocaste exactamente el fondo, se cierra.
     if (e.target === this) {
       this.classList.remove('active');
     }
   });
 }
 
-// 2. Para el modal de elegir jugadores en la Pizarra
 const fondoModalSeleccion = document.getElementById('modal-seleccion');
 if (fondoModalSeleccion) {
   fondoModalSeleccion.addEventListener('click', function(e) {
@@ -1460,7 +1388,6 @@ if (fondoModalSeleccion) {
   });
 }
 
-// 3. Para el nuevo modal de advertencia de la boleta
 const fondoModalAdvertencia = document.getElementById('modal-advertencia');
 if (fondoModalAdvertencia) {
   fondoModalAdvertencia.addEventListener('click', function(e) {
@@ -1470,7 +1397,6 @@ if (fondoModalAdvertencia) {
   });
 }
 
-// ACCIÓN: Cerrar el modal de éxito con el botón Aceptar
 const btnCerrarExito = document.getElementById('btn-cerrar-exito');
 if (btnCerrarExito) {
   btnCerrarExito.onclick = () => {
@@ -1478,7 +1404,6 @@ if (btnCerrarExito) {
   };
 }
 
-// MEJORA DE UX: Cerrar el modal de éxito tocando el fondo oscuro
 const fondoModalExito = document.getElementById('modal-exito');
 if (fondoModalExito) {
   fondoModalExito.addEventListener('click', function(e) {
@@ -1488,7 +1413,6 @@ if (fondoModalExito) {
   });
 }
 
-// --- LÓGICA DEL MENÚ FLOTANTE PARA MÓVILES (Con Fondo Oscurecido) ---
 const btnFlotante = document.getElementById('btn-flotante-jugadores');
 const panelesIzquierdos = document.querySelectorAll('.left-panel');
 const botonesCerrarPanel = document.querySelectorAll('.btn-cerrar-panel-movil');
@@ -1501,29 +1425,25 @@ if (btnFlotante && overlayMovil) {
       const panel = vistaActiva.querySelector('.left-panel');
       if (panel) {
         panel.classList.add('active-mobile');
-        overlayMovil.classList.add('active'); // Encendemos el fondo oscuro
+        overlayMovil.classList.add('active'); 
       }
     }
   });
 }
 
-// Función maestra para apagar todo el entorno móvil
 function cerrarPanelMovil() {
   panelesIzquierdos.forEach(panel => panel.classList.remove('active-mobile'));
-  if (overlayMovil) overlayMovil.classList.remove('active'); // Apagamos el fondo oscuro
+  if (overlayMovil) overlayMovil.classList.remove('active'); 
 }
 
-// Cierra si tocan la "✕" de arriba
 botonesCerrarPanel.forEach(btn => {
   btn.addEventListener('click', cerrarPanelMovil);
 });
 
-// ¡NUEVO! Cierra si tocan en cualquier parte vacía del fondo oscurecido
 if (overlayMovil) {
   overlayMovil.addEventListener('click', cerrarPanelMovil);
 }
 
-// Cierra automáticamente si seleccionan un jugador de la lista
 document.querySelectorAll('.player-list').forEach(lista => {
   lista.addEventListener('click', (e) => {
     if (e.target.closest('.player-row') && window.innerWidth <= 992) {
@@ -1534,35 +1454,28 @@ document.querySelectorAll('.player-list').forEach(lista => {
   });
 });
 
-// --- LÓGICA DEL INTERRUPTOR DE SUPLENTES ---
 const toggleSuplentes = document.getElementById('toggle-suplentes');
 
 if (toggleSuplentes) {
-  // Le decimos que arranque ocultando los suplentes por defecto
   document.body.classList.add('hide-subs');
 
   toggleSuplentes.addEventListener('change', (e) => {
     if (e.target.checked) {
-      // Si está en SÍ (derecha), le sacamos la clase al body
       document.body.classList.remove('hide-subs');
     } else {
-      // Si está en NO (izquierda), le ponemos la clase para ocultarlos
       document.body.classList.add('hide-subs');
     }
   });
 }
 
-// --- LÓGICA PARA ALTERNAR FOTOS / CAMISETAS ---
 const btnToggleFotos = document.getElementById('btn-toggle-fotos');
 const iconUser = document.querySelector('.icon-user');
 const iconShirt = document.querySelector('.icon-shirt');
 
 if (btnToggleFotos) {
   btnToggleFotos.addEventListener('click', () => {
-    // Ponemos o sacamos la clase del body
     document.body.classList.toggle('modo-camisetas');
     
-    // Cambiamos el ícono del botón según el estado
     if (document.body.classList.contains('modo-camisetas')) {
       iconUser.style.display = 'none';
       iconShirt.style.display = 'block';
@@ -1573,7 +1486,6 @@ if (btnToggleFotos) {
   });
 }
 
-// --- LÓGICA DE MOVIMIENTO LIBRE (DRAG & DROP) ---
 window.estaArrastrando = false;
 
 function hacerArrastrable(token) {
@@ -1586,10 +1498,7 @@ function hacerArrastrable(token) {
   token.addEventListener('touchstart', dragStart, { passive: false });
 
   function dragStart(e) {
-    // Ignorar si hace clic en el botón de suplente o cartelito
     if (e.target.closest('.btn-suplente') || e.target.closest('.nombre-suplente')) return;
-
-    // No arrastrar si estamos en medio de una selección
     if (eligiendoSuplente || jugadorSeleccionado) return;
 
     if (!token.dataset.slotTop) {
@@ -1619,14 +1528,13 @@ function hacerArrastrable(token) {
     const dx = evt.clientX - startX;
     const dy = evt.clientY - startY;
 
-    // Si se mueve más de 3 píxeles, es un arrastre, no un clic
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
       isDragging = true;
       window.estaArrastrando = true;
-      token.style.transition = 'none'; // Quitar animación para máxima fluidez
-      token.style.zIndex = 1000;       // Traer al frente
+      token.style.transition = 'none'; 
+      token.style.zIndex = 1000;       
       
-      if (e.type.includes('touch')) e.preventDefault(); // Evitar scroll
+      if (e.type.includes('touch')) e.preventDefault(); 
     }
 
     if (isDragging) {
@@ -1636,7 +1544,6 @@ function hacerArrastrable(token) {
       let newLeft = initialLeft + moveXPct;
       let newTop = initialTop + moveYPct;
 
-      // Limitar para que no se escape de la cancha (0% a 100%)
       newLeft = Math.max(0, Math.min(100, newLeft));
       newTop = Math.max(0, Math.min(100, newTop));
 
@@ -1654,10 +1561,9 @@ function hacerArrastrable(token) {
     if (isDragging) {
       token.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
       token.style.zIndex = 10;
-      guardarEstadoPizarra(); // Guardamos la táctica asimétrica
-      actualizarPlaceholders(); // Encendemos los puntitos de fondo si la ficha se fue de ahí
+      guardarEstadoPizarra(); 
+      actualizarPlaceholders(); 
       
-      // Micro-delay para no disparar el clic por accidente al soltar
       setTimeout(() => {
         window.estaArrastrando = false;
         isDragging = false;
@@ -1666,7 +1572,6 @@ function hacerArrastrable(token) {
   }
 }
 
-// --- FUNCIÓN ACTUALIZADA: Control inteligente de círculos de fondo ---
 function actualizarPlaceholders() {
   document.querySelectorAll('.placeholder').forEach(p => {
      const tokenEncima = Array.from(document.querySelectorAll('.player-token')).find(t => {
@@ -1680,23 +1585,19 @@ function actualizarPlaceholders() {
   });
 }
 
-// --- NUEVA LÓGICA: Radar de proximidad estricto (1 a 1) ---
 function vincularJugadoresAHuecos() {
   const placeholders = Array.from(document.querySelectorAll('.placeholder'));
   const tokens = Array.from(document.querySelectorAll('.player-token'));
   
-  // 1. Armamos una lista solo con los círculos que están LIBRES
   let huecosDisponibles = placeholders.filter(p => {
      return !tokens.some(t => t.dataset.slotTop === p.style.top && t.dataset.slotLeft === p.style.left);
   });
 
   tokens.forEach(token => {
-    // Si este jugador no sabe cuál es su círculo original...
     if (!token.dataset.slotTop) {
       let huecoMasCercano = null;
       let distanciaMinima = Infinity;
       
-      // 2. Compara su posición SOLO contra los círculos que siguen libres
       huecosDisponibles.forEach(p => {
         const dx = parseFloat(p.style.left) - parseFloat(token.style.left);
         const dy = parseFloat(p.style.top) - parseFloat(token.style.top);
@@ -1708,25 +1609,50 @@ function vincularJugadoresAHuecos() {
         }
       });
       
-      // 3. Si encontró uno, se lo apropia y lo saca del mercado
       if (huecoMasCercano) {
         token.dataset.slotTop = huecoMasCercano.style.top;
         token.dataset.slotLeft = huecoMasCercano.style.left;
         
-        // Eliminamos este hueco de los disponibles para que NINGÚN otro jugador se lo robe
         huecosDisponibles = huecosDisponibles.filter(p => p !== huecoMasCercano);
       }
     }
   });
 }
 
-// --- OBSERVADOR INTELIGENTE MÁXIMO ---
 const canchaObserver = document.querySelector('.pitch-container');
 if (canchaObserver) {
   const observer = new MutationObserver(() => {
-    vincularJugadoresAHuecos(); // 1. Vincula a los jugadores cargados a sus círculos
-    actualizarPlaceholders();   // 2. Oculta los círculos recién encontrados
-    actualizarBoxScore();       // 3. Refresca la tabla de estadísticas
+    vincularJugadoresAHuecos(); 
+    actualizarPlaceholders();   
+    actualizarBoxScore();       
   });
   observer.observe(canchaObserver, { childList: true, subtree: true });
 }
+
+const buscadorModal = document.getElementById('buscador-modal');
+
+if (buscadorModal) {
+  buscadorModal.addEventListener('input', (e) => {
+    const textoBusqueda = e.target.value.toLowerCase();
+    
+    const filasJugadores = document.querySelectorAll('#lista-recomendados > div, #lista-resto > div'); 
+
+    filasJugadores.forEach(fila => {
+      const nombreJugador = fila.innerText.toLowerCase();
+      
+      if (nombreJugador.includes(textoBusqueda)) {
+        fila.style.display = ''; 
+      } else {
+        fila.style.display = 'none'; 
+      }
+    });
+  });
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-squad-tab')) {
+     if (buscadorModal) {
+         buscadorModal.value = ''; 
+     }
+  }
+});

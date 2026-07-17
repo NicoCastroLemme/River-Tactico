@@ -269,11 +269,21 @@
 
   <div class="modal-overlay" id="modal-seleccion">
     <div class="selection-modal">
-      <h3 id="modal-seleccion-titulo">Elegir Jugador</h3>
-      <div class="modal-squad-tabs">
+      <!-- Le dimos más espacio al título hacia abajo (25px) -->
+      <h3 id="modal-seleccion-titulo" style="margin-bottom: 15px;">Elegir Jugador</h3>
+      
+      <!-- 1. Los botones ahora están arriba -->
+      <div class="modal-squad-tabs" style="margin-bottom: 15px;">
         <button class="modal-squad-tab active" data-plantel="primera">Primera</button>
         <button class="modal-squad-tab" data-plantel="reserva">Reserva</button>
+        <button class="modal-squad-tab" data-plantel="rumores">Rumores</button>
       </div>
+
+      <!-- 2. El buscador quedó abajo de los botones -->
+      <div style="margin-bottom: 15px;">
+        <input type="text" id="buscador-modal" class="search-input" placeholder="Buscar jugador...">
+      </div>
+      
       <div class="selection-section">
         <h4 class="selection-subtitle">Sugerencias</h4>
         <div class="selection-list" id="lista-recomendados"></div>
