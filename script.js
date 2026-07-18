@@ -253,7 +253,11 @@ function guardarEstadoPizarra() {
 
 function cargarEstadoPizarra() {
   const guardado = localStorage.getItem('rivertactico_estado');
-  if (guardado) {
+  
+  // ESCUDO 1: Si no hay nada guardado, cortamos acá
+  if (!guardado) return; 
+
+  try {
     const estado = JSON.parse(guardado);
 
     const btnFormacion = Array.from(document.querySelectorAll('.btn-formation'))
@@ -263,42 +267,50 @@ function cargarEstadoPizarra() {
         cambiarFormacion(estado.formacion, btnFormacion);
     }
 
-    // NUEVO: Le inyectamos la táctica deformada SOLAMENTE a la fotocopia activa, sin romper el molde maestro
+    // --- ACÁ ESTABA EL ERROR ---
     if (estado.layoutCustom) {
         posicionesTacticas = estado.layoutCustom;
+        dibujarEsquema(); // ¡ESTA ES LA LÍNEA MÁGICA QUE FALTABA! Esto hace que los círculos acompañen al jugador
     }
 
-    estado.jugadores.forEach(j => {
-      const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id === j.id);
-      if (jugador) {
-        jugadorSeleccionado = jugador;
-        ubicarJugadorLibre({ top: j.top, left: j.left });
-        
-        const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
-        if (tokenRecienCreado) {
-            if (j.slotTop && j.slotLeft) {
-                tokenRecienCreado.dataset.slotTop = j.slotTop;
-                tokenRecienCreado.dataset.slotLeft = j.slotLeft;
-            }
-        }
+    if (estado.jugadores && Array.isArray(estado.jugadores)) {
+        estado.jugadores.forEach(j => {
+          const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id === j.id);
+          if (jugador) {
+            jugadorSeleccionado = jugador;
+            ubicarJugadorLibre({ top: j.top, left: j.left });
+            
+            const tokenRecienCreado = document.getElementById(`token-${jugador.id}`);
+            if (tokenRecienCreado) {
+                if (j.slotTop && j.slotLeft) {
+                    tokenRecienCreado.dataset.slotTop = j.slotTop;
+                    tokenRecienCreado.dataset.slotLeft = j.slotLeft;
+                }
 
-        if (j.idSuplente) {
-           const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
-           if (suplente) {
-               const cartelSuplente = tokenRecienCreado.querySelector('.nombre-suplente');
-               const btnSuplente = tokenRecienCreado.querySelector('.btn-suplente');
-               
-               cartelSuplente.textContent = suplente.nombre;
-               cartelSuplente.dataset.id = suplente.id;
-               cartelSuplente.classList.remove('oculto');
-               btnSuplente.classList.add('oculto');
-           }
-        }
-      }
-    });
+                if (j.idSuplente) {
+                   const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
+                   if (suplente) {
+                       const cartelSuplente = tokenRecienCreado.querySelector('.nombre-suplente');
+                       const btnSuplente = tokenRecienCreado.querySelector('.btn-suplente');
+                       
+                       if (cartelSuplente && btnSuplente) {
+                           cartelSuplente.textContent = suplente.nombre;
+                           cartelSuplente.dataset.id = suplente.id;
+                           cartelSuplente.classList.remove('oculto');
+                           btnSuplente.classList.add('oculto');
+                       }
+                   }
+                }
+            }
+          }
+        });
+    }
     
     actualizarPlaceholders();
     actualizarBoxScore();
+
+  } catch (error) {
+    console.warn("La memoria de la pizarra estaba corrupta y se ignoró.", error);
   }
 }
 
