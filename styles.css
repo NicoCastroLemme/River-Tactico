@@ -876,7 +876,7 @@ body.dark-mode .logo-img {
     font-size: 10px;
     font-weight: 900;
     padding: 1px 3px;
-    border-radius: 4px;
+    border-radius: 2px;
     border: 1px solid; /* El color del borde se lo mandamos por JavaScript */
     z-index: 10; /* Para que quede siempre por encima de la foto */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -888,24 +888,25 @@ body.dark-mode .logo-img {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: rgba(0, 0, 0, 0.75); /* Fondo negro semitransparente */
+    background-color: transparent; /* Le sacamos el fondo */
+    border: none; /* Le sacamos el borde */
+    box-shadow: none; /* Le sacamos la sombra de la caja cuadrada */
     color: #fff;
     padding: 6px 12px;
-    border-radius: 6px;
     font-size: 14px;
     font-weight: 900;
-    z-index: 10; /* Siempre por encima de los jugadores y la cancha */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9); /* Sombra directa al texto para que resalte sobre el pasto */
 }
 
-/* Cartel flotante: Promedio (Arriba a la derecha) */
 .promedio-flotante {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    /* Usamos porcentajes en lugar de px */
+    top: 5%; 
+    right: 9%; 
+    
     background-color: rgba(0, 0, 0, 0.75);
-    color: var(--text-main); /* Arranca blanco/gris, el JS le inyectará el color verde/rojo/amarillo */
+    color: #fff;
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 14px;
@@ -923,4 +924,44 @@ body.modo-camisetas #view-puntuar .token-img {
 }
 body.modo-camisetas #view-puntuar .player-token {
     background-image: none !important;
+}
+
+/* Grilla de suplentes (Vista Puntuación) */
+.bench-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Crea 3 columnas exactamente iguales */
+    gap: 15px 5px; /* Separación: 15px arriba/abajo, 5px a los costados */
+    justify-items: center; /* Centra cada ficha en su lugarcito */
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+/* Solo por si alguien abre la PC en una pantalla muy chica, asegura que las fichas se achiquen un toque y no se desborden */
+@media (max-width: 1024px) {
+    .bench-grid {
+        gap: 15px 2px;
+    }
+}
+
+/* Control de visibilidad para los Suplentes */
+.solo-movil { display: none; }
+
+@media (max-width: 768px) {
+    .solo-pc { display: none; }
+    .solo-movil { display: block; }
+}
+
+/* --- AJUSTE DE CARTELES FLOTANTES PARA COMPUTADORA --- */
+@media (min-width: 768px) {
+    .progreso-flotante {
+        top: 25px;
+        left: 25px;
+        font-size: 16px; /* Lo agrandamos un pelín para que resalte más en PC */
+    }
+    
+    .promedio-flotante {
+        top: 35px;
+        right: 42px;
+        font-size: 16px;
+    }
 }

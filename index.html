@@ -151,14 +151,17 @@
       <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
       <div class="info-card">
         <h2>RIVER PLATE</h2>
-        <h3>VS ALDOSIVI</h3>
-        <h4>16avos. de final Copa Argentina</h4>
-        <h4>17-07-2026</h4>
+        <h3>VS BELGRANO</h3>
+        <h4>FINAL CAMPEONATO APERTURA 2026</h4>
+        <h4>24-05-2026</h4>
       </div>
-      <h2 style="font-size: 14px; text-align: left; margin-bottom: -10px;">SUPLENTES</h2>
-      <div class="player-list" id="bench-list">
-        <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 20px;">Cargando suplentes...</p>
+
+      <!-- === SUPLENTES EN PC (Columna Izquierda) === -->
+      <div class="banco-suplentes-container solo-pc" style="margin-top: 10px;">
+        <h4 style="text-align: center; color: var(--text-main); font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">SUPLENTES</h4>
+        <div class="bench-tokens bench-grid"></div>
       </div>
+      
     </div>
 
     <!-- === COLUMNA CENTRAL (Vista Puntuar) === -->
@@ -188,8 +191,13 @@
         <img src="fotos/cancha.png" class="cancha-img-fondo" alt="Cancha">
         
         <!-- CARTELES FLOTANTES MOVIDOS ACÁ -->
-        <div id="boleta-progreso" class="progreso-flotante">0 / 11</div>
         <div id="boleta-promedio" class="promedio-flotante">-</div>
+      </div>
+
+      <!-- === SUPLENTES EN CELULAR (Abajo de la cancha) === -->
+      <div class="banco-suplentes-container solo-movil" style="margin-top: 15px;">
+        <h4 style="text-align: center; color: var(--text-main); font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">SUPLENTES</h4>
+        <div class="bench-tokens" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; padding-bottom: 20px;"></div>
       </div>
 
       <!-- Botones de la vista Puntuar -->
@@ -204,6 +212,8 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         </button>
       </div>
+
+      
     </div>
 
     <!-- === PANEL DERECHO LIMPIO === -->

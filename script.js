@@ -231,7 +231,7 @@ function guardarEstadoPizarra() {
     jugadores: []
   };
   
-  document.querySelectorAll('.player-token').forEach(token => {
+  document.querySelectorAll('#pitch .player-token').forEach(token => {
     let idSuplente = null;
     const cartelSuplente = token.querySelector('.nombre-suplente');
     if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
@@ -422,7 +422,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   }
 
   const jugadoresEnCancha = [];
-  document.querySelectorAll('.player-token').forEach(token => {
+  document.querySelectorAll('#pitch .player-token').forEach(token => {
     const id = token.id.replace('token-', '');
     const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
     if (jugador) {
@@ -442,7 +442,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   // Usamos JSON.parse(JSON.stringify(...)) para hacer una "fotocopia" desconectada del original
   posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
 
-  document.querySelectorAll('.player-token').forEach(el => el.remove());
+  document.querySelectorAll('#pitch .player-token').forEach(el => el.remove());
   dibujarEsquema(); 
 
   let slotsDisponibles = [];
@@ -571,7 +571,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
 }
 
 function ubicarJugadorLibre(coords) {
-  const tokenExistente = Array.from(document.querySelectorAll('.player-token'))
+  const tokenExistente = Array.from(document.querySelectorAll('#pitch .player-token'))
     .find(token => token.style.top === coords.top && token.style.left === coords.left);
 
   const placeholderExistente = Array.from(document.querySelectorAll('.placeholder'))
@@ -716,7 +716,7 @@ function abrirModalSeleccion(posAbreviada, coords) {
     listaRecomendados.innerHTML = '';
     listaResto.innerHTML = '';
 
-    const idsTitulares = Array.from(document.querySelectorAll('.player-token'))
+    const idsTitulares = Array.from(document.querySelectorAll('#pitch .player-token'))
       .map(t => parseInt(t.id.replace('token-', '')));
       
     const idsSuplentes = Array.from(document.querySelectorAll('.nombre-suplente:not(.oculto)'))
@@ -823,7 +823,7 @@ themeBtns.forEach(btn => {
 });
 
 function verificarOnce() {
-  const cantidadEnCancha = document.querySelectorAll('.player-token').length;
+  const cantidadEnCancha = document.querySelectorAll('#pitch .player-token').length;
   const btnCompartir = document.getElementById('btn-compartir');
   if(btnCompartir) {
     if (cantidadEnCancha === 11) {
@@ -837,7 +837,7 @@ function verificarOnce() {
 const btnLimpiar = document.getElementById('btn-limpiar');
 if(btnLimpiar) {
   btnLimpiar.addEventListener('click', () => {
-    document.querySelectorAll('.player-token').forEach(el => el.remove());
+    document.querySelectorAll('#pitch .player-token').forEach(el => el.remove());
     document.querySelectorAll('.player-row').forEach(row => row.classList.remove('on-pitch'));
     dibujarEsquema();
     verificarOnce();
@@ -976,7 +976,7 @@ function actualizarBoxScore() {
 
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
-      const token = Array.from(document.querySelectorAll('.player-token'))
+      const token = Array.from(document.querySelectorAll('#pitch .player-token'))
         .find(t => {
            const sTop = t.dataset.slotTop || t.style.top;
            const sLeft = t.dataset.slotLeft || t.style.left;
@@ -993,7 +993,7 @@ function actualizarBoxScore() {
 
   posicionesOrdenadas.forEach(pos => {
     posicionesTacticas[pos].forEach(coords => {
-      const token = Array.from(document.querySelectorAll('.player-token'))
+      const token = Array.from(document.querySelectorAll('#pitch .player-token'))
         .find(t => {
            const sTop = t.dataset.slotTop || t.style.top;
            const sLeft = t.dataset.slotLeft || t.style.left;
@@ -1157,41 +1157,50 @@ function cargarVistaPuntuacion() {
     pitchRating.appendChild(token);
   });
 
-  // 2. DIBUJAMOS EL BANCO DE SUPLENTES REAL
-  benchList.innerHTML = ''; 
-  ultimoPartido.suplentes.forEach(p => {
-    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
-    if (!jugadorBD) return;
-
-    const row = document.createElement('div');
-    row.id = `rating-row-${p.id}`;
-    row.className = p.jugo ? 'player-row' : 'player-row on-pitch'; // Si no jugó, queda grisado
+  // 2. DIBUJAMOS EL BANCO DE SUPLENTES EN PC Y MÓVIL
+  const benchContainers = document.querySelectorAll('.bench-tokens');
+  
+  benchContainers.forEach(contenedor => {
+    contenedor.innerHTML = ''; 
     
-    let textoNota = '-';
-    let estiloInline = 'color: var(--text-muted);'; 
+    ultimoPartido.suplentes.forEach(p => {
+      const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+      if (!jugadorBD) return;
 
-    if (p.jugo) {
-      if (datosActivos[p.id]) {
-        textoNota = parseFloat(datosActivos[p.id]).toFixed(1);
-        estiloInline = `color: ${obtenerColorExacto(textoNota)}; font-weight: bold;`;
+      const token = document.createElement('div');
+      token.className = 'player-token';
+      
+      token.style.position = 'relative';
+      token.style.top = 'auto';
+      token.style.left = 'auto';
+      token.style.transform = 'none';
+
+      let htmlNotaFlotante = '';
+
+      if (p.jugo) {
+        if (datosActivos[p.id]) {
+          const nota = parseFloat(datosActivos[p.id]).toFixed(1);
+          const colorCalibrado = obtenerColorExacto(nota);
+          htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
+        }
+        if (modoPuntajeActual === 'mis_puntajes') {
+          token.style.cursor = 'pointer';
+          token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
+        }
       } else {
-        textoNota = 'S/P';
+        token.style.opacity = '0.4';
+        token.style.filter = 'grayscale(100%)';
+        token.style.cursor = 'not-allowed';
       }
-      if (modoPuntajeActual === 'mis_puntajes') {
-        row.style.cursor = 'pointer';
-        row.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
-      }
-    } else {
-      row.style.cursor = 'not-allowed';
-    }
 
-    row.innerHTML = `
-      <span class="num">${jugadorBD.numero}</span>
-      <span class="name">${jugadorBD.nombre}</span>
-      <span class="pos">${p.pos}</span>        
-      <span class="rating" style="${estiloInline}">${textoNota}</span>
-    `;
-    benchList.appendChild(row);
+      token.innerHTML = `
+        ${htmlNotaFlotante}
+        <img src="${obtenerRutaFoto(p.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
+        <div class="token-name">${obtenerApellido(jugadorBD.nombre)}</div>
+      `;
+      
+      contenedor.appendChild(token);
+    });
   });
 
   actualizarBoletaEnVivo();
@@ -1277,7 +1286,6 @@ document.querySelectorAll('.sort-tab').forEach(btn => {
 });
 
 function actualizarBoletaEnVivo() {
-  const progresoEl = document.getElementById('boleta-progreso');
   const btnEnviar = document.getElementById('btn-enviar-boleta');
   const sortControls = document.getElementById('boleta-sort-controls');
   const listContainer = document.getElementById('rated-players-container');
@@ -1285,13 +1293,9 @@ function actualizarBoletaEnVivo() {
   const mvpContainer = document.getElementById('boleta-mvp-container');
   const datosActivos = obtenerDatosActivos(); 
   
-  if (!progresoEl || !btnEnviar) return; 
+  if (!btnEnviar) return; 
 
-  const suplentesQueJugaron = ultimoPartido.suplentes.filter(s => s.jugo).length;
-  const totalAEvaluar = ultimoPartido.titulares.length + suplentesQueJugaron;
   const puntuados = Object.keys(datosActivos).length;
-  
-  progresoEl.innerText = `${puntuados} / ${totalAEvaluar}`;
   
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
@@ -1388,10 +1392,13 @@ function actualizarBoletaEnVivo() {
     });
 
   } else {
+    // Si no hay jugadores puntuados, vuelve al guion por defecto
     promElement.innerText = '-';
-    promElement.style.color = 'var(--text-main)';
+    promElement.style.color = '#fff'; /* Vuelve al color blanco/gris por defecto */
+    
+    // Oculta las otras cosas que no sirven si no hay puntajes
     mvpContainer.style.display = 'none';
-    sortControls.style.display = 'none';
+    if(sortControls) sortControls.style.display = 'none';
     listContainer.innerHTML = '';
   }
 }
@@ -1639,7 +1646,7 @@ function hacerArrastrable(token) {
 
 function actualizarPlaceholders() {
   document.querySelectorAll('.placeholder').forEach(p => {
-     const tokenEncima = Array.from(document.querySelectorAll('.player-token')).find(t => {
+     const tokenEncima = Array.from(document.querySelectorAll('#pitch .player-token')).find(t => {
         const topToken = t.dataset.slotTop || t.style.top;
         const leftToken = t.dataset.slotLeft || t.style.left;
         return topToken === p.style.top && leftToken === p.style.left;
@@ -1652,7 +1659,7 @@ function actualizarPlaceholders() {
 
 function vincularJugadoresAHuecos() {
   const placeholders = Array.from(document.querySelectorAll('.placeholder'));
-  const tokens = Array.from(document.querySelectorAll('.player-token'));
+  const tokens = Array.from(document.querySelectorAll('#pitch .player-token'));
   
   let huecosDisponibles = placeholders.filter(p => {
      return !tokens.some(t => t.dataset.slotTop === p.style.top && t.dataset.slotLeft === p.style.left);
