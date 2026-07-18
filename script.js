@@ -1059,12 +1059,20 @@ const btnPuntuar = document.getElementById('btn-puntuar');
 const viewPizarra = document.getElementById('view-pizarra');
 const viewPuntuar = document.getElementById('view-puntuar');
 
+// Variable para recordar si tenías las camisetas prendidas o no
+let teniaCamisetasActivadas = false;
+
 if(btnPizarra && btnPuntuar) {
   btnPizarra.addEventListener('click', () => {
     btnPizarra.classList.add('active');
     btnPuntuar.classList.remove('active');
     viewPizarra.style.display = 'grid';
     viewPuntuar.style.display = 'none';
+    
+    // Si tenías las camisetas activadas, te las vuelve a poner al volver a la pizarra
+    if (teniaCamisetasActivadas) {
+        document.body.classList.add('modo-camisetas');
+    }
   });
 
   btnPuntuar.addEventListener('click', () => {
@@ -1072,6 +1080,11 @@ if(btnPizarra && btnPuntuar) {
     btnPizarra.classList.remove('active');
     viewPuntuar.style.display = 'grid';
     viewPizarra.style.display = 'none';
+    
+    // Anota si tenías las camisetas puestas y luego APAGA el modo para esta vista
+    teniaCamisetasActivadas = document.body.classList.contains('modo-camisetas');
+    document.body.classList.remove('modo-camisetas');
+    
     cargarVistaPuntuacion();
   });
 }
@@ -1708,3 +1721,45 @@ document.addEventListener('click', (e) => {
      }
   }
 });
+
+// --- MOTOR PARA COMPARTIR LA IMAGEN DE LOS PUNTAJES ---
+const btnCompartirPuntaje = document.getElementById('btn-compartir-puntaje');
+if(btnCompartirPuntaje) {
+  btnCompartirPuntaje.addEventListener('click', () => {
+    // Acá le apuntamos a la cancha de puntuación, no a la otra
+    const canchaPuntaje = document.getElementById('pitch-rating');
+    
+    const contenidoOriginal = btnCompartirPuntaje.innerHTML;
+    btnCompartirPuntaje.innerHTML = '⏳';
+    
+    html2canvas(canchaPuntaje, {
+      scale: 3,                 
+      useCORS: true,              
+      backgroundColor: '#ffffff'
+    }).then(canvas => {
+      canvas.toBlob(function(blob) {
+        const file = new File([blob], "Mis_Puntajes_River.png", { type: "image/png" });
+        
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          // Si está en celular, abre el menú nativo de WhatsApp, Instagram, etc.
+          navigator.share({
+            title: '¡Mirá mis puntajes de River!',
+            text: 'Yo ya puntué a los jugadores en mi11river.com 🐔',
+            files: [file]
+          }).then(() => {
+            btnCompartirPuntaje.innerHTML = contenidoOriginal; 
+          }).catch(error => {
+            btnCompartirPuntaje.innerHTML = contenidoOriginal;
+          });
+        } else {
+          // Si está en PC, le descarga la imagen directo
+          const enlace = document.createElement('a');
+          enlace.download = 'Mis_Puntajes_River.png';
+          enlace.href = canvas.toDataURL('image/png');
+          enlace.click();
+          btnCompartirPuntaje.innerHTML = contenidoOriginal; 
+        }
+      });
+    });
+  });
+}

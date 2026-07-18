@@ -914,3 +914,13 @@ body.dark-mode .logo-img {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
+
+/* BLINDAJE: Evita que el modo camiseta afecte a los puntajes */
+body.modo-camisetas #view-puntuar .token-img {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+body.modo-camisetas #view-puntuar .player-token {
+    background-image: none !important;
+}
