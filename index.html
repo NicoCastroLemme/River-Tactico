@@ -37,7 +37,7 @@
       </div>
       <nav class="header-nav">
         <button class="nav-btn active" id="btn-pizarra">Crear 11</button>
-        <button class="nav-btn" id="btn-puntuar" style="display: none;">Puntuar Partido</button>
+        <button class="nav-btn" id="btn-puntuar">Puntuar Partido</button>
       </nav>
     </div>
   </header>
@@ -131,18 +131,17 @@
         <button class="btn-formation" onclick="cambiarFormacion('4-2-3-1', this)">4-2-3-1</button>
         <button class="btn-formation" onclick="cambiarFormacion('4-3-1-2', this)">4-3-1-2</button>
         <button class="btn-formation" onclick="cambiarFormacion('4-1-4-1', this)">4-1-4-1</button>
-        <button class="btn-formation" onclick="cambiarFormacion('4-4-1-1', this)">4-4-1-1</button>
+        <!--<button class="btn-formation" onclick="cambiarFormacion('4-4-1-1', this)">4-4-1-1</button>-->
         <button class="btn-formation" onclick="cambiarFormacion('4-3-2-1', this)">4-3-2-1</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-5-2', this)">3-5-2</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-4-3', this)">3-4-3</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-4-2-1', this)">3-4-2-1</button>
-        <button class="btn-formation" onclick="cambiarFormacion('5-3-2', this)">5-3-2</button>
-        <button class="btn-formation" onclick="cambiarFormacion('5-4-1', this)">5-4-1</button>
+        <!--<button class="btn-formation" onclick="cambiarFormacion('5-3-2', this)">5-3-2</button>
+        <button class="btn-formation" onclick="cambiarFormacion('5-4-1', this)">5-4-1</button>-->
       </div>
 
       <h4 id="titulo-mis-jugadores" style="margin-top: 20px;">Mis Jugadores · 0/11</h4>
       <!-- Las pestañas ya no están -->
-      <div class="box-score-list" id="box-score-container"></div>
       <div class="box-score-list" id="box-score-container"></div>
     </div>
   </div> 
@@ -152,9 +151,9 @@
       <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
       <div class="info-card">
         <h2>RIVER PLATE</h2>
-        <h3>VS BELGRANO</h3>
-        <h4>FINAL CAMPEONATO APERTURA 2026</h4>
-        <h4>24-05-2026</h4>
+        <h3>VS ALDOSIVI</h3>
+        <h4>16avos. de final Copa Argentina</h4>
+        <h4>17-07-2026</h4>
       </div>
       <h2 style="font-size: 14px; text-align: left; margin-bottom: -10px;">SUPLENTES</h2>
       <div class="player-list" id="bench-list">
@@ -162,7 +161,7 @@
       </div>
     </div>
 
-    <!-- === NUEVA COLUMNA CENTRAL (Vista Puntuar) === -->
+    <!-- === COLUMNA CENTRAL (Vista Puntuar) === -->
     <div class="center-column">
       <div class="pitch-container" id="pitch-rating">
         <div class="line mid-line"></div>
@@ -184,7 +183,13 @@
         <div class="corner bl"></div>
         <div class="corner br"></div>
 
-        <div class="watermark">RIVERTACTICO.COM</div>
+        <!--<div class="watermark">MI11RIVER.COM</div>-->
+
+        <img src="fotos/cancha.png" class="cancha-img-fondo" alt="Cancha">
+        
+        <!-- CARTELES FLOTANTES MOVIDOS ACÁ -->
+        <div id="boleta-progreso" class="progreso-flotante">0 / 11</div>
+        <div id="boleta-promedio" class="promedio-flotante">-</div>
       </div>
 
       <!-- Solo el botón de Modo Oscuro en esta vista -->
@@ -198,26 +203,7 @@
 
     <!-- === PANEL DERECHO LIMPIO === -->
     <div class="right-panel">
-      <div class="source-tabs-wrapper">
-        <button class="source-tab active main-tab" data-source="mis_puntajes">Mi Puntajes</button>
-        <div class="source-row">
-          <button class="source-tab" data-source="sofascore">SofaScore</button>
-          <button class="source-tab" data-source="millostats">MilloStats</button>
-          <button class="source-tab" data-source="promedio_usuarios">Comunidad</button>
-        </div>
-      </div>
-
       <div class="info-card" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
-        <div class="boleta-stats">
-          <div class="stat-row">
-            <span class="stat-label">Progreso</span>
-            <span class="stat-value" id="boleta-progreso">0/0</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Promedio</span>
-            <span class="stat-value" id="boleta-promedio">-</span>
-          </div>
-        </div>
 
         <div class="boleta-mvp" id="boleta-mvp-container" style="display: none; margin-bottom: 10px;">
           <span class="mvp-label">⭐ LA FIGURA</span>

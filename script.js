@@ -8,58 +8,109 @@ let plantelRumores = [];
 
 const coleccionFormaciones = {
   '4-4-2': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '15%' }],
-    'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
+    'MC':  [{ top: '43%', left: '39%' }, { top: '43%', left: '62%' }],
     'MD':  [{ top: '38%', left: '85%' }],
     'MI':  [{ top: '38%', left: '15%' }],
     'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
   },  
   '4-3-3': {
-    'ARQ': [{ top: '85%', left: '50%' }],
+    'ARQ': [{ top: '80%', left: '50%' }],
     'LD':  [{ top: '60%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
     'LI':  [{ top: '60%', left: '15%' }],
-    'MCD': [{ top: '45%', left: '50%' }],
+    'MCD': [{ top: '43%', left: '50%' }],
     'MC':  [{ top: '40%', left: '75%' }, { top: '40%', left: '25%' }],
     'ED':  [{ top: '20%', left: '85%' }],
     'DC':  [{ top: '18%', left: '50%' }],
     'EI':  [{ top: '20%', left: '15%' }]
-  }, 
-  '3-5-2': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'DFC': [{ top: '64%', left: '26%' },  { top: '67%', left: '50%' }, { top: '64%', left: '74%' }],
-    'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
-    'MD':  [{ top: '38%', left: '87%' }],
-    'MI':  [{ top: '38%', left: '13%' }],
-    'MCO': [{ top: '33%', left: '50%' }],
-    'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
   },
   '4-2-3-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '15%' }],
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
     'MC':  [{ top: '48%', left: '35%' }, { top: '48%', left: '65%' }],
     'MCO': [{ top: '33%', left: '50%' }],
     'ED':  [{ top: '33%', left: '80%' }],
     'DC':  [{ top: '18%', left: '50%' }],
     'EI':  [{ top: '33%', left: '20%' }]
   },
-  '3-4-3': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'DFC': [{ top: '64%', left: '26%' },  { top: '67%', left: '50%' }, { top: '64%', left: '74%' }],
+  '4-3-1-2': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
+    'MCD': [{ top: '50%', left: '50%' }],
+    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
+    'MCO': [{ top: '33%', left: '50%' }],
+    'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
+  },
+  '4-1-4-1': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
+    'MCD': [{ top: '50%', left: '50%' }],
+    'MC':  [{ top: '35%', left: '40%' }, { top: '35%', left: '60%' }],
+    'MI':  [{ top: '35%', left: '18%' }],
+    'MD':  [{ top: '35%', left: '82%' }],
+    'DC':  [{ top: '18%', left: '50%' }]
+  },
+  '4-4-1-1': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
     'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
-    'MD':  [{ top: '38%', left: '87%' }],
-    'MI':  [{ top: '38%', left: '13%' }],
+    'MD':  [{ top: '38%', left: '85%' }],
+    'MI':  [{ top: '38%', left: '15%' }],
+    'MCO': [{ top: '30%', left: '50%' }],
+    'DC':  [{ top: '15%', left: '50%' }]
+  },
+  '4-3-2-1': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'LD':  [{ top: '60%', left: '85%' }],
+    'DFC': [{ top: '65%', left: '38%' }, { top: '65%', left: '62%' }],
+    'LI':  [{ top: '60%', left: '15%' }],
+    'MCD': [{ top: '50%', left: '50%' }],
+    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
+    'MCO': [{ top: '30%', left: '38%' }, { top: '30%', left: '62%' }],
+    'DC':  [{ top: '18%', left: '50%' }]
+  }, 
+  '3-5-2': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'DFC': [{ top: '60%', left: '26%' },  { top: '63%', left: '50%' }, { top: '60%', left: '74%' }],
+    'MC':  [{ top: '45%', left: '39%' }, { top: '45%', left: '62%' }],
+    'MD':  [{ top: '40%', left: '85%' }],
+    'MI':  [{ top: '40%', left: '15%' }],
+    'MCO': [{ top: '30%', left: '50%' }],
+    'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
+  },
+  '3-4-3': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'DFC': [{ top: '60%', left: '26%' },  { top: '63%', left: '50%' }, { top: '60%', left: '74%' }],
+    'MC':  [{ top: '45%', left: '39%' }, { top: '45%', left: '62%' }],
+    'MD':  [{ top: '40%', left: '85%' }],
+    'MI':  [{ top: '40%', left: '15%' }],
     'ED':  [{ top: '20%', left: '85%' }],
     'DC':  [{ top: '18%', left: '50%' }],
     'EI':  [{ top: '20%', left: '15%' }]
   },
+  '3-4-2-1': {
+    'ARQ': [{ top: '80%', left: '50%' }],
+    'DFC': [{ top: '60%', left: '26%' },  { top: '63%', left: '50%' }, { top: '60%', left: '74%' }],
+    'MC':  [{ top: '45%', left: '39%' }, { top: '45%', left: '62%' }],
+    'MD':  [{ top: '40%', left: '85%' }],
+    'MI':  [{ top: '40%', left: '15%' }],
+    'MCO': [{ top: '29%', left: '35%' }, { top: '29%', left: '65%' }],
+    'DC':  [{ top: '15%', left: '50%' }]
+  },
   '5-3-2': {
-    'ARQ': [{ top: '85%', left: '50%' }],
+    'ARQ': [{ top: '80%', left: '50%' }],
     'LD':  [{ top: '56%', left: '90%' }],
     'DFC': [{ top: '64%', left: '26%' },  { top: '67%', left: '50%' }, { top: '64%', left: '74%' }],
     'LI':  [{ top: '56%', left: '10%' }],
@@ -67,65 +118,14 @@ const coleccionFormaciones = {
     'MC':  [{ top: '40%', left: '72%' }, { top: '40%', left: '28%' }],
     'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
   },
-  '4-3-1-2': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '15%' }],
-    'MCD': [{ top: '53%', left: '50%' }],
-    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
-    'MCO': [{ top: '33%', left: '50%' }],
-    'DC':  [{ top: '18%', left: '35%' }, { top: '18%', left: '65%' }]
-  },
-  '4-1-4-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '15%' }],
-    'MCD': [{ top: '53%', left: '50%' }],
-    'MC':  [{ top: '35%', left: '40%' }, { top: '35%', left: '60%' }],
-    'MI':  [{ top: '35%', left: '18%' }],
-    'MD':  [{ top: '35%', left: '82%' }],
-    'DC':  [{ top: '18%', left: '50%' }]
-  },
-  '3-4-2-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'DFC': [{ top: '64%', left: '26%' },  { top: '67%', left: '50%' }, { top: '64%', left: '74%' }],
-    'MI':  [{ top: '40%', left: '13%' }],
-    'MC':  [{ top: '47%', left: '35%' }, { top: '47%', left: '65%' }],
-    'MD':  [{ top: '40%', left: '87%' }],
-    'MCO': [{ top: '30%', left: '40%' }, { top: '30%', left: '60%' }],
-    'DC':  [{ top: '15%', left: '50%' }]
-  },
-  '4-4-1-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '63%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '63%', left: '15%' }],
-    'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
-    'MD':  [{ top: '38%', left: '85%' }],
-    'MI':  [{ top: '38%', left: '15%' }],
-    'MCO': [{ top: '30%', left: '50%' }],
-    'DC':  [{ top: '15%', left: '50%' }]
-  },
   '5-4-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
+    'ARQ': [{ top: '80%', left: '50%' }],
     'LD':  [{ top: '56%', left: '90%' }],
     'DFC': [{ top: '64%', left: '26%' },  { top: '67%', left: '50%' }, { top: '64%', left: '74%' }],
     'LI':  [{ top: '56%', left: '10%' }],
     'MI':  [{ top: '38%', left: '13%' }],
     'MC':  [{ top: '45%', left: '35%' }, { top: '45%', left: '65%' }],
     'MD':  [{ top: '38%', left: '87%' }],
-    'DC':  [{ top: '18%', left: '50%' }]
-  },
-  '4-3-2-1': {
-    'ARQ': [{ top: '85%', left: '50%' }],
-    'LD':  [{ top: '60%', left: '85%' }],
-    'DFC': [{ top: '70%', left: '35%' }, { top: '70%', left: '65%' }],
-    'LI':  [{ top: '60%', left: '15%' }],
-    'MCD': [{ top: '50%', left: '50%' }],
-    'MC':  [{ top: '45%', left: '75%' }, { top: '45%', left: '25%' }],
-    'MCO': [{ top: '30%', left: '38%' }, { top: '30%', left: '62%' }],
     'DC':  [{ top: '18%', left: '50%' }]
   }
 };
@@ -152,6 +152,14 @@ const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15
 
 // Promedio simulado de los usuarios de tu web (un intermedio racional)
 const promedioUsuariosData = { 41: 6.8, 16: 6.3, 13: 7.3, 28: 6.0, 21: 4.5, 6: 7.8, 15: 7.0, 24: 6.7, 26: 8.9, 11: 9.8, 35: 8.4, 20: 6.2, 10: 7.2, 19: 6.6 };
+
+// Función para quedarse solo con el apellido
+function obtenerApellido(nombreCompleto) {
+  if (!nombreCompleto) return "";
+  const partes = nombreCompleto.split(' ');
+  // Si tiene más de una palabra, saltea la primera. Si no, devuelve lo que haya.
+  return partes.length > 1 ? partes.slice(1).join(' ') : nombreCompleto;
+}
 
 function obtenerDatosActivos() {
   if (modoPuntajeActual === 'sofascore') return sofaScoreData;
@@ -247,16 +255,18 @@ function cargarEstadoPizarra() {
   const guardado = localStorage.getItem('rivertactico_estado');
   if (guardado) {
     const estado = JSON.parse(guardado);
-    
-    // --- NUEVO: Restauramos la cancha deformada antes de dibujar ---
-    if (estado.layoutCustom) {
-       coleccionFormaciones[estado.formacion] = estado.layoutCustom;
-    }
-    // --------------------------------------------------------------
 
     const btnFormacion = Array.from(document.querySelectorAll('.btn-formation'))
       .find(btn => btn.innerText === estado.formacion);
-    if (btnFormacion) cambiarFormacion(estado.formacion, btnFormacion);
+      
+    if (btnFormacion) {
+        cambiarFormacion(estado.formacion, btnFormacion);
+    }
+
+    // NUEVO: Le inyectamos la táctica deformada SOLAMENTE a la fotocopia activa, sin romper el molde maestro
+    if (estado.layoutCustom) {
+        posicionesTacticas = estado.layoutCustom;
+    }
 
     estado.jugadores.forEach(j => {
       const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id === j.id);
@@ -417,7 +427,8 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   botonClicked.classList.add('active');
 
   formacionActual = nombreFormacion;
-  posicionesTacticas = coleccionFormaciones[nombreFormacion]; 
+  // Usamos JSON.parse(JSON.stringify(...)) para hacer una "fotocopia" desconectada del original
+  posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
 
   document.querySelectorAll('.player-token').forEach(el => el.remove());
   dibujarEsquema(); 
@@ -485,7 +496,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
 
       token.innerHTML = `
         <img src="${obtenerRutaFoto(jugador.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-        <div class="token-name">${jugador.nombre}</div>
+        <div class="token-name">${obtenerApellido(jugador.nombre)}</div>
         <button class="btn-suplente">+</button>
         <div class="nombre-suplente oculto"></div>
       `;
@@ -643,7 +654,7 @@ function ubicarJugadorLibre(coords) {
 
   token.innerHTML = `
     <img src="${obtenerRutaFoto(jugadorSeleccionado.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-    <div class="token-name">${jugadorSeleccionado.nombre}</div>
+    <div class="token-name">${obtenerApellido(jugadorSeleccionado.nombre)}</div>
     <button class="btn-suplente">+</button>
     <div class="nombre-suplente oculto"></div>
   `;
@@ -1053,31 +1064,26 @@ if(btnPizarra && btnPuntuar) {
   });
 }
 
+// ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
 const ultimoPartido = {
   titulares: [
-    { id: 41, name: "S. Beltrán", pos: "ARQ", top: 85, left: 50 },
-    { id: 16, name: "F. Bustos", pos: "LD", top: 65, left: 85 },
-    { id: 13, name: "L. Rivero", pos: "DFC", top: 70, left: 38 },
-    { id: 28, name: "M. Quarta", pos: "DFC", top: 70, left: 62, eventos: { dobleAmarilla: true } },
-    { id: 21, name: "M. Acuña", pos: "LI", top: 65, left: 15, eventos: { rojaDirecta: true } },
-    { id: 6, name: "A. Moreno", pos: "MCD", top: 50, left: 50 },
-    { id: 15, name: "F. Vera", pos: "MC", top: 45, left: 25 },
-    { id: 24, name: "J. C. Meza", pos: "MC", top: 45, left: 75 },
-    { id: 26, name: "T. Galván", pos: "MCO", top: 28, left: 35, eventos: { asistencias: 2, amarillas: 1 } },
-    { id: 11, name: "F. Colidio", pos: "MCO", top: 28, left: 65, eventos: { goles: 3 } },
-    { id: 35, name: "J. Freitas", pos: "DC", top: 14, left: 50, eventos: { goles: 1, asistencias: 1 } }
+    { id: 41, pos: "ARQ", top: 80, left: 50 },
+    { id: 20, pos: "LD", top: 60, left: 85 },     
+    { id: 28, pos: "DFC", top: 65, left: 62 },     
+    { id: 13, pos: "DFC", top: 65, left: 38 },     
+    { id: 21, pos: "LI", top: 60, left: 15 },      
+    { id: 15, pos: "MC", top: 48, left: 65 },     
+    { id: 6, pos: "MC", top: 48, left: 35 },      
+    { id: 11, pos: "EI", top: 33, left: 20 },       
+    { id: 26, pos: "MCO", top: 33, left: 50 },     
+    { id: 24, pos: "ED", top: 33, left: 80 },     
+    { id: 19, pos: "DC", top: 18, left: 50 }       
   ],
   suplentes: [
-    { id: 1, name: "F. Armani", pos: "ARQ", jugo: false },
-    { id: 29, name: "G. Montiel", pos: "LD", jugo: false },
-    { id: 20, name: "G. Pezzella", pos: "DFC", jugo: true },
-    { id: 106, name: "F. González", pos: "MC", jugo: false },
-    { id: 10, name: "J. F. Quintero", pos: "MCO", jugo: true },
-    { id: 22, name: "K. Castaño", pos: "MC", jugo: false },
-    { id: 25, name: "L. Pereyra", pos: "MCO", jugo: false },
-    { id: 34, name: "G. Galoppo", pos: "MC", jugo: false },
-    { id: 44, name: "L. Silva", pos: "MCD", jugo: false },
-    { id: 7, name: "M. Salas", pos: "DC", jugo: false }
+    { id: 8, pos: "MC", jugo: true },           
+    { id: 18, pos: "DC", jugo: true },            
+    { id: 35, pos: "MP", jugo: true },          
+    { id: 25, pos: "EI", jugo: true },           
   ]
 };
 
@@ -1086,89 +1092,77 @@ function cargarVistaPuntuacion() {
   const benchList = document.getElementById('bench-list');
   const datosActivos = obtenerDatosActivos(); 
 
-  const fichasViejas = pitchRating.querySelectorAll('.token');
+  // Limpiamos las fichas viejas
+  const fichasViejas = pitchRating.querySelectorAll('.player-token');
   fichasViejas.forEach(f => f.remove());
 
+  // 1. DIBUJAMOS LOS TITULARES REALES
   ultimoPartido.titulares.forEach(p => {
+    // Buscamos la info del jugador en tu base de datos
+    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+    if (!jugadorBD) return;
+
     const token = document.createElement('div');
-    token.className = 'token'; 
+    // CLAVE: Le damos exactamente la misma clase que en la pizarra para que herede el 70x70 y el estilo del cartel
+    token.className = 'player-token'; 
     token.id = `rating-token-${p.id}`; 
     
-    token.style.position = 'absolute';
-    token.style.left = `${p.left}%`;
     token.style.top = `${p.top}%`;
-    token.style.transform = 'translate(-50%, -50%)';
-    token.style.width = '60px'; 
-    token.style.display = 'flex';
-    token.style.flexDirection = 'column';
-    token.style.alignItems = 'center';
+    token.style.left = `${p.left}%`;
 
-    let notaCancha = '';
+    let htmlNotaFlotante = '';
     if (datosActivos[p.id]) {
-      const nota = datosActivos[p.id];
+      const nota = parseFloat(datosActivos[p.id]).toFixed(1);
       const colorCalibrado = obtenerColorExacto(nota);
-      notaCancha = `<span style="margin-left: 3px; color: ${colorCalibrado}; font-weight: bold;">[${nota}]</span>`;
-    }
-
-    let htmlEventos = '';
-    if (p.eventos) {
-      const svgPelota = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="11" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/><polygon points="12,6.5 7.5,10 9,15.5 15,15.5 16.5,10" fill="#1a1a1a"/><path d="M12 6.5V1M7.5 10L2.5 8M16.5 10L21.5 8M9 15.5L5.5 20.5M15 15.5L18.5 20.5" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-      const svgBotin = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15"><path fill="#00FF88" stroke="#000" stroke-width="1.5" stroke-linejoin="round" d="M4 8l5-2 4 4c2 0 6 2 8 6 0 3-3 4-7 4H5c-2 0-3-1-2-4 0-4 0-6 1-8z"/><path fill="#000" d="M6 20v2h2v-2zm5 0v2h2v-2zm5 0v2h2v-2z"/></svg>`;
-      
-      htmlEventos = `<div class="player-events">`;
-      if (p.eventos.goles) { htmlEventos += `<div class="ev-item">${svgPelota}</div>`; }
-      if (p.eventos.asistencias) { htmlEventos += `<div class="ev-item">${svgBotin}</div>`; }
-      if (p.eventos.rojaDirecta) { htmlEventos += `<div class="ev-item"><div class="tarjeta roja"></div></div>`; } 
-      else if (p.eventos.dobleAmarilla) { htmlEventos += `<div class="ev-item cards-overlap"><div class="tarjeta amarilla"></div><div class="tarjeta amarilla"></div><div class="tarjeta roja"></div></div>`; } 
-      else if (p.eventos.amarillas) { htmlEventos += `<div class="ev-item"><div class="tarjeta amarilla"></div></div>`; }
-      htmlEventos += `</div>`;
+      // Creamos la chapita inyectándole el color exacto al texto y al borde
+      htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
     }
 
     token.innerHTML = `
-      <img src="fotos/${p.id}.png" class="token-img" onerror="this.style.display='none'">
-      ${htmlEventos}
-      <div class="token-name">${p.name} ${notaCancha}</div>
+      ${htmlNotaFlotante}
+      <img src="${obtenerRutaFoto(p.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
+      <div class="token-name">${obtenerApellido(jugadorBD.nombre)}</div>
     `;
 
     if (modoPuntajeActual === 'mis_puntajes') {
       token.style.cursor = 'pointer';
-      token.onclick = () => abrirModalNota(p.id, p.name);
-    } else {
-      token.style.cursor = 'default';
+      token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
     }
     
     pitchRating.appendChild(token);
   });
 
+  // 2. DIBUJAMOS EL BANCO DE SUPLENTES REAL
   benchList.innerHTML = ''; 
   ultimoPartido.suplentes.forEach(p => {
+    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+    if (!jugadorBD) return;
+
     const row = document.createElement('div');
     row.id = `rating-row-${p.id}`;
-    row.className = p.jugo ? 'player-row' : 'player-row on-pitch';
+    row.className = p.jugo ? 'player-row' : 'player-row on-pitch'; // Si no jugó, queda grisado
     
     let textoNota = '-';
     let estiloInline = 'color: var(--text-muted);'; 
 
     if (p.jugo) {
       if (datosActivos[p.id]) {
-        textoNota = datosActivos[p.id];
+        textoNota = parseFloat(datosActivos[p.id]).toFixed(1);
         estiloInline = `color: ${obtenerColorExacto(textoNota)}; font-weight: bold;`;
       } else {
         textoNota = 'S/P';
       }
       if (modoPuntajeActual === 'mis_puntajes') {
         row.style.cursor = 'pointer';
-        row.onclick = () => abrirModalNota(p.id, p.name);
-      } else {
-        row.style.cursor = 'default';
+        row.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
       }
     } else {
       row.style.cursor = 'not-allowed';
     }
 
     row.innerHTML = `
-      <span class="num">${p.id}</span>
-      <span class="name">${p.name}</span>
+      <span class="num">${jugadorBD.numero}</span>
+      <span class="name">${jugadorBD.nombre}</span>
       <span class="pos">${p.pos}</span>        
       <span class="rating" style="${estiloInline}">${textoNota}</span>
     `;
@@ -1297,9 +1291,20 @@ function actualizarBoletaEnVivo() {
         mvpId = id;
       }
 
-      const jugador = [...ultimoPartido.titulares, ...ultimoPartido.suplentes].find(j => j.id == id);
-      if (jugador) {
-        jugadoresPuntuadosObj.push({ ...jugador, notaFinal: nota });
+      // Buscamos al jugador en el partido para saber su posición
+      const jugadorPartido = [...ultimoPartido.titulares, ...ultimoPartido.suplentes].find(j => j.id == id);
+      
+      if (jugadorPartido) {
+        // CORRECCIÓN: Buscamos el nombre real en tu base de datos (plantel.json)
+        const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
+        const nombreReal = jugadorBD ? jugadorBD.nombre : 'Desconocido';
+
+        jugadoresPuntuadosObj.push({ 
+            id: id,
+            name: nombreReal,
+            pos: jugadorPartido.pos,
+            notaFinal: nota 
+        });
       }
     }
     
@@ -1312,7 +1317,13 @@ function actualizarBoletaEnVivo() {
       if (jugadorMvp) {
         mvpContainer.style.display = 'block';
         const imgMvp = document.getElementById('boleta-mvp-img');
-        if (imgMvp) imgMvp.src = `fotos/${jugadorMvp.id}.png`;
+        
+        // CORRECCIÓN: Usamos tu maquinita de fotos para que encuentre si es de Primera o Reserva
+        if (imgMvp) {
+            imgMvp.src = obtenerRutaFoto(jugadorMvp.id);
+            imgMvp.onerror = function() { this.src = 'fotos/default2.png'; };
+        }
+        
         document.getElementById('boleta-mvp-name').innerText = jugadorMvp.name;
         const mvpRatingEl = document.getElementById('boleta-mvp-rating');
         mvpRatingEl.innerText = mvpNota.toFixed(1);
