@@ -140,7 +140,8 @@ const pitch = document.getElementById('pitch');
 const boxScoreContainer = document.getElementById('box-score-container');
 
 // --- VARIABLES DE MEMORIA PARA PUNTAJES ---
-let boletaPuntajes = {}; 
+// Carga las notas de la memoria si las hay, sino arranca vacío
+let boletaPuntajes = JSON.parse(localStorage.getItem('rivertactico_puntajes')) || {}; 
 let jugadorPuntuandoActual = null;
 
 // --- DATOS SIMULADOS PARA PRUEBAS ---
@@ -729,7 +730,7 @@ function abrirModalSeleccion(posAbreviada, coords) {
     const recomendados = [];
     const resto = [];
 
-    disponibles.forEach(p => {
+    disposibles.forEach(p => {
       const arrayPosiciones = Array.isArray(p.posicion) ? p.posicion : [p.posicion];
       if (arrayPosiciones.includes(posAbreviada)) {
         recomendados.push(p);
@@ -1262,6 +1263,24 @@ function guardarNota(nota) {
   if (!jugadorPuntuandoActual) return;
   boletaPuntajes[jugadorPuntuandoActual] = nota;
   modalPuntaje.classList.remove('active');
+  
+  // 1. GUARDAMOS EN MEMORIA (por si actualiza la página sin querer)
+  localStorage.setItem('rivertactico_puntajes', JSON.stringify(boletaPuntajes));
+
+  // 2. MAGIA DEL AUTOSCROLL (Si llegó a los 11 titulares)
+  const cantidadPuntuados = Object.keys(boletaPuntajes).length;
+  
+  // Si justo llegó a 11 y está en un celular (pantalla chica)
+  if (cantidadPuntuados === 11 && window.innerWidth <= 768) {
+      setTimeout(() => {
+          const bancoMovil = document.querySelector('.banco-suplentes-container.solo-movil');
+          if (bancoMovil) {
+              // Lo desliza suavemente hacia los suplentes y el botón de enviar
+              bancoMovil.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+      }, 300); // Le damos un mini delay de 300ms para que se cierre el modal primero
+  }
+
   cargarVistaPuntuacion(); 
 }
 
@@ -1443,9 +1462,51 @@ if (btnConfirmarEnvio) {
 
 function ejecutarEnvioFinal() {
   const modalExito = document.getElementById('modal-exito');
-  if (modalExito) {
-    modalExito.classList.add('active');
-  }
+  const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
+  
+  // 1. Cambiamos el texto del botón para que el usuario sepa que está cargando
+  const textoOriginal = btnEnviarBoleta.innerText;
+  btnEnviarBoleta.innerText = 'ENVIANDO... ⏳';
+  btnEnviarBoleta.disabled = true;
+
+  // 2. Armamos el paquete con la fecha exacta y las notas que puso el usuario
+  const paqueteDeVotos = {
+    fecha: new Date().toISOString(),
+    puntajes: boletaPuntajes
+  };
+
+  // 3. ACA PONES TU LINK (OJO: tiene que terminar sí o sí en /votos.json)
+  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json';
+
+  // 4. Disparamos los datos hacia los servidores de Google
+  fetch(urlFirebase, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(paqueteDeVotos)
+  })
+  .then(respuesta => respuesta.json())
+  .then(datos => {
+    // Si llegó bien, mostramos el modal de éxito
+    if (modalExito) {
+      modalExito.classList.add('active');
+    }
+    
+    // Restauramos el botón
+    btnEnviarBoleta.innerText = textoOriginal;
+    
+    // (Opcional) Limpiamos la memoria para que el usuario no vote dos veces seguidas
+    localStorage.removeItem('rivertactico_puntajes');
+    boletaPuntajes = {};
+    cargarVistaPuntuacion(); 
+  })
+  .catch(error => {
+    console.error("Error enviando datos:", error);
+    alert("Hubo un error de conexión. ¡Intentá de nuevo!");
+    btnEnviarBoleta.innerText = textoOriginal;
+    btnEnviarBoleta.disabled = false;
+  });
 }
 
 const fondoModalPuntaje = document.getElementById('modal-puntaje');
