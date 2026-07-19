@@ -1117,6 +1117,9 @@ function cargarVistaPuntuacion() {
   const pitchRating = document.getElementById('pitch-rating');
   const benchList = document.getElementById('bench-list');
   const datosActivos = obtenerDatosActivos(); 
+  
+  // Verificamos si este usuario ya mandó sus votos
+  const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
 
   // Limpiamos las fichas viejas
   const fichasViejas = pitchRating.querySelectorAll('.player-token');
@@ -1124,12 +1127,10 @@ function cargarVistaPuntuacion() {
 
   // 1. DIBUJAMOS LOS TITULARES REALES
   ultimoPartido.titulares.forEach(p => {
-    // Buscamos la info del jugador en tu base de datos
     const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
     if (!jugadorBD) return;
 
     const token = document.createElement('div');
-    // CLAVE: Le damos exactamente la misma clase que en la pizarra para que herede el 70x70 y el estilo del cartel
     token.className = 'player-token'; 
     token.id = `rating-token-${p.id}`; 
     
@@ -1140,7 +1141,6 @@ function cargarVistaPuntuacion() {
     if (datosActivos[p.id]) {
       const nota = parseFloat(datosActivos[p.id]).toFixed(1);
       const colorCalibrado = obtenerColorExacto(nota);
-      // Creamos la chapita inyectándole el color exacto al texto y al borde
       htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
     }
 
@@ -1151,14 +1151,18 @@ function cargarVistaPuntuacion() {
     `;
 
     if (modoPuntajeActual === 'mis_puntajes') {
-      token.style.cursor = 'pointer';
-      token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
+      if (!yaVoto) {
+        token.style.cursor = 'pointer';
+        token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
+      } else {
+        token.style.cursor = 'default'; // Si ya votó, sacamos la manito
+      }
     }
     
     pitchRating.appendChild(token);
   });
 
-  // 2. DIBUJAMOS EL BANCO DE SUPLENTES EN PC Y MÓVIL
+  // 2. DIBUJAMOS EL BANCO DE SUPLENTES
   const benchContainers = document.querySelectorAll('.bench-tokens');
   
   benchContainers.forEach(contenedor => {
@@ -1185,8 +1189,12 @@ function cargarVistaPuntuacion() {
           htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
         }
         if (modoPuntajeActual === 'mis_puntajes') {
-          token.style.cursor = 'pointer';
-          token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
+          if (!yaVoto) {
+            token.style.cursor = 'pointer';
+            token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
+          } else {
+            token.style.cursor = 'default';
+          }
         }
       } else {
         token.style.opacity = '0.4';
@@ -1315,9 +1323,14 @@ function actualizarBoletaEnVivo() {
   if (!btnEnviar) return; 
 
   const puntuados = Object.keys(datosActivos).length;
+  const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
   
+  // --- CONTROL DEL BOTÓN SEGÚN EL ESTADO ---
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
+    btnEnviar.disabled = true;
+  } else if (yaVoto) {
+    btnEnviar.innerText = 'PUNTAJES ENVIADOS ✓';
     btnEnviar.disabled = true;
   } else {
     btnEnviar.innerText = 'ENVIAR PUNTAJES';
@@ -1339,11 +1352,9 @@ function actualizarBoletaEnVivo() {
         mvpId = id;
       }
 
-      // Buscamos al jugador en el partido para saber su posición
       const jugadorPartido = [...ultimoPartido.titulares, ...ultimoPartido.suplentes].find(j => j.id == id);
       
       if (jugadorPartido) {
-        // CORRECCIÓN: Buscamos el nombre real en tu base de datos (plantel.json)
         const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
         const nombreReal = jugadorBD ? jugadorBD.nombre : 'Desconocido';
 
@@ -1366,7 +1377,6 @@ function actualizarBoletaEnVivo() {
         mvpContainer.style.display = 'block';
         const imgMvp = document.getElementById('boleta-mvp-img');
         
-        // CORRECCIÓN: Usamos tu maquinita de fotos para que encuentre si es de Primera o Reserva
         if (imgMvp) {
             imgMvp.src = obtenerRutaFoto(jugadorMvp.id);
             imgMvp.onerror = function() { this.src = 'fotos/default2.png'; };
@@ -1411,11 +1421,9 @@ function actualizarBoletaEnVivo() {
     });
 
   } else {
-    // Si no hay jugadores puntuados, vuelve al guion por defecto
     promElement.innerText = '-';
-    promElement.style.color = '#fff'; /* Vuelve al color blanco/gris por defecto */
+    promElement.style.color = '#fff'; 
     
-    // Oculta las otras cosas que no sirven si no hay puntajes
     mvpContainer.style.display = 'none';
     if(sortControls) sortControls.style.display = 'none';
     listContainer.innerHTML = '';
@@ -1476,7 +1484,7 @@ function ejecutarEnvioFinal() {
   };
 
   // 3. ACA PONES TU LINK (OJO: tiene que terminar sí o sí en /votos.json)
-  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json';
+  const urlFirebase = 'PEGÁ-TU-LINK-ACÁ/votos.json'; // <-- ¡Acordate de volver a pegar tu link acá!
 
   // 4. Disparamos los datos hacia los servidores de Google
   fetch(urlFirebase, {
@@ -1493,12 +1501,11 @@ function ejecutarEnvioFinal() {
       modalExito.classList.add('active');
     }
     
-    // Restauramos el botón
+    // Restauramos el texto del botón
     btnEnviarBoleta.innerText = textoOriginal;
     
-    // (Opcional) Limpiamos la memoria para que el usuario no vote dos veces seguidas
-    localStorage.removeItem('rivertactico_puntajes');
-    boletaPuntajes = {};
+    // --- MAGIA NUEVA: Dejamos asentado que ya votó y NO borramos las notas ---
+    localStorage.setItem('rivertactico_ya_voto', 'true');
     cargarVistaPuntuacion(); 
   })
   .catch(error => {

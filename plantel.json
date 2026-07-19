@@ -8,8 +8,8 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
-        "goles_recibidos": 0,
+        "minutos": 90,
+        "goles_recibidos": 3,
         "vallas_invictas": 0
       }
     },
@@ -34,7 +34,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 90,
         "goles": 0,
         "asistencias": 0
       }
@@ -100,7 +100,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 90,
         "goles": 0,
         "asistencias": 0
       }
@@ -126,7 +126,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 90,
         "goles": 0,
         "asistencias": 0
       }
@@ -165,7 +165,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 90,
         "goles": 0,
         "asistencias": 0
       }
@@ -191,7 +191,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 66,
         "goles": 0,
         "asistencias": 0
       }
@@ -205,7 +205,7 @@
       "lesionado": false,
       "nuevo": true,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 50,
         "goles": 0,
         "asistencias": 0
       }
@@ -218,7 +218,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 39,
         "goles": 0,
         "asistencias": 0
       }
@@ -264,13 +264,13 @@
     },
     {
       "id": 24,
-      "nombre": "J. C. Meza",
+      "nombre": "JC. Meza",
       "posicion": ["MCO", "MC", "MI"],
       "numero": 24,
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 40,
         "goles": 0,
         "asistencias": 0
       }
@@ -283,7 +283,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 90,
         "goles": 0,
         "asistencias": 0
       }
@@ -309,9 +309,9 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 24,
         "goles": 0,
-        "asistencias": 0
+        "asistencias": 1
       }
     },
     {
@@ -322,7 +322,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 65,
         "goles": 0,
         "asistencias": 0
       }
@@ -335,7 +335,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 25,
         "goles": 0,
         "asistencias": 0
       }
@@ -361,7 +361,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 51,
         "goles": 0,
         "asistencias": 0
       }
@@ -374,8 +374,8 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
+        "minutos": 90,
+        "goles": 1,
         "asistencias": 0
       }
     },
