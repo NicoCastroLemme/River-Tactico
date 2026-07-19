@@ -730,7 +730,7 @@ function abrirModalSeleccion(posAbreviada, coords) {
     const recomendados = [];
     const resto = [];
 
-    disposibles.forEach(p => {
+    disponibles.forEach(p => {
       const arrayPosiciones = Array.isArray(p.posicion) ? p.posicion : [p.posicion];
       if (arrayPosiciones.includes(posAbreviada)) {
         recomendados.push(p);
@@ -1484,7 +1484,7 @@ function ejecutarEnvioFinal() {
   };
 
   // 3. ACA PONES TU LINK (OJO: tiene que terminar sí o sí en /votos.json)
-  const urlFirebase = 'PEGÁ-TU-LINK-ACÁ/votos.json'; // <-- ¡Acordate de volver a pegar tu link acá!
+  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json'; // <-- ¡Acordate de volver a pegar tu link acá!
 
   // 4. Disparamos los datos hacia los servidores de Google
   fetch(urlFirebase, {

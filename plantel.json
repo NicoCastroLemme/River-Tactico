@@ -72,7 +72,7 @@
       "posicion": ["DFC"],
       "numero": 2,
       "puntaje_promedio": 0,
-      "lesionado": false,
+      "lesionado": true,
       "estadisticas": {
         "minutos": 0,
         "goles": 0,
