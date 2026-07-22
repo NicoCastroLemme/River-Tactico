@@ -125,25 +125,24 @@ body {
 .token-name { 
     position: absolute; 
     top: 100%; 
-    left: 0; 
-    width: 100%; 
-    transform: none; 
-    margin-top: -1px; /* Lo subimos un pixel para que muerda apenitas la foto */
-    z-index: 5; /* MAGIA: Esto lo obliga a estar siempre por encima de la imagen */
+    left: 50%; /* MAGIA 1: Lo movemos al centro de la foto */
+    transform: translateX(-50%); /* MAGIA 2: Lo centramos sobre su propio eje */
+    min-width: 100%; /* Como mínimo, mide lo mismo que la foto */
+    width: max-content; /* Si el nombre es largo, se estira lo que necesite */
+    max-width: 100px; /* Un límite de seguridad para que no tape a 3 jugadores juntos */
     
+    margin-top: -1px; 
+    z-index: 5; 
     background-color: #fff; 
     color: var(--text-main); 
     font-size: 9px; 
     font-weight: 900; 
     letter-spacing: 0; 
-    padding: 3px 0; 
-    
-    /*border: 1px solid var(--text-main); /* Ahora sí, borde completo en los 4 lados */
+    padding: 3px 6px; /* Le dimos un poco más de aire a los costados */
     border-radius: 0; 
-    
     text-align: center; 
     text-transform: uppercase; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); /* Le subí apenitas la sombra para que resalte más sobre la foto */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     pointer-events: none; 
     
     white-space: nowrap; 
@@ -681,7 +680,7 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   .player-token { width: 50px; height: 50px; }
   .token-name { 
       font-size: 8px; 
-      padding: 2px 0; 
+      padding: 2px 4px; /* Ajustamos el aire lateral para celu */
       margin-top: 0; 
   }
   .placeholder { width: 45px; height: 45px; font-size: 10px; }
@@ -964,4 +963,93 @@ body.modo-camisetas #view-puntuar .player-token {
         right: 42px;
         font-size: 16px;
     }
+}
+
+/* ==========================================
+   TARJETAS DEL HISTORIAL DE PARTIDOS
+   ========================================== */
+.match-card {
+  background: linear-gradient(145deg, #ffffff, #f9f9f9);
+  border: 1px solid var(--border-color);
+  border-radius: 0px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+body.dark-mode .match-card {
+  background: linear-gradient(145deg, #1e1e1e, #181818);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+}
+
+.match-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--river-red);
+  box-shadow: 0 8px 15px rgba(218, 41, 28, 0.15);
+}
+
+.match-info h4 {
+  color: var(--text-main);
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.match-info p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.match-score {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 10px 14px;
+  border-radius: 0px;
+  font-weight: 900;
+  font-size: 20px;
+  font-family: "Arial Black", Impact, sans-serif;
+}
+
+body.dark-mode .match-score {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* --- ESTILOS DE TARJETA ACTIVA (VOTAR) --- */
+.match-card.live {
+  border-color: var(--river-red);
+  box-shadow: 0 0 10px rgba(218, 41, 28, 0.15);
+}
+
+.match-score-live {
+  background: var(--river-red);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 0px;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(218, 41, 28, 0.4);
+}
+
+.badge-live {
+  background-color: var(--river-red);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 0px;
+  font-size: 9px;
+  font-weight: 900;
+  margin-left: 5px;
+  animation: pulseLive 1.5s infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulseLive {
+  0% { box-shadow: 0 0 0 0 rgba(218, 41, 28, 0.7); }
+  70% { box-shadow: 0 0 0 5px rgba(218, 41, 28, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(218, 41, 28, 0); }
 }

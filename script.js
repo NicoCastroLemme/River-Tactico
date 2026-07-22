@@ -1,5 +1,5 @@
 let eligiendoSuplente = false;
-let jugadorTitularElegido = null; // Para saber a qué jugador le estamos metiendo el suplente
+let jugadorTitularElegido = null; 
 
 // Variables globales que ahora arrancan vacías y se llenan con el JSON
 let plantelPrimera = [];
@@ -140,27 +140,14 @@ const pitch = document.getElementById('pitch');
 const boxScoreContainer = document.getElementById('box-score-container');
 
 // --- VARIABLES DE MEMORIA PARA PUNTAJES ---
-// Carga las notas de la memoria si las hay, sino arranca vacío
 let boletaPuntajes = JSON.parse(localStorage.getItem('rivertactico_puntajes')) || {}; 
 let jugadorPuntuandoActual = null;
 
 // --- DATOS SIMULADOS PARA PRUEBAS ---
-let modoPuntajeActual = 'mis_puntajes'; // Arranca siempre en tu boleta
-
-// Simulamos notas analíticas (SofaScore) y pasionales (MilloStats)
+let modoPuntajeActual = 'mis_puntajes'; 
 const sofaScoreData = { 41: 7.2, 16: 6.8, 13: 7.0, 28: 6.5, 21: 5.5, 6: 7.5, 15: 7.1, 24: 6.9, 26: 8.8, 11: 9.6, 35: 8.2, 20: 6.5, 10: 7.0, 19: 6.8 };
 const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15: 7.0, 24: 6.5, 26: 9.0, 11: 10.0, 35: 8.5, 20: 6.0, 10: 7.5, 19: 6.5 };
-
-// Promedio simulado de los usuarios de tu web (un intermedio racional)
 const promedioUsuariosData = { 41: 6.8, 16: 6.3, 13: 7.3, 28: 6.0, 21: 4.5, 6: 7.8, 15: 7.0, 24: 6.7, 26: 8.9, 11: 9.8, 35: 8.4, 20: 6.2, 10: 7.2, 19: 6.6 };
-
-// Función para quedarse solo con el apellido
-function obtenerApellido(nombreCompleto) {
-  if (!nombreCompleto) return "";
-  const partes = nombreCompleto.split(' ');
-  // Si tiene más de una palabra, saltea la primera. Si no, devuelve lo que haya.
-  return partes.length > 1 ? partes.slice(1).join(' ') : nombreCompleto;
-}
 
 function obtenerDatosActivos() {
   if (modoPuntajeActual === 'sofascore') return sofaScoreData;
@@ -175,11 +162,50 @@ document.querySelectorAll('.source-tab').forEach(btn => {
     document.querySelectorAll('.source-tab').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     modoPuntajeActual = e.target.dataset.source;
-    cargarVistaPuntuacion(); // Redibujamos todo con los datos nuevos
+    cargarVistaPuntuacion();
   });
 });
 
-// --- MOTOR DE INTERPOLACIÓN DE COLOR (Rojo > Amarillo > Verde) ---
+// --- ESCANER INTELIGENTE DE APELLIDOS E INICIALES ---
+function procesarApellidosDistintivos() {
+  const todos = [...plantelPrimera, ...plantelReserva, ...plantelRumores];
+  const conteoApellidos = {};
+
+  todos.forEach(j => {
+    // 1. Separamos el nombre.
+    const partes = j.nombre.trim().split(' ');
+    
+    // 2. Rescatamos la primera letra SÍ o SÍ (Ej: "Enzo" -> "E", "P." -> "P").
+    const primeraLetra = partes[0].charAt(0).toUpperCase();
+    
+    // 3. Filtramos las iniciales para quedarnos solo con el apellido puro.
+    const palabrasReales = partes.filter(p => !p.includes('.') && p.length > 1);
+    
+    // 4. Armamos el apellido base.
+    let apellidoBase = palabrasReales.length > 1 ? palabrasReales.slice(1).join(' ') : palabrasReales.join(' ');
+    if (palabrasReales.length === 0) apellidoBase = j.nombre; // Seguro anti-fallos
+    
+    j.apellidoBase = apellidoBase;
+    j.inicialPila = primeraLetra;
+
+    // 5. Normalizamos sin tildes para contar bien (Díaz = Diaz)
+    const apellidoNormalizado = normalizarTexto(apellidoBase);
+    j.apellidoNormalizado = apellidoNormalizado;
+    
+    conteoApellidos[apellidoNormalizado] = (conteoApellidos[apellidoNormalizado] || 0) + 1;
+  });
+
+  todos.forEach(j => {
+    // 6. Si el apellido normalizado se repite, le pegamos la inicial que rescatamos en el paso 2
+    if (conteoApellidos[j.apellidoNormalizado] > 1 && j.inicialPila) {
+      j.apellidoProcesado = `${j.inicialPila}. ${j.apellidoBase}`;
+    } else {
+      j.apellidoProcesado = j.apellidoBase;
+    }
+  });
+}
+
+// --- MOTOR DE INTERPOLACIÓN DE COLOR ---
 function obtenerColorExacto(nota) {
   const n = parseFloat(nota);
   if (isNaN(n)) return 'var(--text-muted)';
@@ -216,6 +242,8 @@ async function inicializarApp() {
     plantelReserva = datos.reserva;
     plantelRumores = datos.rumores || [];
 
+    procesarApellidosDistintivos(); // Se encarga de procesar P. Diaz, E. Diaz, Quintero, etc.
+
     dibujarEsquema();
     renderizarListaJugadores(plantelPrimera);
     cargarEstadoPizarra(); 
@@ -228,7 +256,7 @@ async function inicializarApp() {
 function guardarEstadoPizarra() {
   const estado = {
     formacion: formacionActual,
-    layoutCustom: posicionesTacticas, // NUEVO: Guardamos la táctica deformada por el usuario
+    layoutCustom: posicionesTacticas, 
     jugadores: []
   };
   
@@ -254,24 +282,18 @@ function guardarEstadoPizarra() {
 
 function cargarEstadoPizarra() {
   const guardado = localStorage.getItem('rivertactico_estado');
-  
-  // ESCUDO 1: Si no hay nada guardado, cortamos acá
   if (!guardado) return; 
 
   try {
     const estado = JSON.parse(guardado);
-
     const btnFormacion = Array.from(document.querySelectorAll('.btn-formation'))
       .find(btn => btn.innerText === estado.formacion);
       
-    if (btnFormacion) {
-        cambiarFormacion(estado.formacion, btnFormacion);
-    }
+    if (btnFormacion) cambiarFormacion(estado.formacion, btnFormacion);
 
-    // --- ACÁ ESTABA EL ERROR ---
     if (estado.layoutCustom) {
         posicionesTacticas = estado.layoutCustom;
-        dibujarEsquema(); // ¡ESTA ES LA LÍNEA MÁGICA QUE FALTABA! Esto hace que los círculos acompañen al jugador
+        dibujarEsquema(); 
     }
 
     if (estado.jugadores && Array.isArray(estado.jugadores)) {
@@ -287,7 +309,6 @@ function cargarEstadoPizarra() {
                     tokenRecienCreado.dataset.slotTop = j.slotTop;
                     tokenRecienCreado.dataset.slotLeft = j.slotLeft;
                 }
-
                 if (j.idSuplente) {
                    const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == j.idSuplente);
                    if (suplente) {
@@ -335,7 +356,6 @@ function renderizarListaJugadores(plantelSeleccionado) {
     const iconoLesion = jugador.lesionado ? '<span class="injury-icon" title="Lesionado">✚</span>' : '';
     const iconoNuevo = jugador.nuevo ? '<span class="new-badge">NEW</span>' : '';
     
-    // NUEVO: Solo creamos la etiqueta del puntaje si es mayor a 0
     const htmlPuntaje = parseFloat(jugador.puntaje_promedio) > 0 
       ? `<span class="rating">${jugador.puntaje_promedio}</span>` 
       : '';
@@ -417,10 +437,7 @@ function dibujarEsquema() {
 
 function cambiarFormacion(nombreFormacion, botonClicked) {
   if (formacionActual === nombreFormacion) return;
-  if (!coleccionFormaciones[nombreFormacion]) {
-    alert(`Falta configurar la táctica ${nombreFormacion}.`);
-    return;
-  }
+  if (!coleccionFormaciones[nombreFormacion]) return;
 
   const jugadoresEnCancha = [];
   document.querySelectorAll('#pitch .player-token').forEach(token => {
@@ -440,7 +457,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
   botonClicked.classList.add('active');
 
   formacionActual = nombreFormacion;
-  // Usamos JSON.parse(JSON.stringify(...)) para hacer una "fotocopia" desconectada del original
   posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
 
   document.querySelectorAll('#pitch .player-token').forEach(el => el.remove());
@@ -473,15 +489,9 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     const jugador = pack.titular;
     if (!jugador.ubicado) {
       const esArquero = jugador.posicion.includes('ARQ');
-
       const slotVacio = slotsDisponibles.find(s => {
         if (s.ocupado) return false; 
-        
-        if (esArquero) {
-          return s.puesto === 'ARQ'; 
-        } else {
-          return s.puesto !== 'ARQ'; 
-        }
+        return esArquero ? (s.puesto === 'ARQ') : (s.puesto !== 'ARQ');
       });
 
       if (slotVacio) {
@@ -509,7 +519,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
 
       token.innerHTML = `
         <img src="${obtenerRutaFoto(jugador.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-        <div class="token-name">${obtenerApellido(jugador.nombre)}</div>
+        <div class="token-name">${jugador.apellidoProcesado}</div>
         <button class="btn-suplente">+</button>
         <div class="nombre-suplente oculto"></div>
       `;
@@ -667,7 +677,7 @@ function ubicarJugadorLibre(coords) {
 
   token.innerHTML = `
     <img src="${obtenerRutaFoto(jugadorSeleccionado.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-    <div class="token-name">${obtenerApellido(jugadorSeleccionado.nombre)}</div>
+    <div class="token-name">${jugadorSeleccionado.apellidoProcesado}</div>
     <button class="btn-suplente">+</button>
     <div class="nombre-suplente oculto"></div>
   `;
@@ -703,6 +713,10 @@ function ubicarJugadorLibre(coords) {
 function abrirModalSeleccion(posAbreviada, coords) {
   const modal = document.getElementById('modal-seleccion');
   
+  // Limpia el buscador para que empiece de cero cada vez que abre el modal
+  const buscador = document.getElementById('buscador-modal');
+  if (buscador) buscador.value = '';
+
   if (eligiendoSuplente) {
       document.getElementById('modal-seleccion-titulo').innerText = `ELEGIR SUPLENTE: ${posAbreviada}`;
   } else {
@@ -726,7 +740,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
     const idsOcupados = [...idsTitulares, ...idsSuplentes];
 
     const disponibles = plantelSeleccionado.filter(p => !idsOcupados.includes(p.id));
-
     const recomendados = [];
     const resto = [];
 
@@ -770,9 +783,13 @@ function abrirModalSeleccion(posAbreviada, coords) {
     } else {
       listaResto.innerHTML = '<div style="padding: 10px; font-size: 11px; color: var(--text-muted); text-align: center;">Plantel agotado.</div>';
     }
+
+    // MAGIA: Re-aplicamos el filtro por si el usuario ya tenía texto escrito al cambiar de pestaña
+    if (typeof aplicarFiltroModal === 'function') {
+        aplicarFiltroModal();
+    }
   }
 
-  // --- LÓGICA DE LAS PESTAÑAS (CORREGIDA PARA INCLUIR RUMORES) ---
   tabsModal.forEach(btn => {
     btn.onclick = (e) => {
       tabsModal.forEach(b => b.classList.remove('active'));
@@ -789,7 +806,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
     };
   });
 
-  // Chequeo inicial según el panel activo de la izquierda
   const tabActivaIzquierda = document.querySelector('.squad-tab.active').innerText;
   tabsModal.forEach(b => b.classList.remove('active'));
   
@@ -816,7 +832,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
 document.addEventListener('DOMContentLoaded', inicializarApp);
 
 const themeBtns = document.querySelectorAll('.theme-toggle-btn');
-
 themeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
@@ -851,7 +866,6 @@ const btnCompartir = document.getElementById('btn-compartir');
 if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
     const cancha = document.getElementById('pitch');
-    
     const contenidoOriginal = btnCompartir.innerHTML;
     btnCompartir.innerHTML = '⏳';
     
@@ -859,11 +873,9 @@ if(btnCompartir) {
       scale: 3,                 
       useCORS: true,              
       backgroundColor: '#ffffff', 
-      
     }).then(canvas => {
       canvas.toBlob(function(blob) {
         const file = new File([blob], "Mi_11_River.png", { type: "image/png" });
-        
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
           navigator.share({
             title: '¡Mirá mi 11 ideal de River!',
@@ -956,8 +968,6 @@ function aplicarFiltroVisual() {
   });
 }
 
-let pestanaMisJugadores = 'titulares';
-
 function actualizarBoxScore() {
   const container = document.getElementById('box-score-container');
   if (!container) return;
@@ -1008,11 +1018,8 @@ function actualizarBoxScore() {
 
          if (jugador) {
              const esArquero = jugador.posicion.includes('ARQ') || jugador.posicion === 'ARQ';
-             
-             // --- NUEVO: Extraemos los datos del JSON de forma segura ---
-             // Si el jugador no tiene el bloque "estadisticas", usamos un objeto vacío {}
              const stats = jugador.estadisticas || {}; 
-             const minutos = stats.minutos || 0; // Si no hay minutos, pone 0
+             const minutos = stats.minutos || 0;
              
              let htmlStats = '';
              if (esArquero) {
@@ -1033,7 +1040,6 @@ function actualizarBoxScore() {
                 `;
              }
 
-             // NUEVO: Control visual para ocultar el 0.0 en la tabla derecha
              const valorPuntaje = parseFloat(jugador.puntaje_promedio);
              const htmlPromedioFinal = valorPuntaje > 0 
                 ? `<span class="avg-score">${valorPuntaje.toFixed(1)}</span>` 
@@ -1055,39 +1061,96 @@ function actualizarBoxScore() {
   });
 }
 
+// ==========================================
+// NAVEGACIÓN PRINCIPAL: PATRÓN MASTER-DETAIL
+// ==========================================
 const btnPizarra = document.getElementById('btn-pizarra');
-const btnPuntuar = document.getElementById('btn-puntuar');
+const btnPartidos = document.getElementById('btn-partidos');
+
 const viewPizarra = document.getElementById('view-pizarra');
+const viewPartidos = document.getElementById('view-partidos');
 const viewPuntuar = document.getElementById('view-puntuar');
 
-// Variable para recordar si tenías las camisetas prendidas o no
 let teniaCamisetasActivadas = false;
 
-if(btnPizarra && btnPuntuar) {
+// 1. Botón "Crear 11" (La Pizarra)
+if (btnPizarra) {
   btnPizarra.addEventListener('click', () => {
     btnPizarra.classList.add('active');
-    btnPuntuar.classList.remove('active');
+    if (btnPartidos) btnPartidos.classList.remove('active');
+    
     viewPizarra.style.display = 'grid';
-    viewPuntuar.style.display = 'none';
+    if(viewPartidos) viewPartidos.style.display = 'none';
+    if(viewPuntuar) viewPuntuar.style.display = 'none';
     
-    // Si tenías las camisetas activadas, te las vuelve a poner al volver a la pizarra
-    if (teniaCamisetasActivadas) {
-        document.body.classList.add('modo-camisetas');
-    }
+    if (teniaCamisetasActivadas) document.body.classList.add('modo-camisetas');
   });
+}
 
-  btnPuntuar.addEventListener('click', () => {
-    btnPuntuar.classList.add('active');
-    btnPizarra.classList.remove('active');
-    viewPuntuar.style.display = 'grid';
-    viewPizarra.style.display = 'none';
+// 2. Botón "Puntajes" (La Grilla de Partidos - Master)
+if (btnPartidos) {
+  btnPartidos.addEventListener('click', () => {
+    btnPartidos.classList.add('active');
+    if(btnPizarra) btnPizarra.classList.remove('active');
     
-    // Anota si tenías las camisetas puestas y luego APAGA el modo para esta vista
     teniaCamisetasActivadas = document.body.classList.contains('modo-camisetas');
     document.body.classList.remove('modo-camisetas');
+
+    if(viewPizarra) viewPizarra.style.display = 'none';
+    if(viewPuntuar) viewPuntuar.style.display = 'none';
+    viewPartidos.style.display = 'block'; 
     
-    cargarVistaPuntuacion();
+    renderizarHistorial();
   });
+}
+
+// ==========================================
+// MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
+// ==========================================
+const historialSimulado = [
+    { id: 'p_actual', fecha: '22/07/2026', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto' },
+    { id: 'p1', fecha: '14/07/2026', rival: 'Boca Juniors', resultado: '2-0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado' },
+    { id: 'p2', fecha: '07/07/2026', rival: 'Independiente', resultado: '1-1', condicion: 'V', miPromedio: '5.5', estado: 'cerrado' },
+    { id: 'p3', fecha: '01/07/2026', rival: 'Talleres', resultado: '3-1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado' }
+];
+
+function renderizarHistorial() {
+    const grid = document.getElementById('grid-partidos');
+    if (!grid) return;
+    
+    grid.innerHTML = ''; 
+
+    historialSimulado.forEach(partido => {
+        const card = document.createElement('div');
+        card.className = `match-card ${partido.estado === 'abierto' ? 'live' : ''}`;
+        
+        let htmlScore = '';
+        if (partido.estado === 'abierto') {
+            htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
+        } else {
+            const colorPromedio = obtenerColorExacto(partido.miPromedio);
+            htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${partido.miPromedio}</div>`;
+        }
+
+        const badgeLive = partido.estado === 'abierto' ? `<span class="badge-live">¡VOTÁ AHORA!</span>` : '';
+
+        card.innerHTML = `
+            <div class="match-info">
+                <h4>River vs ${partido.rival}</h4>
+                <p>📅 ${partido.fecha} ${badgeLive}<br>${partido.condicion === 'L' ? '🏠 Local' : (partido.condicion === 'V' ? '✈️ Visitante' : '🏟️ Neutral')} | ⚽ ${partido.resultado}</p>
+            </div>
+            ${htmlScore}
+        `;
+
+        card.onclick = () => {
+            // MAGIA DETAIL: Ocultamos la lista, mostramos la cancha y dibujamos a los jugadores
+            viewPartidos.style.display = 'none';
+            viewPuntuar.style.display = 'grid'; 
+            cargarVistaPuntuacion();
+        };
+
+        grid.appendChild(card);
+    });
 }
 
 // ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
@@ -1106,7 +1169,7 @@ const ultimoPartido = {
     { id: 19, pos: "DC", top: 18, left: 50 }       
   ],
   suplentes: [
-    { id: 8, pos: "MC", jugo: true },           
+    { id: 8, pos: "MC", jugo: true },            
     { id: 18, pos: "DC", jugo: true },            
     { id: 35, pos: "MP", jugo: true },          
     { id: 25, pos: "EI", jugo: true },           
@@ -1118,14 +1181,11 @@ function cargarVistaPuntuacion() {
   const benchList = document.getElementById('bench-list');
   const datosActivos = obtenerDatosActivos(); 
   
-  // Verificamos si este usuario ya mandó sus votos
   const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
 
-  // Limpiamos las fichas viejas
   const fichasViejas = pitchRating.querySelectorAll('.player-token');
   fichasViejas.forEach(f => f.remove());
 
-  // 1. DIBUJAMOS LOS TITULARES REALES
   ultimoPartido.titulares.forEach(p => {
     const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
     if (!jugadorBD) return;
@@ -1147,7 +1207,7 @@ function cargarVistaPuntuacion() {
     token.innerHTML = `
       ${htmlNotaFlotante}
       <img src="${obtenerRutaFoto(p.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-      <div class="token-name">${obtenerApellido(jugadorBD.nombre)}</div>
+      <div class="token-name">${jugadorBD.apellidoProcesado}</div>
     `;
 
     if (modoPuntajeActual === 'mis_puntajes') {
@@ -1155,14 +1215,13 @@ function cargarVistaPuntuacion() {
         token.style.cursor = 'pointer';
         token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
       } else {
-        token.style.cursor = 'default'; // Si ya votó, sacamos la manito
+        token.style.cursor = 'default'; 
       }
     }
     
     pitchRating.appendChild(token);
   });
 
-  // 2. DIBUJAMOS EL BANCO DE SUPLENTES
   const benchContainers = document.querySelectorAll('.bench-tokens');
   
   benchContainers.forEach(contenedor => {
@@ -1205,7 +1264,7 @@ function cargarVistaPuntuacion() {
       token.innerHTML = `
         ${htmlNotaFlotante}
         <img src="${obtenerRutaFoto(p.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-        <div class="token-name">${obtenerApellido(jugadorBD.nombre)}</div>
+        <div class="token-name">${jugadorBD.apellidoProcesado}</div>
       `;
       
       contenedor.appendChild(token);
@@ -1272,21 +1331,17 @@ function guardarNota(nota) {
   boletaPuntajes[jugadorPuntuandoActual] = nota;
   modalPuntaje.classList.remove('active');
   
-  // 1. GUARDAMOS EN MEMORIA (por si actualiza la página sin querer)
   localStorage.setItem('rivertactico_puntajes', JSON.stringify(boletaPuntajes));
 
-  // 2. MAGIA DEL AUTOSCROLL (Si llegó a los 11 titulares)
   const cantidadPuntuados = Object.keys(boletaPuntajes).length;
   
-  // Si justo llegó a 11 y está en un celular (pantalla chica)
   if (cantidadPuntuados === 11 && window.innerWidth <= 768) {
       setTimeout(() => {
           const bancoMovil = document.querySelector('.banco-suplentes-container.solo-movil');
           if (bancoMovil) {
-              // Lo desliza suavemente hacia los suplentes y el botón de enviar
               bancoMovil.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
-      }, 300); // Le damos un mini delay de 300ms para que se cierre el modal primero
+      }, 300); 
   }
 
   cargarVistaPuntuacion(); 
@@ -1325,7 +1380,6 @@ function actualizarBoletaEnVivo() {
   const puntuados = Object.keys(datosActivos).length;
   const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
   
-  // --- CONTROL DEL BOTÓN SEGÚN EL ESTADO ---
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
     btnEnviar.disabled = true;
@@ -1472,21 +1526,17 @@ function ejecutarEnvioFinal() {
   const modalExito = document.getElementById('modal-exito');
   const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
   
-  // 1. Cambiamos el texto del botón para que el usuario sepa que está cargando
   const textoOriginal = btnEnviarBoleta.innerText;
   btnEnviarBoleta.innerText = 'ENVIANDO... ⏳';
   btnEnviarBoleta.disabled = true;
 
-  // 2. Armamos el paquete con la fecha exacta y las notas que puso el usuario
   const paqueteDeVotos = {
     fecha: new Date().toISOString(),
     puntajes: boletaPuntajes
   };
 
-  // 3. ACA PONES TU LINK (OJO: tiene que terminar sí o sí en /votos.json)
-  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json'; // <-- ¡Acordate de volver a pegar tu link acá!
+  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json'; 
 
-  // 4. Disparamos los datos hacia los servidores de Google
   fetch(urlFirebase, {
     method: 'POST',
     headers: {
@@ -1496,15 +1546,12 @@ function ejecutarEnvioFinal() {
   })
   .then(respuesta => respuesta.json())
   .then(datos => {
-    // Si llegó bien, mostramos el modal de éxito
     if (modalExito) {
       modalExito.classList.add('active');
     }
     
-    // Restauramos el texto del botón
     btnEnviarBoleta.innerText = textoOriginal;
     
-    // --- MAGIA NUEVA: Dejamos asentado que ya votó y NO borramos las notas ---
     localStorage.setItem('rivertactico_ya_voto', 'true');
     cargarVistaPuntuacion(); 
   })
@@ -1669,14 +1716,12 @@ function hacerArrastrable(token) {
       token.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
       token.style.zIndex = 10;
       
-      // --- MAGIA: MOVER EL CÍRCULO INVISIBLE CON EL JUGADOR ---
       const oldTop = token.dataset.slotTop;
       const oldLeft = token.dataset.slotLeft;
       const newTop = token.style.top;
       const newLeft = token.style.left;
       
       if (oldTop && oldLeft) {
-          // 1. Movemos el círculo físico en la cancha
           const placeholder = Array.from(document.querySelectorAll('.placeholder'))
             .find(p => p.style.top === oldTop && p.style.left === oldLeft);
           
@@ -1685,7 +1730,6 @@ function hacerArrastrable(token) {
              placeholder.style.left = newLeft;
           }
           
-          // 2. Modificamos la táctica maestra para que se aprenda la nueva ubicación
           const pos = token.dataset.pos;
           if (posicionesTacticas[pos]) {
              const coordObj = posicionesTacticas[pos].find(c => c.top === oldTop && c.left === oldLeft);
@@ -1695,11 +1739,9 @@ function hacerArrastrable(token) {
              }
           }
           
-          // 3. Le decimos al jugador cuál es su nuevo "hogar"
           token.dataset.slotTop = newTop;
           token.dataset.slotLeft = newLeft;
       }
-      // --------------------------------------------------------
       
       guardarEstadoPizarra(); 
       actualizarPlaceholders(); 
@@ -1769,33 +1811,28 @@ if (canchaObserver) {
   observer.observe(canchaObserver, { childList: true, subtree: true });
 }
 
-const buscadorModal = document.getElementById('buscador-modal');
+// --- FUNCIÓN REUTILIZABLE PARA EL FILTRO DEL MODAL ---
+function aplicarFiltroModal() {
+  const buscadorModal = document.getElementById('buscador-modal');
+  if (!buscadorModal) return;
+  
+  const textoBusqueda = buscadorModal.value.toLowerCase().trim();
+  const filasJugadores = document.querySelectorAll('#lista-recomendados > div, #lista-resto > div'); 
 
-if (buscadorModal) {
-  buscadorModal.addEventListener('input', (e) => {
-    const textoBusqueda = e.target.value.toLowerCase();
-    
-    const filasJugadores = document.querySelectorAll('#lista-recomendados > div, #lista-resto > div'); 
-
-    filasJugadores.forEach(fila => {
-      const nombreJugador = fila.innerText.toLowerCase();
-      
-      if (nombreJugador.includes(textoBusqueda)) {
-        fila.style.display = ''; 
-      } else {
-        fila.style.display = 'none'; 
-      }
-    });
+  filasJugadores.forEach(fila => {
+    const nombreJugador = fila.innerText.toLowerCase();
+    if (nombreJugador.includes(textoBusqueda)) {
+      fila.style.display = ''; 
+    } else {
+      fila.style.display = 'none'; 
+    }
   });
 }
 
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('modal-squad-tab')) {
-     if (buscadorModal) {
-         buscadorModal.value = ''; 
-     }
-  }
-});
+const buscadorModalElement = document.getElementById('buscador-modal');
+if (buscadorModalElement) {
+  buscadorModalElement.addEventListener('input', aplicarFiltroModal);
+}
 
 // --- MOTOR PARA COMPARTIR LA IMAGEN DE LOS PUNTAJES ---
 const btnCompartirPuntaje = document.getElementById('btn-compartir-puntaje');
@@ -1816,7 +1853,6 @@ if(btnCompartirPuntaje) {
         const file = new File([blob], "Mis_Puntajes_River.png", { type: "image/png" });
         
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          // Si está en celular, abre el menú nativo de WhatsApp, Instagram, etc.
           navigator.share({
             title: '¡Mirá mis puntajes de River!',
             text: 'Yo ya puntué a los jugadores en mi11river.com 🐔',
@@ -1827,7 +1863,6 @@ if(btnCompartirPuntaje) {
             btnCompartirPuntaje.innerHTML = contenidoOriginal;
           });
         } else {
-          // Si está en PC, le descarga la imagen directo
           const enlace = document.createElement('a');
           enlace.download = 'Mis_Puntajes_River.png';
           enlace.href = canvas.toDataURL('image/png');

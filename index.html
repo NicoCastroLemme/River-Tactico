@@ -37,11 +37,14 @@
       </div>
       <nav class="header-nav">
         <button class="nav-btn active" id="btn-pizarra">Crear 11</button>
-        <button class="nav-btn" id="btn-puntuar">Puntuar Partido</button>
+        <button class="nav-btn" id="btn-partidos">Puntajes</button>
       </nav>
     </div>
   </header>
 
+  <!-- =============================== -->
+  <!-- VISTA 1: PIZARRA TÁCTICA        -->
+  <!-- =============================== -->
   <div class="app-layout" id="view-pizarra">
     <div class="left-panel">
       <button class="btn-cerrar-panel-movil" id="..."> &times; </button>
@@ -52,7 +55,6 @@
       <div class="squad-tabs">
         <button class="squad-tab active" onclick="cambiarPlantel('primera', this)">PRIMERA</button>
         <button class="squad-tab" onclick="cambiarPlantel('reserva', this)">RESERVA</button>
-        <!-- NUEVO BOTÓN DE RUMORES -->
         <button class="squad-tab" onclick="cambiarPlantel('rumores', this)">RUMORES</button>
       </div>
       <input type="text" id="search-player" class="search-input" placeholder="Buscar jugador por apellido...">
@@ -87,7 +89,6 @@
         <div class="corner tr"></div>
         <div class="corner bl"></div>
         <div class="corner br"></div>
-
       </div>
 
       <div class="pitch-actions">
@@ -97,10 +98,7 @@
         </button>
 
         <button class="icon-btn" id="btn-toggle-fotos" title="Alternar Fotos/Camisetas">
-          <!-- Ícono de Persona (Activo por defecto) -->
           <svg class="icon-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          
-          <!-- Ícono de Camiseta (Oculto por defecto) -->
           <svg class="icon-shirt" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a8 8 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
         </button>
 
@@ -108,7 +106,6 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
         </button>
 
-        <!-- INTERRUPTOR DE SUPLENTES -->
         <div class="toggle-switch-container" title="Mostrar/Ocultar Suplentes">
           <span class="toggle-label">Suplentes</span>
           <label class="switch">
@@ -131,21 +128,33 @@
         <button class="btn-formation" onclick="cambiarFormacion('4-2-3-1', this)">4-2-3-1</button>
         <button class="btn-formation" onclick="cambiarFormacion('4-3-1-2', this)">4-3-1-2</button>
         <button class="btn-formation" onclick="cambiarFormacion('4-1-4-1', this)">4-1-4-1</button>
-        <!--<button class="btn-formation" onclick="cambiarFormacion('4-4-1-1', this)">4-4-1-1</button>-->
         <button class="btn-formation" onclick="cambiarFormacion('4-3-2-1', this)">4-3-2-1</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-5-2', this)">3-5-2</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-4-3', this)">3-4-3</button>
         <button class="btn-formation" onclick="cambiarFormacion('3-4-2-1', this)">3-4-2-1</button>
-        <!--<button class="btn-formation" onclick="cambiarFormacion('5-3-2', this)">5-3-2</button>
-        <button class="btn-formation" onclick="cambiarFormacion('5-4-1', this)">5-4-1</button>-->
       </div>
-
       <h4 id="titulo-mis-jugadores" style="margin-top: 20px;">Mis Jugadores · 0/11</h4>
-      <!-- Las pestañas ya no están -->
       <div class="box-score-list" id="box-score-container"></div>
     </div>
   </div> 
 
+  <!-- =============================== -->
+  <!-- VISTA 2: LISTA DE PARTIDOS      -->
+  <!-- =============================== -->
+  <div id="view-partidos" style="display: none; padding: 30px 20px; width: 100%; max-width: 1000px; margin: 0 auto; min-height: calc(100vh - 100px);">
+    <div class="historial-header" style="text-align: center; margin-bottom: 30px;">
+      <h2 style="color: var(--text-main); font-size: 24px; font-weight: 900; margin-bottom: 5px;">Partidos</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Elegí un partido para votar o ver tus calificaciones.</p>
+    </div>
+    
+    <div id="grid-partidos" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+      <!-- Acá el JS va a inyectar las tarjetas -->
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- VISTA 3: CANCHA DE PUNTUAR      -->
+  <!-- =============================== -->
   <div class="app-layout" id="view-puntuar" style="display: none;">
     <div class="left-panel">
       <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
@@ -186,8 +195,6 @@
         <div class="corner bl"></div>
         <div class="corner br"></div>
 
-        <!--<div class="watermark">MI11RIVER.COM</div>-->
-
         <img src="fotos/cancha.png" class="cancha-img-fondo" alt="Cancha">
         
         <!-- CARTELES FLOTANTES MOVIDOS ACÁ -->
@@ -213,7 +220,6 @@
         </button>
       </div>
 
-      
     </div>
 
     <!-- === PANEL DERECHO LIMPIO === -->
@@ -246,8 +252,11 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> 
 
+  <!-- =============================== -->
+  <!-- MODALES FLOTANTES               -->
+  <!-- =============================== -->
   <div class="modal-overlay" id="modal-puntaje">
     <div class="rating-modal">
       <h3 id="modal-nombre-jugador">Nombre Jugador</h3>

@@ -264,7 +264,7 @@
     },
     {
       "id": 24,
-      "nombre": "JC. Meza",
+      "nombre": "J. C. Meza",
       "posicion": ["MCO", "MC", "MI"],
       "numero": 24,
       "puntaje_promedio": 0,
@@ -304,7 +304,7 @@
     {
       "id": 25,
       "nombre": "L. Pereyra",
-      "posicion": ["MCO", "MI", "MC"],
+      "posicion": ["MCO", "MI", "MC", "EI"],
       "numero": 25,
       "puntaje_promedio": 0,
       "lesionado": false,
