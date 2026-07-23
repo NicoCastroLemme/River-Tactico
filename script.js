@@ -16,6 +16,7 @@ if (!userId) {
 
 // Variable para saber en qué partido estamos parados ahora
 let partidoActualId = 'p_actual';
+let partidoActualEstado = 'abierto';
 
 const coleccionFormaciones = {
   '4-4-2': {
@@ -1116,10 +1117,10 @@ if (btnPartidos) {
 
 // Limpiamos los datos y agregamos "competencia"
 const historialSimulado = [
-    { id: 'p_actual', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto', competencia: 'Copa Argentina' },
-    { id: 'p1', rival: 'Boca Juniors', resultado: '2 - 0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado', competencia: 'Liga Profesional' },
+    { id: 'p4', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto', competencia: 'Copa Argentina' },
+    { id: 'p3', rival: 'Boca Juniors', resultado: '2 - 0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado', competencia: 'Liga Profesional' },
     { id: 'p2', rival: 'Independiente', resultado: '1 - 1', condicion: 'L', miPromedio: '5.5', estado: 'cerrado', competencia: 'Liga Profesional' },
-    { id: 'p3', rival: 'Talleres', resultado: '3 - 1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado', competencia: 'Liga Profesional' }
+    { id: 'p1', rival: 'Talleres', resultado: '3 - 1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado', competencia: 'Liga Profesional' }
 ];
 
 function renderizarHistorial() {
@@ -1156,15 +1157,15 @@ function renderizarHistorial() {
         `;
 
         card.onclick = () => {
-          // Le avisamos al sistema qué partido eligió
-          partidoActualId = partido.id; 
+            // Le avisamos al sistema qué partido eligió y en qué estado está
+            partidoActualId = partido.id; 
+            partidoActualEstado = partido.estado; /* <--- MAGIA ACÁ */
             
-          // Cargamos los puntajes de ESE partido si ya los había empezado a votar
-          boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
+            boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
             
-          viewPartidos.style.display = 'none';
-          viewPuntuar.style.display = 'grid'; 
-          cargarVistaPuntuacion();
+            viewPartidos.style.display = 'none';
+            viewPuntuar.style.display = 'grid'; 
+            cargarVistaPuntuacion();
         };
 
         grid.appendChild(card);
@@ -1229,7 +1230,8 @@ function cargarVistaPuntuacion() {
     `;
 
     if (modoPuntajeActual === 'mis_puntajes') {
-      if (!yaVoto) {
+      // Bloqueamos si ya votó O si el partido fue cerrado por el admin
+      if (!yaVoto && partidoActualEstado === 'abierto') {
         token.style.cursor = 'pointer';
         token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
       } else {
@@ -1266,7 +1268,8 @@ function cargarVistaPuntuacion() {
           htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
         }
         if (modoPuntajeActual === 'mis_puntajes') {
-          if (!yaVoto) {
+          // Aplicamos la misma traba que en los titulares
+          if (!yaVoto && partidoActualEstado === 'abierto') {
             token.style.cursor = 'pointer';
             token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
           } else {
@@ -1397,6 +1400,9 @@ function actualizarBoletaEnVivo() {
   
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
+    btnEnviar.disabled = true;
+  } else if (partidoActualEstado === 'cerrado') {
+    btnEnviar.innerText = 'PARTIDO CERRADO 🔒'; /* <--- TEXTO NUEVO */
     btnEnviar.disabled = true;
   } else if (yaVoto) {
     btnEnviar.innerText = 'PUNTAJES ENVIADOS ✓';
