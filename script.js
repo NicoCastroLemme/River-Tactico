@@ -172,23 +172,16 @@ function procesarApellidosDistintivos() {
   const conteoApellidos = {};
 
   todos.forEach(j => {
-    // 1. Separamos el nombre.
     const partes = j.nombre.trim().split(' ');
-    
-    // 2. Rescatamos la primera letra SÍ o SÍ (Ej: "Enzo" -> "E", "P." -> "P").
     const primeraLetra = partes[0].charAt(0).toUpperCase();
-    
-    // 3. Filtramos las iniciales para quedarnos solo con el apellido puro.
     const palabrasReales = partes.filter(p => !p.includes('.') && p.length > 1);
     
-    // 4. Armamos el apellido base.
     let apellidoBase = palabrasReales.length > 1 ? palabrasReales.slice(1).join(' ') : palabrasReales.join(' ');
-    if (palabrasReales.length === 0) apellidoBase = j.nombre; // Seguro anti-fallos
+    if (palabrasReales.length === 0) apellidoBase = j.nombre; 
     
     j.apellidoBase = apellidoBase;
     j.inicialPila = primeraLetra;
 
-    // 5. Normalizamos sin tildes para contar bien (Díaz = Diaz)
     const apellidoNormalizado = normalizarTexto(apellidoBase);
     j.apellidoNormalizado = apellidoNormalizado;
     
@@ -196,7 +189,6 @@ function procesarApellidosDistintivos() {
   });
 
   todos.forEach(j => {
-    // 6. Si el apellido normalizado se repite, le pegamos la inicial que rescatamos en el paso 2
     if (conteoApellidos[j.apellidoNormalizado] > 1 && j.inicialPila) {
       j.apellidoProcesado = `${j.inicialPila}. ${j.apellidoBase}`;
     } else {
@@ -242,7 +234,7 @@ async function inicializarApp() {
     plantelReserva = datos.reserva;
     plantelRumores = datos.rumores || [];
 
-    procesarApellidosDistintivos(); // Se encarga de procesar P. Diaz, E. Diaz, Quintero, etc.
+    procesarApellidosDistintivos();
 
     dibujarEsquema();
     renderizarListaJugadores(plantelPrimera);
@@ -316,7 +308,7 @@ function cargarEstadoPizarra() {
                        const btnSuplente = tokenRecienCreado.querySelector('.btn-suplente');
                        
                        if (cartelSuplente && btnSuplente) {
-                           cartelSuplente.textContent = suplente.nombre;
+                           cartelSuplente.textContent = suplente.apellidoProcesado;
                            cartelSuplente.dataset.id = suplente.id;
                            cartelSuplente.classList.remove('oculto');
                            btnSuplente.classList.add('oculto');
@@ -540,16 +532,7 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
         abrirModalSeleccion(posAbreviada, coords);
       };
 
-      if (pack.idSuplente) {
-         const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == pack.idSuplente);
-         if (suplente) {
-             cartelSuplente.textContent = suplente.nombre;
-             cartelSuplente.dataset.id = suplente.id;
-             cartelSuplente.classList.remove('oculto');
-             btnSuplente.classList.add('oculto');
-         }
-      }
-
+      // MAGIA: El evento siempre vive acá, desde el momento en que se crea el jugador.
       cartelSuplente.onclick = (e) => {
          e.stopPropagation();
          const idSuplente = cartelSuplente.dataset.id;
@@ -561,6 +544,16 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
          btnSuplente.classList.remove('oculto');
          guardarEstadoPizarra();
       };
+
+      if (pack.idSuplente) {
+         const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == pack.idSuplente);
+         if (suplente) {
+             cartelSuplente.textContent = suplente.apellidoProcesado;
+             cartelSuplente.dataset.id = suplente.id;
+             cartelSuplente.classList.remove('oculto');
+             btnSuplente.classList.add('oculto');
+         }
+      }
 
       const placeholder = Array.from(document.querySelectorAll('.placeholder'))
         .find(p => p.style.top === coords.top && p.style.left === coords.left);
@@ -621,21 +614,9 @@ function ubicarJugadorLibre(coords) {
       const cartelSuplente = jugadorTitularElegido.querySelector('.nombre-suplente');
       
       btnSuplente.classList.add('oculto');
-      cartelSuplente.textContent = jugadorSeleccionado.nombre;
+      cartelSuplente.textContent = jugadorSeleccionado.apellidoProcesado;
       cartelSuplente.dataset.id = jugadorSeleccionado.id; 
       cartelSuplente.classList.remove('oculto');
-
-      cartelSuplente.onclick = (e) => {
-         e.stopPropagation();
-         const idSuplente = cartelSuplente.dataset.id;
-         const filaSuplente = document.getElementById(`row-${idSuplente}`);
-         if (filaSuplente) filaSuplente.classList.remove('on-pitch');
-         
-         cartelSuplente.classList.add('oculto');
-         cartelSuplente.dataset.id = '';
-         btnSuplente.classList.remove('oculto');
-         guardarEstadoPizarra();
-      };
 
       const filaJugador = document.getElementById(`row-${jugadorSeleccionado.id}`);
       if (filaJugador) {
@@ -687,11 +668,26 @@ function ubicarJugadorLibre(coords) {
   pitch.appendChild(token);
 
   const btnSuplente = token.querySelector('.btn-suplente');
+  const cartelSuplente = token.querySelector('.nombre-suplente');
+
   btnSuplente.onclick = (e) => {
     e.stopPropagation(); 
     eligiendoSuplente = true;
     jugadorTitularElegido = token;
     abrirModalSeleccion(posAbreviada, coords);
+  };
+
+  // MAGIA: El evento siempre vive acá, desde el momento en que se crea el jugador.
+  cartelSuplente.onclick = (e) => {
+      e.stopPropagation();
+      const idSuplente = cartelSuplente.dataset.id;
+      const filaSuplente = document.getElementById(`row-${idSuplente}`);
+      if (filaSuplente) filaSuplente.classList.remove('on-pitch');
+      
+      cartelSuplente.classList.add('oculto');
+      cartelSuplente.dataset.id = '';
+      btnSuplente.classList.remove('oculto');
+      guardarEstadoPizarra();
   };
 
   if (placeholderExistente) placeholderExistente.style.opacity = '0';
@@ -713,7 +709,6 @@ function ubicarJugadorLibre(coords) {
 function abrirModalSeleccion(posAbreviada, coords) {
   const modal = document.getElementById('modal-seleccion');
   
-  // Limpia el buscador para que empiece de cero cada vez que abre el modal
   const buscador = document.getElementById('buscador-modal');
   if (buscador) buscador.value = '';
 
@@ -784,7 +779,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
       listaResto.innerHTML = '<div style="padding: 10px; font-size: 11px; color: var(--text-muted); text-align: center;">Plantel agotado.</div>';
     }
 
-    // MAGIA: Re-aplicamos el filtro por si el usuario ya tenía texto escrito al cambiar de pestaña
     if (typeof aplicarFiltroModal === 'function') {
         aplicarFiltroModal();
     }
@@ -1107,18 +1101,20 @@ if (btnPartidos) {
 // ==========================================
 // MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
 // ==========================================
+
+// Limpiamos los datos y agregamos "competencia"
 const historialSimulado = [
-    { id: 'p_actual', fecha: '22/07/2026', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto' },
-    { id: 'p1', fecha: '14/07/2026', rival: 'Boca Juniors', resultado: '2-0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado' },
-    { id: 'p2', fecha: '07/07/2026', rival: 'Independiente', resultado: '1-1', condicion: 'V', miPromedio: '5.5', estado: 'cerrado' },
-    { id: 'p3', fecha: '01/07/2026', rival: 'Talleres', resultado: '3-1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado' }
+    { id: 'p_actual', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto', competencia: 'Copa Argentina' },
+    { id: 'p1', rival: 'Boca Juniors', resultado: '2 - 0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado', competencia: 'Liga Profesional' },
+    { id: 'p2', rival: 'Independiente', resultado: '1 - 1', condicion: 'L', miPromedio: '5.5', estado: 'cerrado', competencia: 'Liga Profesional' },
+    { id: 'p3', rival: 'Talleres', resultado: '3 - 1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado', competencia: 'Liga Profesional' }
 ];
 
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
     if (!grid) return;
     
-    grid.innerHTML = ''; 
+    grid.innerHTML = ''; // Limpiamos la grilla antes de dibujar
 
     historialSimulado.forEach(partido => {
         const card = document.createElement('div');
@@ -1132,18 +1128,22 @@ function renderizarHistorial() {
             htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${partido.miPromedio}</div>`;
         }
 
-        const badgeLive = partido.estado === 'abierto' ? `<span class="badge-live">¡VOTÁ AHORA!</span>` : '';
+        // Lógica PRO: Si River es visitante ('V'), el rival va primero. 
+        // Si es local ('L') o neutral ('N'), River va primero.
+        let textoTitulo = partido.condicion === 'V' 
+            ? `${partido.rival} ${partido.resultado} River Plate`
+            : `River Plate ${partido.resultado} ${partido.rival}`;
 
+        // Estructura ultra minimalista tal como pediste
         card.innerHTML = `
             <div class="match-info">
-                <h4>River vs ${partido.rival}</h4>
-                <p>📅 ${partido.fecha} ${badgeLive}<br>${partido.condicion === 'L' ? '🏠 Local' : (partido.condicion === 'V' ? '✈️ Visitante' : '🏟️ Neutral')} | ⚽ ${partido.resultado}</p>
+                <h4>${textoTitulo}</h4>
+                <p>${partido.competencia}</p>
             </div>
             ${htmlScore}
         `;
 
         card.onclick = () => {
-            // MAGIA DETAIL: Ocultamos la lista, mostramos la cancha y dibujamos a los jugadores
             viewPartidos.style.display = 'none';
             viewPuntuar.style.display = 'grid'; 
             cargarVistaPuntuacion();

@@ -98,10 +98,10 @@ body {
 
 .placeholder { 
   position: absolute; 
-  width: 60px; 
-  height: 60px; 
+  width: 50px; 
+  height: 50px; 
   border: 2px dashed rgba(0, 0, 0, 0.4); /* Negro semitransparente */
-  border-radius: 50%; 
+  border-radius: 0%; 
   transform: translate(-50%, -50%); 
   display: flex; 
   justify-content: center; 
@@ -527,42 +527,67 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
 
 .mobile-overlay { display: none; }
 
-/* Botón de "+" para agregar suplente */
+/* Botón de "+" para agregar suplente (Estilo ranura vacía) */
 .btn-suplente {
   position: absolute;
-  top: calc(100% + 28px); /* Lo empujamos más abajo que el cartel del titular */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #e51a23; /* Rojo River */
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  font-size: 14px;
+  margin-top: 22px; 
+  background-color: transparent; /* Fondo transparente */
+  color: rgba(0, 0, 0, 0.4); /* Color del '+' semi-transparente */
+  border: 2px dashed rgba(0, 0, 0, 0.4); /* Borde punteado */
+  border-radius: 0; /* Cuadrado recto */
+  width: 18px; 
+  height: 18px;
+  font-size: 12px;
   font-weight: bold;
-  line-height: 1;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 15;
-  box-shadow: 1px 1px 0px rgba(0,0,0,0.8);
+  box-shadow: none; /* Sin sombra para que parezca pintado en la cancha */
+  transition: all 0.2s ease;
 }
 
-/* El cartelito del suplente (sin foto) */
+/* Efecto al pasar el mouse */
+.btn-suplente:hover {
+  border-color: var(--river-red); 
+  background-color: rgba(218, 41, 28, 0.2); 
+  color: var(--accent-black); 
+}
+
+/* El cartelito del suplente (Apilado y calcado del titular) */
 .nombre-suplente {
   position: absolute;
-  top: calc(100% + 28px);
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #f0f0f0; /* Un gris clarito para diferenciarlo del titular */
-  color: #333;
-  font-size: 8px;
-  font-weight: 700;
-  padding: 2px 5px;
-  border: 1px solid #999;
-  white-space: nowrap;
+  margin-top: 19px; /* Engancha exactamente debajo del cartel titular */
+  
+  min-width: 100%;
+  width: max-content;
+  max-width: 100px;
+  
+  background-color: #d1d1d1; /* Fondo gris para diferenciarlo */
+  color: var(--text-main);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0;
+  padding: 3px 6px;
+  border-radius: 0; /* Borde recto igual al titular */
+  border: none;
+  text-align: center;
   text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  z-index: 15;
+  z-index: 4; /* Pasa un pelín por detrás del titular para un encastre perfecto */
+  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 /* Clase de utilidad para esconder cosas */
@@ -683,7 +708,7 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
       padding: 2px 4px; /* Ajustamos el aire lateral para celu */
       margin-top: 0; 
   }
-  .placeholder { width: 45px; height: 45px; font-size: 10px; }
+  .placeholder { width: 40px; height: 40px; font-size: 10px; }
   
   .player-events { left: calc(100% - 2px); transform: translateY(-50%) scale(0.8); transform-origin: left center; }
   
@@ -736,19 +761,22 @@ body.dark-mode .source-tab.active { background: var(--river-red); color: white; 
   /* Acercar el suplente al titular en celulares */
   .btn-suplente,
   .nombre-suplente {
-    top: calc(100% + 20px); /* Reducimos la caída casi a la mitad */
+    top: 100%; 
   }
 
-  /* Achicamos un pelín el botón y cartel para que no queden toscos */
+  /* Achicamos un pelín el botón en celulares */
   .btn-suplente {
+    margin-top: 17px;
     width: 14px;
     height: 14px;
     font-size: 12px;
   }
   
+  /* Encastre exacto para la versión reducida de celular */
   .nombre-suplente {
-    font-size: 7px;
-    padding: 1px 3px;
+    margin-top: 15px; 
+    font-size: 8px;
+    padding: 2px 4px;
   }
   
 }
