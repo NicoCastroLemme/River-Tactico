@@ -6,6 +6,17 @@ let plantelPrimera = [];
 let plantelReserva = [];
 let plantelRumores = [];
 
+// --- SISTEMA DE IDENTIDAD ---
+let userId = localStorage.getItem('rivertactico_uid');
+if (!userId) {
+  // Si es nuevo, le creamos un ID único aleatorio y lo guardamos para siempre
+  userId = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+  localStorage.setItem('rivertactico_uid', userId);
+}
+
+// Variable para saber en qué partido estamos parados ahora
+let partidoActualId = 'p_actual';
+
 const coleccionFormaciones = {
   '4-4-2': {
     'ARQ': [{ top: '80%', left: '50%' }],
@@ -140,7 +151,8 @@ const pitch = document.getElementById('pitch');
 const boxScoreContainer = document.getElementById('box-score-container');
 
 // --- VARIABLES DE MEMORIA PARA PUNTAJES ---
-let boletaPuntajes = JSON.parse(localStorage.getItem('rivertactico_puntajes')) || {}; 
+// Ahora arranca vacía, la llenamos cuando el usuario elige el partido
+let boletaPuntajes = {};
 let jugadorPuntuandoActual = null;
 
 // --- DATOS SIMULADOS PARA PRUEBAS ---
@@ -1144,9 +1156,15 @@ function renderizarHistorial() {
         `;
 
         card.onclick = () => {
-            viewPartidos.style.display = 'none';
-            viewPuntuar.style.display = 'grid'; 
-            cargarVistaPuntuacion();
+          // Le avisamos al sistema qué partido eligió
+          partidoActualId = partido.id; 
+            
+          // Cargamos los puntajes de ESE partido si ya los había empezado a votar
+          boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
+            
+          viewPartidos.style.display = 'none';
+          viewPuntuar.style.display = 'grid'; 
+          cargarVistaPuntuacion();
         };
 
         grid.appendChild(card);
@@ -1181,7 +1199,7 @@ function cargarVistaPuntuacion() {
   const benchList = document.getElementById('bench-list');
   const datosActivos = obtenerDatosActivos(); 
   
-  const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
+  const yaVoto = localStorage.getItem(`rivertactico_ya_voto_${partidoActualId}`) === 'true';
 
   const fichasViejas = pitchRating.querySelectorAll('.player-token');
   fichasViejas.forEach(f => f.remove());
@@ -1331,19 +1349,16 @@ function guardarNota(nota) {
   boletaPuntajes[jugadorPuntuandoActual] = nota;
   modalPuntaje.classList.remove('active');
   
-  localStorage.setItem('rivertactico_puntajes', JSON.stringify(boletaPuntajes));
+  // MAGIA: Guardamos la boleta específica de ESTE partido
+  localStorage.setItem(`rivertactico_puntajes_${partidoActualId}`, JSON.stringify(boletaPuntajes));
 
   const cantidadPuntuados = Object.keys(boletaPuntajes).length;
-  
   if (cantidadPuntuados === 11 && window.innerWidth <= 768) {
       setTimeout(() => {
           const bancoMovil = document.querySelector('.banco-suplentes-container.solo-movil');
-          if (bancoMovil) {
-              bancoMovil.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          if (bancoMovil) bancoMovil.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300); 
   }
-
   cargarVistaPuntuacion(); 
 }
 
@@ -1378,7 +1393,7 @@ function actualizarBoletaEnVivo() {
   if (!btnEnviar) return; 
 
   const puntuados = Object.keys(datosActivos).length;
-  const yaVoto = localStorage.getItem('rivertactico_ya_voto') === 'true';
+  const yaVoto = localStorage.getItem(`rivertactico_ya_voto_${partidoActualId}`) === 'true';
   
   if (modoPuntajeActual !== 'mis_puntajes') {
     btnEnviar.innerText = 'MODO LECTURA';
@@ -1535,10 +1550,13 @@ function ejecutarEnvioFinal() {
     puntajes: boletaPuntajes
   };
 
-  const urlFirebase = 'https://mi-11-river-default-rtdb.firebaseio.com/votos.json'; 
+  // MAGIA PRO: Estructuramos la base de datos armando la ruta exacta
+  // Quedará guardado en: /votos/p_actual/user_123abc.json
+  const urlFirebase = `https://mi-11-river-default-rtdb.firebaseio.com/votos/${partidoActualId}/${userId}.json`; 
 
+  // Usamos PUT en lugar de POST para que sobreescriba exactamente la carpeta de este usuario
   fetch(urlFirebase, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -1549,10 +1567,10 @@ function ejecutarEnvioFinal() {
     if (modalExito) {
       modalExito.classList.add('active');
     }
-    
     btnEnviarBoleta.innerText = textoOriginal;
     
-    localStorage.setItem('rivertactico_ya_voto', 'true');
+    // Marcamos que ya votó específicamente EN ESTE PARTIDO
+    localStorage.setItem(`rivertactico_ya_voto_${partidoActualId}`, 'true');
     cargarVistaPuntuacion(); 
   })
   .catch(error => {
