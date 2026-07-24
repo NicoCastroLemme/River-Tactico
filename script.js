@@ -1207,6 +1207,31 @@ async function descargarHistorialDeFirebase() {
     }
 }
 
+// Variable para saber qué estamos mirando en la pantalla general
+let modoVistaGrilla = 'mi_boleta'; 
+
+// ==========================================
+// CONTROL DE PESTAÑAS EN LA GRILLA GENERAL
+// ==========================================
+const tabGrillaMiBoleta = document.getElementById('tab-grilla-mi-boleta');
+const tabGrillaPromedios = document.getElementById('tab-grilla-promedios');
+
+if (tabGrillaMiBoleta && tabGrillaPromedios) {
+    tabGrillaMiBoleta.addEventListener('click', () => {
+        tabGrillaMiBoleta.classList.add('active');
+        tabGrillaPromedios.classList.remove('active');
+        modoVistaGrilla = 'mi_boleta';
+        renderizarHistorial(); // Volvemos a dibujar las tarjetas
+    });
+
+    tabGrillaPromedios.addEventListener('click', () => {
+        tabGrillaPromedios.classList.add('active');
+        tabGrillaMiBoleta.classList.remove('active');
+        modoVistaGrilla = 'promedios';
+        renderizarHistorial(); // Volvemos a dibujar las tarjetas
+    });
+}
+
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
     if (!grid) return;
@@ -1223,8 +1248,17 @@ function renderizarHistorial() {
         } else if (partido.estado === 'pendiente') {
             htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
         } else {
-            const colorPromedio = obtenerColorExacto(partido.miPromedio);
-            htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${partido.miPromedio}</div>`;
+            // MAGIA ACÁ: Elegimos qué nota mostrar según la pestaña activa
+            // Busca 'miPromedio' o 'promedioHinchas' en Firebase
+            let notaAMostrar = modoVistaGrilla === 'mi_boleta' ? partido.miPromedio : partido.promedioHinchas;
+            
+            if (notaAMostrar) {
+                const colorPromedio = obtenerColorExacto(notaAMostrar);
+                htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${notaAMostrar}</div>`;
+            } else {
+                // Si justo no hay promedio cargado, mostramos un guión gris
+                htmlScore = `<div class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25);">-</div>`;
+            }
         }
 
         let golesRiver = "";
@@ -1241,7 +1275,6 @@ function renderizarHistorial() {
 
         card.innerHTML = `
             <div class="match-info" style="display: flex; flex-direction: column; width: 100%; padding-right: 15px;">
-                
                 <div style="display: grid; grid-template-columns: auto auto; justify-content: start; column-gap: 15px; row-gap: 4px; align-items: center;">
                     <h4 style="margin: 0; white-space: nowrap;">River Plate</h4>
                     <h4 style="margin: 0;">${golesRiver}</h4>
@@ -1249,8 +1282,6 @@ function renderizarHistorial() {
                     <h4 style="margin: 0; color: var(--text-muted); white-space: nowrap;">${partido.rival}</h4>
                     <h4 style="margin: 0; color: var(--text-muted);">${golesRival}</h4>
                 </div>
-                
-                <!-- MAGIA ACÁ: Usamos un gris neutro (128,128,128) transparente para que se vea en fondos blancos y negros -->
                 <p style="margin-top: 8px; margin-bottom: 0; font-size: 0.85em; color: var(--text-muted); border-top: 1px solid rgba(128, 128, 128, 0.25); padding-top: 6px;">${partido.competencia}</p>
             </div>
             ${htmlScore}
@@ -1274,7 +1305,6 @@ function renderizarHistorial() {
         grid.appendChild(card);
     });
 }
-
 // ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
 const ultimoPartido = {
   titulares: [
@@ -1999,4 +2029,47 @@ if(btnCompartirPuntaje) {
       });
     });
   });
+}
+
+// ==========================================
+// CONTROL DE PESTAÑAS: MI BOLETA / PROMEDIOS
+// ==========================================
+const tabMiBoleta = document.getElementById('tab-mi-boleta');
+const tabPromedios = document.getElementById('tab-promedios');
+// (Ya no declaramos btnEnviarBoleta acá porque ya existe más arriba en tu código)
+
+if (tabMiBoleta && tabPromedios) {
+    // 1. Clic en "Mi Boleta"
+    tabMiBoleta.addEventListener('click', () => {
+        tabMiBoleta.classList.add('active');
+        tabPromedios.classList.remove('active');
+        
+        // Volvemos al modo de tu boleta local
+        modoPuntajeActual = 'mis_puntajes';
+        
+        if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'block';
+        cargarVistaPuntuacion();
+    });
+
+    // 2. Clic en "Promedio Hinchas"
+    tabPromedios.addEventListener('click', async () => { 
+        tabPromedios.classList.add('active');
+        tabMiBoleta.classList.remove('active');
+        
+        // Le avisamos al sistema que ahora tiene que leer de la base de datos
+        modoPuntajeActual = 'promedio_usuarios';
+        
+        if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'none';
+        
+        const textoOriginal = tabPromedios.innerText;
+        tabPromedios.innerText = 'Calculando... ⏳';
+        
+        // Trae los datos, hace la matemática y espera
+        await calcularPromediosDeFirebase();
+        
+        tabPromedios.innerText = textoOriginal;
+        
+        // Dibuja la cancha con los promedios reales
+        cargarVistaPuntuacion();
+    });
 }

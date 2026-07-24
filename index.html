@@ -145,6 +145,10 @@
     <div class="historial-header" style="text-align: center; margin-bottom: 30px;">
       <h2 style="color: var(--text-main); font-size: 24px; font-weight: 900; margin-bottom: 5px;">Partidos</h2>
       <p style="color: var(--text-muted); font-size: 14px;">Elegí un partido para votar o ver tus calificaciones.</p>
+      <div class="squad-tabs" style="justify-content: center; max-width: 350px; margin: 0 auto;">
+        <button class="squad-tab active" id="tab-grilla-mi-boleta">Mis puntajes</button>
+        <button class="squad-tab" id="tab-grilla-promedios">Promedio hinchas</button>
+      </div>
     </div>
     
     <div id="grid-partidos" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
@@ -225,7 +229,10 @@
     <!-- === PANEL DERECHO LIMPIO === -->
     <div class="right-panel">
       <div class="info-card" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
-
+        <div class="squad-tabs" style="margin-bottom: 15px;" id="tabs-fuente-puntajes">
+          <button class="squad-tab active" id="tab-mi-boleta">Mis puntajes</button>
+          <button class="squad-tab" id="tab-promedios">Promedio hinchas</button>
+        </div>
         <div class="boleta-mvp" id="boleta-mvp-container" style="display: none; margin-bottom: 10px;">
           <span class="mvp-label">⭐ LA FIGURA</span>
           <div class="mvp-content">
