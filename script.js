@@ -1177,7 +1177,7 @@ let historialPartidos = []; // Arranca vacío, se llena desde la nube
 
 async function descargarHistorialDeFirebase() {
     const grid = document.getElementById('grid-partidos');
-    if (grid) grid.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding: 40px; width: 100%;">Cargando partidos... ⏳</div>';
+    if (grid) grid.innerHTML = '';
 
     const url = 'https://mi-11-river-default-rtdb.firebaseio.com/partidos.json';
     try {
@@ -1346,7 +1346,7 @@ function renderizarHistorial() {
         else if (modoVistaGrilla === 'promedios') {
             if (partido.estado === 'abierto') {
                 const idUnico = `live-score-${partido.id}`;
-                htmlScore = `<div id="${idUnico}" class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25); display: flex; align-items: center; justify-content: center;">⏳</div>`;
+                htmlScore = `<div id="${idUnico}" class="match-score" style="color: transparent; border-color: transparent;"></div>`;
                 cargarPromedioEnVivoParaGrilla(partido.id, idUnico);
             } else {
                 const notaAMostrar = partido.promedioHinchas;
@@ -1781,8 +1781,7 @@ function ejecutarEnvioFinal() {
   const modalExito = document.getElementById('modal-exito');
   const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
   
-  const textoOriginal = btnEnviarBoleta.innerText;
-  btnEnviarBoleta.innerText = 'ENVIANDO... ⏳';
+  // Solo lo deshabilitamos para evitar doble clic, pero no cambiamos el texto
   btnEnviarBoleta.disabled = true;
 
   const paqueteDeVotos = {
@@ -1807,7 +1806,6 @@ function ejecutarEnvioFinal() {
     if (modalExito) {
       modalExito.classList.add('active');
     }
-    btnEnviarBoleta.innerText = textoOriginal;
     
     // Marcamos que ya votó específicamente EN ESTE PARTIDO
     localStorage.setItem(`rivertactico_ya_voto_${partidoActualId}`, 'true');
@@ -1816,7 +1814,6 @@ function ejecutarEnvioFinal() {
   .catch(error => {
     console.error("Error enviando datos:", error);
     alert("Hubo un error de conexión. ¡Intentá de nuevo!");
-    btnEnviarBoleta.innerText = textoOriginal;
     btnEnviarBoleta.disabled = false;
   });
 }
@@ -2162,13 +2159,8 @@ if (tabMiBoleta && tabPromedios) {
         
         if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'none';
         
-        const textoOriginal = tabPromedios.innerText;
-        tabPromedios.innerText = 'Calculando... ⏳';
-        
-        // Trae los datos, hace la matemática y espera
+        // Trae los datos, hace la matemática y espera sin cambiar textos
         await calcularPromediosDeFirebase();
-        
-        tabPromedios.innerText = textoOriginal;
         
         // Dibuja la cancha con los promedios reales
         cargarVistaPuntuacion();
