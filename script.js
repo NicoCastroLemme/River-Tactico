@@ -1211,7 +1211,7 @@ function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
     if (!grid) return;
     
-    grid.innerHTML = ''; // Limpiamos la grilla antes de dibujar
+    grid.innerHTML = ''; 
 
     historialPartidos.forEach(partido => {
         const card = document.createElement('div');
@@ -1220,30 +1220,49 @@ function renderizarHistorial() {
         let htmlScore = '';
         if (partido.estado === 'abierto') {
             htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
+        } else if (partido.estado === 'pendiente') {
+            htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
         } else {
             const colorPromedio = obtenerColorExacto(partido.miPromedio);
             htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${partido.miPromedio}</div>`;
         }
 
-        // Lógica PRO: Si River es visitante ('V'), el rival va primero. 
-        // Si es local ('L') o neutral ('N'), River va primero.
-        let textoTitulo = partido.condicion === 'V' 
-            ? `${partido.rival} ${partido.resultado} River Plate`
-            : `River Plate ${partido.resultado} ${partido.rival}`;
+        let golesRiver = "";
+        let golesRival = "";
+        
+        if (partido.resultado.includes('-')) {
+            let partes = partido.resultado.split('-');
+            golesRiver = partes[0].trim();
+            golesRival = partes[1].trim();
+        } else {
+            golesRiver = ""; 
+            golesRival = "";
+        }
 
-        // Estructura ultra minimalista tal como pediste
         card.innerHTML = `
-            <div class="match-info">
-                <h4>${textoTitulo}</h4>
-                <p>${partido.competencia}</p>
+            <div class="match-info" style="display: flex; flex-direction: column; width: 100%; padding-right: 15px;">
+                
+                <div style="display: grid; grid-template-columns: auto auto; justify-content: start; column-gap: 15px; row-gap: 4px; align-items: center;">
+                    <h4 style="margin: 0; white-space: nowrap;">River Plate</h4>
+                    <h4 style="margin: 0;">${golesRiver}</h4>
+                    
+                    <h4 style="margin: 0; color: var(--text-muted); white-space: nowrap;">${partido.rival}</h4>
+                    <h4 style="margin: 0; color: var(--text-muted);">${golesRival}</h4>
+                </div>
+                
+                <!-- MAGIA ACÁ: Usamos un gris neutro (128,128,128) transparente para que se vea en fondos blancos y negros -->
+                <p style="margin-top: 8px; margin-bottom: 0; font-size: 0.85em; color: var(--text-muted); border-top: 1px solid rgba(128, 128, 128, 0.25); padding-top: 6px;">${partido.competencia}</p>
             </div>
             ${htmlScore}
         `;
 
         card.onclick = () => {
-            // Le avisamos al sistema qué partido eligió y en qué estado está
+            if (partido.estado === 'pendiente') {
+                return; 
+            }
+
             partidoActualId = partido.id; 
-            partidoActualEstado = partido.estado; /* <--- MAGIA ACÁ */
+            partidoActualEstado = partido.estado; 
             
             boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
             
