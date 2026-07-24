@@ -1248,15 +1248,29 @@ function renderizarHistorial() {
         } else if (partido.estado === 'pendiente') {
             htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
         } else {
-            // MAGIA ACÁ: Elegimos qué nota mostrar según la pestaña activa
-            // Busca 'miPromedio' o 'promedioHinchas' en Firebase
-            let notaAMostrar = modoVistaGrilla === 'mi_boleta' ? partido.miPromedio : partido.promedioHinchas;
+            let notaAMostrar = null;
+
+            if (modoVistaGrilla === 'mi_boleta') {
+                // MAGIA: Calculamos TU promedio leyendo directamente la memoria de tu celu
+                const misVotos = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partido.id}`));
+                if (misVotos && Object.keys(misVotos).length > 0) {
+                    let suma = 0;
+                    let cantidad = 0;
+                    for (let id in misVotos) {
+                        suma += parseFloat(misVotos[id]);
+                        cantidad++;
+                    }
+                    notaAMostrar = (suma / cantidad).toFixed(1);
+                }
+            } else {
+                // Si es promedio hinchas, lee el número final (snapshot) que dejaste en Firebase
+                notaAMostrar = partido.promedioHinchas;
+            }
             
             if (notaAMostrar) {
                 const colorPromedio = obtenerColorExacto(notaAMostrar);
                 htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${notaAMostrar}</div>`;
             } else {
-                // Si justo no hay promedio cargado, mostramos un guión gris
                 htmlScore = `<div class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25);">-</div>`;
             }
         }
