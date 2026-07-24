@@ -1232,6 +1232,76 @@ if (tabGrillaMiBoleta && tabGrillaPromedios) {
     });
 }
 
+// ==========================================
+// FUNCIÓN ASISTENTE: BUSCAR PROMEDIO EN VIVO (MATE CALCADA 100%)
+// ==========================================
+async function cargarPromedioEnVivoParaGrilla(idPartido, elementoId) {
+    try {
+        const respuesta = await fetch(`https://mi-11-river-default-rtdb.firebaseio.com/votos/${idPartido}.json`);
+        const datosDeUsuarios = await respuesta.json();
+        
+        let elemento = document.getElementById(elementoId);
+        if (!elemento) return; 
+
+        if (!datosDeUsuarios) {
+            elemento.innerHTML = '-';
+            return;
+        }
+
+        const sumasPorJugador = {};
+        const conteosPorJugador = {};
+
+        Object.values(datosDeUsuarios).forEach(votoUsuario => {
+            if (votoUsuario.puntajes) {
+                Object.entries(votoUsuario.puntajes).forEach(([idJugador, notaStr]) => {
+                    const nota = parseFloat(notaStr);
+                    if (!isNaN(nota)) {
+                        if (!sumasPorJugador[idJugador]) {
+                            sumasPorJugador[idJugador] = 0;
+                            conteosPorJugador[idJugador] = 0;
+                        }
+                        sumasPorJugador[idJugador] += nota;
+                        conteosPorJugador[idJugador]++;
+                    }
+                });
+            }
+        });
+
+        let sumaDePromedios = 0;
+        let cantidadJugadoresPuntuados = 0;
+
+        Object.keys(sumasPorJugador).forEach(idJugador => {
+            // EL SECRETO ESTABA ACÁ: Imitar el recorte de decimales que hace la cancha adentro
+            let promedioCrudo = sumasPorJugador[idJugador] / conteosPorJugador[idJugador];
+            let promedioRecortado = parseFloat(promedioCrudo.toFixed(1)); 
+            
+            sumaDePromedios += promedioRecortado;
+            cantidadJugadoresPuntuados++;
+        });
+
+        if (cantidadJugadoresPuntuados > 0) {
+            const promedioFinal = (sumaDePromedios / cantidadJugadoresPuntuados).toFixed(1);
+            const colorPromedio = obtenerColorExacto(promedioFinal);
+            const colorBorde = colorPromedio.replace('rgb', 'rgba').replace(')', ', 0.25)');
+            
+            elemento.innerText = promedioFinal;
+            elemento.style.color = colorPromedio;
+            elemento.style.border = `1px solid ${colorBorde}`;
+            elemento.style.fontSize = ''; 
+        } else {
+            elemento.innerHTML = '-';
+        }
+
+    } catch (error) {
+        console.error("Error al cargar promedio en vivo:", error);
+        let elemento = document.getElementById(elementoId);
+        if (elemento) elemento.innerHTML = '-';
+    }
+}
+
+// ==========================================
+// RENDERIZADOR DE LA GRILLA (ACTUALIZADO)
+// ==========================================
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
     if (!grid) return;
@@ -1240,51 +1310,62 @@ function renderizarHistorial() {
 
     historialPartidos.forEach(partido => {
         const card = document.createElement('div');
-        card.className = `match-card ${partido.estado === 'abierto' ? 'live' : ''}`;
+        const yaVoto = localStorage.getItem(`rivertactico_ya_voto_${partido.id}`) === 'true';
+        
+        card.className = `match-card ${partido.estado === 'abierto' && !yaVoto && modoVistaGrilla === 'mi_boleta' ? 'live' : ''}`;
         
         let htmlScore = '';
-        if (partido.estado === 'abierto') {
-            htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
-        } else if (partido.estado === 'pendiente') {
-            htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
-        } else {
-            let notaAMostrar = null;
 
-            if (modoVistaGrilla === 'mi_boleta') {
-                // MAGIA: Calculamos TU promedio leyendo directamente la memoria de tu celu
+        if (partido.estado === 'pendiente') {
+            htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
+        } 
+        else if (modoVistaGrilla === 'mi_boleta') {
+            if (partido.estado === 'abierto' && !yaVoto) {
+                htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
+            } else {
                 const misVotos = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partido.id}`));
+                let notaAMostrar = null;
                 if (misVotos && Object.keys(misVotos).length > 0) {
-                    let suma = 0;
-                    let cantidad = 0;
+                    let suma = 0, cantidad = 0;
                     for (let id in misVotos) {
                         suma += parseFloat(misVotos[id]);
                         cantidad++;
                     }
                     notaAMostrar = (suma / cantidad).toFixed(1);
                 }
-            } else {
-                // Si es promedio hinchas, lee el número final (snapshot) que dejaste en Firebase
-                notaAMostrar = partido.promedioHinchas;
+
+                if (notaAMostrar) {
+                    const colorPromedio = obtenerColorExacto(notaAMostrar);
+                    const colorBorde = colorPromedio.replace('rgb', 'rgba').replace(')', ', 0.25)');
+                    htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorBorde};">${notaAMostrar}</div>`;
+                } else {
+                    htmlScore = `<div class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25);">-</div>`;
+                }
             }
-            
-            if (notaAMostrar) {
-                const colorPromedio = obtenerColorExacto(notaAMostrar);
-                htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorPromedio}40;">${notaAMostrar}</div>`;
+        } 
+        else if (modoVistaGrilla === 'promedios') {
+            if (partido.estado === 'abierto') {
+                const idUnico = `live-score-${partido.id}`;
+                htmlScore = `<div id="${idUnico}" class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25); display: flex; align-items: center; justify-content: center;">⏳</div>`;
+                cargarPromedioEnVivoParaGrilla(partido.id, idUnico);
             } else {
-                htmlScore = `<div class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25);">-</div>`;
+                const notaAMostrar = partido.promedioHinchas;
+                if (notaAMostrar) {
+                    const colorPromedio = obtenerColorExacto(notaAMostrar);
+                    const colorBorde = colorPromedio.replace('rgb', 'rgba').replace(')', ', 0.25)');
+                    htmlScore = `<div class="match-score" style="color: ${colorPromedio}; border: 1px solid ${colorBorde};">${notaAMostrar}</div>`;
+                } else {
+                    htmlScore = `<div class="match-score" style="color: var(--text-muted); border: 1px solid rgba(128,128,128,0.25);">-</div>`;
+                }
             }
         }
 
         let golesRiver = "";
         let golesRival = "";
-        
         if (partido.resultado.includes('-')) {
             let partes = partido.resultado.split('-');
             golesRiver = partes[0].trim();
             golesRival = partes[1].trim();
-        } else {
-            golesRiver = ""; 
-            golesRival = "";
         }
 
         card.innerHTML = `
@@ -1302,9 +1383,7 @@ function renderizarHistorial() {
         `;
 
         card.onclick = () => {
-            if (partido.estado === 'pendiente') {
-                return; 
-            }
+            if (partido.estado === 'pendiente') return; 
 
             partidoActualId = partido.id; 
             partidoActualEstado = partido.estado; 
@@ -1313,7 +1392,15 @@ function renderizarHistorial() {
             
             viewPartidos.style.display = 'none';
             viewPuntuar.style.display = 'grid'; 
-            cargarVistaPuntuacion();
+            
+            // MAGIA ACÁ: Sincronizamos la navegación para que abra en la pestaña correcta
+            if (modoVistaGrilla === 'promedios') {
+                const tabInternaPromedios = document.getElementById('tab-promedios');
+                if (tabInternaPromedios) tabInternaPromedios.click();
+            } else {
+                const tabInternaBoleta = document.getElementById('tab-mi-boleta');
+                if (tabInternaBoleta) tabInternaBoleta.click();
+            }
         };
 
         grid.appendChild(card);
