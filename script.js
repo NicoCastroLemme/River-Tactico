@@ -160,22 +160,76 @@ let jugadorPuntuandoActual = null;
 let modoPuntajeActual = 'mis_puntajes'; 
 const sofaScoreData = { 41: 7.2, 16: 6.8, 13: 7.0, 28: 6.5, 21: 5.5, 6: 7.5, 15: 7.1, 24: 6.9, 26: 8.8, 11: 9.6, 35: 8.2, 20: 6.5, 10: 7.0, 19: 6.8 };
 const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15: 7.0, 24: 6.5, 26: 9.0, 11: 10.0, 35: 8.5, 20: 6.0, 10: 7.5, 19: 6.5 };
-const promedioUsuariosData = { 41: 6.8, 16: 6.3, 13: 7.3, 28: 6.0, 21: 4.5, 6: 7.8, 15: 7.0, 24: 6.7, 26: 8.9, 11: 9.8, 35: 8.4, 20: 6.2, 10: 7.2, 19: 6.6 };
+let promediosRealesCalculados = {}; // Arranca vacío, se llena en vivo de Firebase
 
 function obtenerDatosActivos() {
   if (modoPuntajeActual === 'sofascore') return sofaScoreData;
   if (modoPuntajeActual === 'millostats') return milloStatsData;
-  if (modoPuntajeActual === 'promedio_usuarios') return promedioUsuariosData;
+  if (modoPuntajeActual === 'promedio_usuarios') return promediosRealesCalculados; 
   return boletaPuntajes;
 }
 
-// Escuchador de clics para cambiar de fuente
+// MAGIA: Función que descarga todos los votos de UN partido y saca el promedio matemático
+async function calcularPromediosDeFirebase() {
+  const urlFirebase = `https://mi-11-river-default-rtdb.firebaseio.com/votos/${partidoActualId}.json`;
+  
+  try {
+    const respuesta = await fetch(urlFirebase);
+    const datosDeUsuarios = await respuesta.json();
+    
+    promediosRealesCalculados = {}; // Limpiamos la memoria antes de calcular
+    
+    if (!datosDeUsuarios) return; // Si nadie votó todavía, salimos silenciosamente
+
+    const sumas = {};
+    const conteos = {};
+
+    // Recorremos cada usuario ("user_123": { puntajes: {...} })
+    Object.values(datosDeUsuarios).forEach(votoUsuario => {
+      if (votoUsuario.puntajes) {
+        // Recorremos las notas que puso ese usuario (41: "7.5", 11: "9.0")
+        Object.entries(votoUsuario.puntajes).forEach(([idJugador, notaStr]) => {
+          const nota = parseFloat(notaStr);
+          if (!isNaN(nota)) {
+            if (!sumas[idJugador]) {
+              sumas[idJugador] = 0;
+              conteos[idJugador] = 0;
+            }
+            sumas[idJugador] += nota;
+            conteos[idJugador]++;
+          }
+        });
+      }
+    });
+
+    // Matemática final: Suma total dividida por cantidad de votos
+    Object.keys(sumas).forEach(idJugador => {
+      promediosRealesCalculados[idJugador] = (sumas[idJugador] / conteos[idJugador]).toFixed(1);
+    });
+
+  } catch (error) {
+    console.error("Error al calcular promedios:", error);
+  }
+}
+
+// Escuchador de clics para cambiar de fuente de puntajes
 document.querySelectorAll('.source-tab').forEach(btn => {
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', async (e) => { // <-- Le agregamos 'async'
     document.querySelectorAll('.source-tab').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     modoPuntajeActual = e.target.dataset.source;
-    cargarVistaPuntuacion();
+    
+    // Si tocan el promedio de hinchas, calculamos en vivo
+    if (modoPuntajeActual === 'promedio_usuarios') {
+      const textoOriginal = e.target.innerText;
+      e.target.innerText = 'Calculando... ⏳'; // Feedback visual de nivel pro
+      
+      await calcularPromediosDeFirebase(); // Esperamos a que termine la matemática
+      
+      e.target.innerText = textoOriginal; // Volvemos el texto a la normalidad
+    }
+    
+    cargarVistaPuntuacion(); // Dibujamos las notas nuevas en la cancha
   });
 });
 
@@ -1117,10 +1171,7 @@ if (btnPartidos) {
 
 // Limpiamos los datos y agregamos "competencia"
 const historialSimulado = [
-    { id: 'p4', rival: 'Aldosivi', resultado: 'vs', condicion: 'N', miPromedio: null, estado: 'abierto', competencia: 'Copa Argentina' },
-    { id: 'p3', rival: 'Boca Juniors', resultado: '2 - 0', condicion: 'L', miPromedio: '7.8', estado: 'cerrado', competencia: 'Liga Profesional' },
-    { id: 'p2', rival: 'Independiente', resultado: '1 - 1', condicion: 'L', miPromedio: '5.5', estado: 'cerrado', competencia: 'Liga Profesional' },
-    { id: 'p1', rival: 'Talleres', resultado: '3 - 1', condicion: 'L', miPromedio: '8.2', estado: 'cerrado', competencia: 'Liga Profesional' }
+    { id: 'p1', rival: 'Barracas Central', resultado: 'vs', condicion: 'L', miPromedio: null, estado: 'cerrado', competencia: 'Liga Profesional' }
 ];
 
 function renderizarHistorial() {

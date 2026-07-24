@@ -132,6 +132,30 @@
       }
     },
     {
+      "id": 31,
+      "nombre": "F. González",
+      "posicion": ["DFC"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 36,
+      "nombre": "U. Giménez",
+      "posicion": ["DFC", "LD"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 29,
       "nombre": "G. Montiel",
       "posicion": ["LD"],
@@ -517,18 +541,6 @@
       }
     },
     {
-      "id": 108,
-      "nombre": "F. González",
-      "posicion": ["DFC"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
       "id": 109,
       "nombre": "J. Miretti",
       "posicion": ["DFC"],
@@ -556,30 +568,6 @@
       "id": 111,
       "nombre": "T. Pellegrini",
       "posicion": ["DFC"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 112,
-      "nombre": "U. Giménez",
-      "posicion": ["DFC", "LD"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 113,
-      "nombre": "M. Unyicio",
-      "posicion": ["LD"],
       "numero": "-",
       "puntaje_promedio": 0,
       "estadisticas": {
@@ -823,6 +811,45 @@
       "id": 202,
       "nombre": "A. Correa",
       "posicion": ["MCO", "MP", "MC", "MD", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 203,
+      "nombre": "E. Barco",
+      "posicion": ["MCO", "MP", "MC", "EI", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 204,
+      "nombre": "E. Palacios",
+      "posicion": ["MC", "MCD", "MD", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 205,
+      "nombre": "F. Medina",
+      "posicion": ["DFC", "LI"],
       "numero": "-",
       "puntaje_promedio": 0,
       "nuevo": false,
