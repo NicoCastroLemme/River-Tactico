@@ -1150,7 +1150,7 @@ if (btnPizarra) {
 
 // 2. Botón "Puntajes" (La Grilla de Partidos - Master)
 if (btnPartidos) {
-  btnPartidos.addEventListener('click', () => {
+  btnPartidos.addEventListener('click', async () => { // <-- Le agregamos 'async' acá
     btnPartidos.classList.add('active');
     if(btnPizarra) btnPizarra.classList.remove('active');
     
@@ -1161,7 +1161,8 @@ if (btnPartidos) {
     if(viewPuntuar) viewPuntuar.style.display = 'none';
     viewPartidos.style.display = 'block'; 
     
-    renderizarHistorial();
+    // MAGIA: Trae los datos de Firebase y dibuja la pantalla
+    await descargarHistorialDeFirebase();
   });
 }
 
@@ -1169,10 +1170,42 @@ if (btnPartidos) {
 // MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
 // ==========================================
 
-// Limpiamos los datos y agregamos "competencia"
-const historialSimulado = [
-    { id: 'p1', rival: 'Barracas Central', resultado: 'vs', condicion: 'L', miPromedio: null, estado: 'cerrado', competencia: 'Liga Profesional' }
-];
+// ==========================================
+// MOTOR DEL HISTORIAL (CONECTADO A FIREBASE)
+// ==========================================
+let historialPartidos = []; // Arranca vacío, se llena desde la nube
+
+async function descargarHistorialDeFirebase() {
+    const grid = document.getElementById('grid-partidos');
+    if (grid) grid.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding: 40px; width: 100%;">Cargando partidos... ⏳</div>';
+
+    const url = 'https://mi-11-river-default-rtdb.firebaseio.com/partidos.json';
+    try {
+        const respuesta = await fetch(url);
+        const datos = await respuesta.json();
+        
+        if (datos) {
+            // Convertimos el JSON de la nube en una lista para la pantalla
+            historialPartidos = Object.keys(datos).map(key => {
+                return { id: key, ...datos[key] };
+            });
+            
+            // Ordenamos para que el partido más nuevo quede siempre arriba
+            historialPartidos.sort((a, b) => {
+                const numA = parseInt(a.id.replace('p', '')) || 0;
+                const numB = parseInt(b.id.replace('p', '')) || 0;
+                return numB - numA; 
+            });
+        } else {
+            historialPartidos = [];
+        }
+        
+        renderizarHistorial(); // Dibujamos las tarjetas
+    } catch (error) {
+        console.error("Error cargando partidos:", error);
+        if (grid) grid.innerHTML = '<div style="color:#da291c; text-align:center; padding: 40px;">Error al cargar. Verificá tu conexión.</div>';
+    }
+}
 
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
@@ -1180,7 +1213,7 @@ function renderizarHistorial() {
     
     grid.innerHTML = ''; // Limpiamos la grilla antes de dibujar
 
-    historialSimulado.forEach(partido => {
+    historialPartidos.forEach(partido => {
         const card = document.createElement('div');
         card.className = `match-card ${partido.estado === 'abierto' ? 'live' : ''}`;
         
