@@ -2368,3 +2368,38 @@ function actualizarContadores() {
 // Lo ejecutamos cada 1 minuto para que cambie solo
 setInterval(actualizarContadores, 60000);*/
 
+// ==========================================
+// SISTEMA DE RUTAS POR URL (LINKS COMPARTIBLES)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const btnPizarra = document.getElementById('btn-pizarra');
+    const btnPartidos = document.getElementById('btn-partidos');
+
+    // 1. Leer el link cuando alguien entra por primera vez
+    const rutaActual = window.location.hash;
+    
+    // Le damos un respiro mínimo de 50ms para que termine de cargar tu app normal
+    setTimeout(() => {
+        if (rutaActual === '#puntajes') {
+            // Si el link dice #puntajes, simulamos un clic en tu botón del menú
+            if (btnPartidos) btnPartidos.click();
+        } else if (rutaActual === '#crear-11') {
+            // Si el link dice #crear-11, abrimos la pizarra
+            if (btnPizarra) btnPizarra.click();
+        }
+    }, 50);
+
+    // 2. Actualizar el link silenciosamente cuando el usuario usa tu menú lateral
+    if (btnPizarra) {
+        btnPizarra.addEventListener('click', () => {
+            // history.replaceState cambia la URL sin recargar la página
+            history.replaceState(null, null, '#crear-11');
+        });
+    }
+    
+    if (btnPartidos) {
+        btnPartidos.addEventListener('click', () => {
+            history.replaceState(null, null, '#puntajes');
+        });
+    }
+});
