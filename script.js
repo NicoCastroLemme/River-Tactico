@@ -953,7 +953,7 @@ if(btnCompartir) {
     html2canvas(cancha, {
       scale: 3,                 
       useCORS: true,              
-      backgroundColor: '#ffffff', 
+      backgroundColor: null, 
     }).then(canvas => {
       // Creamos un enlace invisible, le pegamos la imagen y forzamos el clic
       const enlace = document.createElement('a');
@@ -2143,33 +2143,34 @@ if (buscadorModalElement) {
 
 // --- MOTOR PARA COMPARTIR LA IMAGEN DE LOS PUNTAJES ---
 // ==========================================
-// DESCARGAR IMAGEN: MIS PUNTAJES
+// DESCARGAR IMAGEN: MIS PUNTAJES (Soporta múltiples botones)
 // ==========================================
-const btnCompartirPuntaje = document.getElementById('btn-compartir-puntaje');
-if(btnCompartirPuntaje) {
-  btnCompartirPuntaje.addEventListener('click', () => {
+document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
+  boton.addEventListener('click', (e) => {
+    // Buscamos el botón específico que se tocó para ponerle el relojito
+    const btnTocado = e.currentTarget;
     const canchaPuntaje = document.getElementById('pitch-rating');
-    const contenidoOriginal = btnCompartirPuntaje.innerHTML;
-    btnCompartirPuntaje.innerHTML = '⏳';
+    const contenidoOriginal = btnTocado.innerHTML;
+    
+    btnTocado.innerHTML = '⏳';
     
     html2canvas(canchaPuntaje, {
       scale: 3,                 
       useCORS: true,              
-      backgroundColor: '#ffffff'
+      backgroundColor: null // Transparente, como charlamos recién
     }).then(canvas => {
-      // Descarga directa
       const enlace = document.createElement('a');
       enlace.download = 'Mis_Puntajes_River.png';
       enlace.href = canvas.toDataURL('image/png');
       enlace.click();
       
-      btnCompartirPuntaje.innerHTML = contenidoOriginal; 
+      btnTocado.innerHTML = contenidoOriginal; 
     }).catch(error => {
       console.error("Error generando la imagen:", error);
-      btnCompartirPuntaje.innerHTML = contenidoOriginal;
+      btnTocado.innerHTML = contenidoOriginal;
     });
   });
-}
+});
 
 // ==========================================
 // CONTROL DE PESTAÑAS: MI BOLETA / PROMEDIOS

@@ -961,20 +961,21 @@ body.modo-camisetas #view-puntuar .player-token {
     background-image: none !important;
 }
 
-/* Grilla de suplentes (Vista Puntuación) */
+/* Grilla de suplentes (Vista Puntuación - PC) */
 .bench-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Crea 3 columnas exactamente iguales */
-    gap: 15px 5px; /* Separación: 15px arriba/abajo, 5px a los costados */
-    justify-items: center; /* Centra cada ficha en su lugarcito */
+    grid-template-columns: repeat(3, 1fr);
+    /* MAGIA ACÁ: Le subimos de 15px a 40px la separación vertical para que entre el nombre */
+    gap: 40px 5px; 
+    justify-items: center; 
     padding-bottom: 20px;
     width: 100%;
 }
 
-/* Solo por si alguien abre la PC en una pantalla muy chica, asegura que las fichas se achiquen un toque y no se desborden */
+/* Solo por si alguien abre la PC en una pantalla un poco más chica */
 @media (max-width: 1024px) {
     .bench-grid {
-        gap: 15px 2px;
+        gap: 40px 2px; /* Mantenemos los 40px de espacio vertical */
     }
 }
 
@@ -1373,4 +1374,14 @@ body:not(.dark-mode) #rated-players-container {
     border-left: 4px solid var(--river-red) !important;
     border-bottom: none !important; 
     border-radius: 0 !important; 
+}
+
+/* ==========================================
+   SEPARADOR DE BOLETA (SOLO CELULARES)
+   ========================================== */
+@media (max-width: 992px) {
+    #tabs-fuente-puntajes {
+        margin-top: 15px !important;
+        padding-top: 25px;
+    }
 }
