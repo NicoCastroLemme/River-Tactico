@@ -120,7 +120,15 @@ body {
   color: var(--accent-black); 
 }
 
-.player-token { position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%); z-index: 10; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+.player-token { 
+    position: absolute; 
+    width: 70px; 
+    height: 70px; 
+    transform: translate(-50%, -50%); 
+    z-index: 10; 
+    /* LA MAGIA DEL GLIDE: 0.4 segundos de viaje suave */
+    transition: top 0.4s ease-in-out, left 0.4s ease-in-out, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); 
+}
 .token-img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.4)); }
 .token-name { 
     position: absolute; 
@@ -1298,38 +1306,24 @@ body.dark-mode .moon-icon {
 }
 
 /* ==========================================
-   INTERCAMBIO DE LOGOS (CLARO/OSCURO)
-   ========================================== */
-/* Estado normal (Modo Claro) */
-.logo-claro { display: block; }
-.logo-oscuro { display: none; }
-
-/* Estado en Modo Oscuro */
-body.dark-mode .logo-claro { display: none !important; }
-body.dark-mode .logo-oscuro { display: block !important; }
-
-/* ==========================================
    MENÚ POR DEBAJO DEL HEADER Y TRANSICIÓN
    ========================================== */
-/* 1. Obligamos al header a estar siempre por encima de TODO (capa 10000) */
 .main-header {
     position: relative; 
     z-index: 10000 !important;
-    background-color: var(--bg-color) !important; /* Asegura que el header sea sólido y tape el menú al pasar */
+    background-color: var(--bg-color) !important;
+    border-bottom: 2px solid var(--river-red) !important; /* Línea roja unificada acá */
 }
 
-/* 2. El fondo oscurecido va por debajo del header pero arriba de la cancha */
 .sidebar-overlay {
     z-index: 9998 !important;
 }
 
-/* 3. El menú lateral va por debajo del header (capa 9999) */
 .sidebar-menu {
     z-index: 9999 !important;
-    padding-top: 80px !important; /* Empuja los botones para que no queden tapados por el header */
+    padding-top: 80px !important; 
 }
 
-/* 4. Efectito de giro suave para cuando cambia de rayitas a X */
 .hamburger-btn svg {
     transition: transform 0.3s ease;
 }
@@ -1338,32 +1332,20 @@ body.dark-mode .logo-oscuro { display: block !important; }
 }
 
 /* ==========================================
-   LÍNEA ROJA SEPARADORA DEL HEADER
-   ========================================== */
-.main-header {
-    border-bottom: 2px solid var(--river-red) !important;
-}
-
-/* ==========================================
    ESTÉTICA SÚPER LIMPIA PARA EL MODO CLARO (FORZADO GLOBAL)
    ========================================== */
-
-/* 1. Redefinimos las variables para el modo claro desde la raíz */
 body:not(.dark-mode) {
     --bg-color: #ffffff !important; 
     --panel-bg: #ffffff !important;
     --card-bg: #ffffff !important;
     --surface-color: #ffffff !important;
-    
     background: #ffffff !important;
 }
 
-/* 2. Forzamos con 'background' a todos los paneles y tarjetas */
 body:not(.dark-mode) .app-layout,
 body:not(.dark-mode) .left-panel,
 body:not(.dark-mode) .right-panel,
 body:not(.dark-mode) .center-column,
-body:not(.dark-mode) .main-header,
 body:not(.dark-mode) .sidebar-menu,
 body:not(.dark-mode) .info-card,
 body:not(.dark-mode) .player-list,
@@ -1373,24 +1355,22 @@ body:not(.dark-mode) #rated-players-container {
 }
 
 /* ==========================================
-   SIN LÍNEA INFERIOR + RECUPERAR BARRITA ROJA + BORDES RECTOS
+   SIN LÍNEA INFERIOR + RECUPERAR BARRITA ROJA + BORDES RECTOS (MENÚ)
    ========================================== */
 .sidebar-content .nav-btn {
     border-bottom: none !important;
     box-shadow: none !important;
     text-decoration: none !important;
-    border-radius: 0 !important; /* Esto hace que el botón sea perfectamente rectangular */
+    border-radius: 0 !important; 
 }
 
-/* Matamos la rayita inferior fantasma */
 .sidebar-content .nav-btn::after,
 .sidebar-content .nav-btn::before {
     display: none !important;
 }
 
-/* Le devolvemos su borde izquierdo rojo solo al botón activo */
 .sidebar-content .nav-btn.active {
     border-left: 4px solid var(--river-red) !important;
     border-bottom: none !important; 
-    border-radius: 0 !important; /* Aseguramos que el fondo rojito no se redondee */
+    border-radius: 0 !important; 
 }

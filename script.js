@@ -538,150 +538,124 @@ function dibujarEsquema() {
 }
 
 function cambiarFormacion(nombreFormacion, botonClicked) {
-  if (formacionActual === nombreFormacion) return;
-  if (!coleccionFormaciones[nombreFormacion]) return;
+    if (formacionActual === nombreFormacion) return;
+    if (!coleccionFormaciones[nombreFormacion]) return;
 
-  const jugadoresEnCancha = [];
-  document.querySelectorAll('#pitch .player-token').forEach(token => {
-    const id = token.id.replace('token-', '');
-    const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
-    if (jugador) {
-       let idSuplente = null;
-       const cartelSuplente = token.querySelector('.nombre-suplente');
-       if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
-          idSuplente = cartelSuplente.dataset.id;
-       }
-       jugadoresEnCancha.push({ titular: jugador, idSuplente: idSuplente });
-    }
-  });
-
-  document.querySelectorAll('.btn-formation').forEach(btn => btn.classList.remove('active'));
-  botonClicked.classList.add('active');
-
-  formacionActual = nombreFormacion;
-  posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
-
-  document.querySelectorAll('#pitch .player-token').forEach(el => el.remove());
-  dibujarEsquema(); 
-
-  let slotsDisponibles = [];
-  Object.entries(posicionesTacticas).forEach(([puesto, coordsArray]) => {
-    coordsArray.forEach(coords => {
-      slotsDisponibles.push({ puesto, coords, ocupado: false });
+    // 1. En vez de borrar los jugadores, LOS GUARDAMOS (guardamos el elemento DOM entero)
+    const jugadoresData = [];
+    document.querySelectorAll('#pitch .player-token').forEach(token => {
+        const id = token.id.replace('token-', '');
+        const jugador = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
+        if (jugador) {
+           let idSuplente = null;
+           const cartelSuplente = token.querySelector('.nombre-suplente');
+           if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
+              idSuplente = cartelSuplente.dataset.id;
+           }
+           // Guardamos la info del jugador y su ficha visual
+           jugadoresData.push({ titular: jugador, idSuplente: idSuplente, elementoDOM: token });
+        }
     });
-  });
 
-  jugadoresEnCancha.forEach(pack => {
-    const jugador = pack.titular;
-    jugador.ubicado = false;
-    jugador.slotAsignado = null;
-    for (let i = 0; i < jugador.posicion.length; i++) {
-      const puestoDeseado = jugador.posicion[i];
-      const slotIdeal = slotsDisponibles.find(s => s.puesto === puestoDeseado && !s.ocupado);
-      if (slotIdeal) {
-        slotIdeal.ocupado = true;
-        jugador.ubicado = true;
-        jugador.slotAsignado = slotIdeal;
-        break; 
-      }
-    }
-  });
+    // 2. Cambiamos el botón activo en el menú
+    document.querySelectorAll('.btn-formation').forEach(btn => btn.classList.remove('active'));
+    botonClicked.classList.add('active');
 
-  jugadoresEnCancha.forEach(pack => {
-    const jugador = pack.titular;
-    if (!jugador.ubicado) {
-      const esArquero = jugador.posicion.includes('ARQ');
-      const slotVacio = slotsDisponibles.find(s => {
-        if (s.ocupado) return false; 
-        return esArquero ? (s.puesto === 'ARQ') : (s.puesto !== 'ARQ');
-      });
+    formacionActual = nombreFormacion;
+    posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
 
-      if (slotVacio) {
-        slotVacio.ocupado = true;
-        jugador.ubicado = true;
-        jugador.slotAsignado = slotVacio;
-      }
-    }
-  });
+    // 3. Borramos y redibujamos SOLO las crucecitas de fondo (+) y la lista del boxscore
+    document.querySelectorAll('.placeholder').forEach(el => el.remove());
+    boxScoreContainer.innerHTML = '';
+    
+    Object.entries(posicionesTacticas).forEach(([pos, coordsArray]) => {
+        coordsArray.forEach(coords => {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'placeholder';
+            placeholder.style.top = coords.top;
+            placeholder.style.left = coords.left;
+            placeholder.innerText = '+'; 
+            placeholder.dataset.pos = pos; 
+            
+            // ---> LA LÍNEA MÁGICA: Nacen invisibles para no ensuciar la animación
+            placeholder.style.opacity = '0'; 
+            
+            placeholder.onclick = () => ubicarJugadorLibre(coords);
+            pitch.appendChild(placeholder);
 
-  jugadoresEnCancha.forEach(pack => {
-    const jugador = pack.titular;
-    if (jugador.slotAsignado) {
-      const coords = jugador.slotAsignado.coords;
-      
-      const token = document.createElement('div');
-      token.id = `token-${jugador.id}`;
-      token.className = 'player-token';
-      token.style.cursor = 'pointer'; 
-      token.dataset.pos = jugador.slotAsignado.puesto; 
-      token.onclick = () => {
-        if (window.estaArrastrando) return; 
-        ubicarJugadorLibre({ top: token.style.top, left: token.style.left });
-      }; 
+            const boxRow = document.createElement('div');
+            boxRow.className = 'box-score-row';
+            boxRow.innerHTML = `<span>${pos}</span><span>—</span>`;
+            boxScoreContainer.appendChild(boxRow);
+        });
+    });
 
-      token.innerHTML = `
-        <img src="${obtenerRutaFoto(jugador.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
-        <div class="token-name">${jugador.apellidoProcesado}</div>
-        <button class="btn-suplente">+</button>
-        <div class="nombre-suplente oculto"></div>
-      `;
-      
-      token.style.top = coords.top;
-      token.style.left = coords.left;
-      pitch.appendChild(token);
-      hacerArrastrable(token);
+    // 4. Lógica de cálculo de los nuevos lugares
+    let slotsDisponibles = [];
+    Object.entries(posicionesTacticas).forEach(([puesto, coordsArray]) => {
+        coordsArray.forEach(coords => {
+            slotsDisponibles.push({ puesto, coords, ocupado: false });
+        });
+    });
 
-      const btnSuplente = token.querySelector('.btn-suplente');
-      const cartelSuplente = token.querySelector('.nombre-suplente');
-      
-      btnSuplente.onclick = (e) => {
-        e.stopPropagation(); 
-        eligiendoSuplente = true;
-        jugadorTitularElegido = token;
-        const posAbreviada = jugador.slotAsignado.puesto; 
-        abrirModalSeleccion(posAbreviada, coords);
-      };
+    // Buscamos el lugar ideal para cada jugador
+    jugadoresData.forEach(pack => {
+        const jugador = pack.titular;
+        jugador.ubicado = false;
+        jugador.slotAsignado = null;
+        for (let i = 0; i < jugador.posicion.length; i++) {
+            const puestoDeseado = jugador.posicion[i];
+            const slotIdeal = slotsDisponibles.find(s => s.puesto === puestoDeseado && !s.ocupado);
+            if (slotIdeal) {
+                slotIdeal.ocupado = true;
+                jugador.ubicado = true;
+                jugador.slotAsignado = slotIdeal;
+                break; 
+            }
+        }
+    });
 
-      // MAGIA: El evento siempre vive acá, desde el momento en que se crea el jugador.
-      cartelSuplente.onclick = (e) => {
-         e.stopPropagation();
-         const idSuplente = cartelSuplente.dataset.id;
-         const filaSuplente = document.getElementById(`row-${idSuplente}`);
-         if (filaSuplente) filaSuplente.classList.remove('on-pitch');
-         
-         cartelSuplente.classList.add('oculto');
-         cartelSuplente.dataset.id = '';
-         btnSuplente.classList.remove('oculto');
-         guardarEstadoPizarra();
-      };
+    // Si sobra alguno (ej: pasás a una formación sin extremos), lo metemos donde haya hueco
+    jugadoresData.forEach(pack => {
+        const jugador = pack.titular;
+        if (!jugador.ubicado) {
+            const esArquero = jugador.posicion.includes('ARQ');
+            const slotVacio = slotsDisponibles.find(s => {
+                if (s.ocupado) return false; 
+                return esArquero ? (s.puesto === 'ARQ') : (s.puesto !== 'ARQ');
+            });
 
-      if (pack.idSuplente) {
-         const suplente = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == pack.idSuplente);
-         if (suplente) {
-             cartelSuplente.textContent = suplente.apellidoProcesado;
-             cartelSuplente.dataset.id = suplente.id;
-             cartelSuplente.classList.remove('oculto');
-             btnSuplente.classList.add('oculto');
-         }
-      }
+            if (slotVacio) {
+                slotVacio.ocupado = true;
+                jugador.ubicado = true;
+                jugador.slotAsignado = slotVacio;
+            }
+        }
+    });
 
-      const placeholder = Array.from(document.querySelectorAll('.placeholder'))
-        .find(p => p.style.top === coords.top && p.style.left === coords.left);
-      
-      if (placeholder) {
-        placeholder.style.transition = 'none'; 
-        placeholder.style.opacity = '0'; 
-        setTimeout(() => placeholder.style.transition = '', 50); 
-      }
+    // 5. ¡LA MAGIA! En vez de crear fichas nuevas, DESLIZAMOS las que ya existen
+    jugadoresData.forEach(pack => {
+        if (pack.titular.slotAsignado) {
+            const coords = pack.titular.slotAsignado.coords;
+            const token = pack.elementoDOM; // Recuperamos la ficha del HTML
+            
+            // Actualizamos su base de datos interna
+            token.dataset.pos = pack.titular.slotAsignado.puesto; 
+            token.dataset.slotTop = coords.top;
+            token.dataset.slotLeft = coords.left;
+            
+            // Al cambiarle el top y el left, el CSS se encarga de deslizarlo suavecito
+            token.style.top = coords.top;
+            token.style.left = coords.left;
+        }
+    });
 
-      const fila = document.getElementById(`row-${jugador.id}`);
-      if (fila) fila.classList.add('on-pitch');
-    }
-  });
-  
-  verificarOnce();
-  actualizarBoxScore();
-  guardarEstadoPizarra();
+    verificarOnce();
+    actualizarBoxScore();
+    guardarEstadoPizarra();
+    
+    // Le damos un respiro de medio segundo para que terminen de viajar antes de apagar las cruces
+    setTimeout(actualizarPlaceholders, 400); 
 }
 
 function ubicarJugadorLibre(coords) {
