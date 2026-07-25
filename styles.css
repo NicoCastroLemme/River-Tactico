@@ -156,7 +156,7 @@ body {
 .formations-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 30px; }
 .btn-formation { background-color: transparent; border: 1px solid var(--border-color); padding: 8px 0; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-align: center; border-radius: 0; }
 .btn-formation:hover { background-color: #fff; border-color: var(--text-main); }
-.btn-formation.active { background-color: var(--text-main); color: #fff; border-color: var(--text-main); }
+.btn-formation.active { background-color: var(--river-red); color: #fff; border-color: var(--river-red); }
 .tabs { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
 .tab { font-size: 11px; font-weight: bold; cursor: pointer; color: var(--text-muted); }
 .tab.active { color: var(--text-main); position: relative; }
@@ -292,7 +292,7 @@ body.dark-mode .action-btn { color: var(--text-main); }
 .position-filters { display: flex; gap: 5px; margin-top: -5px; margin-bottom: 1px; }
 .filter-btn { flex: 1; background-color: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 0; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border-radius: 0; }
 .filter-btn:hover { background-color: var(--text-muted); color: var(--bg-color); }
-.filter-btn.active { background-color: var(--text-main); color: var(--bg-color); }
+.filter-btn.active { background-color: var(--river-red); color: var(--bg-color); border: 1px solid var(--river-red); }
 .search-input { width: 100%; background-color: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 12px; font-size: 11px; font-weight: bold; box-sizing: border-box; margin-top: -5px; margin-bottom: 1px; border-radius: 0; outline: none; transition: border-color 0.2s; }
 .search-input:focus { border-color: var(--text-main); }
 .search-input::placeholder { color: var(--text-muted); font-weight: normal; opacity: 0.6; }
@@ -874,7 +874,7 @@ body.modo-camisetas .token-img {
 
 /* --- LOGO INVERSO PARA MODO OSCURO --- */
 body.dark-mode .logo-img {
-  content: url('fotos/logo-inverso.png');
+  content: url('fotos/logo-blanco.png');
 }
 
 /* --- MEJORAS PARA ARRASTRE DE JUGADORES (DRAG & DROP) --- */
@@ -1080,4 +1080,317 @@ body.dark-mode .match-score {
   0% { box-shadow: 0 0 0 0 rgba(218, 41, 28, 0.7); }
   70% { box-shadow: 0 0 0 5px rgba(218, 41, 28, 0); }
   100% { box-shadow: 0 0 0 0 rgba(218, 41, 28, 0); }
+}
+
+/* ==========================================
+   PESTAÑAS DE PUNTAJES (SQUAD-TABS) EN MODO OSCURO
+   ========================================== */
+/* 1. Estado inactivo (Pestaña apagada) */
+body.dark-mode .squad-tab {
+    background-color: #222222 !important;
+    color: #888888 !important;
+    border: 1px solid #333333 !important;
+    transition: all 0.3s ease;
+}
+
+/* 2. Cuando le pasás el mouse por arriba */
+body.dark-mode .squad-tab:hover {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+/* 3. Estado ACTIVO (La pestaña seleccionada - ROJO RIVER) */
+body.dark-mode .squad-tab.active {
+    background-color: var(--river-red) !important;
+    color: #ffffff !important;
+    border-color: var(--river-red) !important;
+}
+
+/* 4. Eliminar el parpadeo gris al hacer clic */
+body.dark-mode .squad-tab:focus,
+body.dark-mode .squad-tab:active {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* ==========================================
+   ETIQUETA DE SUPLENTES EN LA CANCHA
+   ========================================== */
+body.dark-mode .nombre-suplente {
+    color: #ffffff !important;
+    background-color: #8d8d8d !important;
+    
+}
+
+/* ==========================================
+   ETIQUETA DE TITULARES EN LA CANCHA
+   ========================================== */
+body.dark-mode .player-name,
+body.dark-mode .token-name {
+    color: #ffffff !important;
+    background-color: #1e1e1e !important;
+}
+/* ==========================================
+   PRUEBA TÁCTICA: TODOS LOS BORDES ROJOS
+   ========================================== 
+
+/* 1. Borde del Header (lo hacemos un poquito más grueso para que destaque)
+body.dark-mode .main-header {
+    border-bottom: 2px solid var(--river-red) !important;
+}
+
+/* 3. El rectángulo de las tarjetas de los partidos
+body.dark-mode .match-card {
+    border: 1px solid var(--river-red) !important;
+}
+
+/* 5. De yapa: El input de buscar jugadores y el borde del panel derecho/izquierdo 
+body.dark-mode .left-panel,
+body.dark-mode .right-panel {
+    border-color: var(--river-red) !important;
+}*/
+
+/* ==========================================
+   MENÚ LATERAL (HAMBURGUESA)
+   ========================================== */
+.hamburger-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-menu {
+    position: fixed;
+    top: 0; right: -280px; /* Arranca escondido a la derecha */
+    width: 260px;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 9999;
+    transition: right 0.3s ease;
+    box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-menu.active {
+    right: 0; /* Aparece */
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h3 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 18px;
+}
+.btn-close-sidebar {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: var(--text-main);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.sidebar-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Modificamos los botones nav-btn para que se adapten al menú lateral */
+.sidebar-content .nav-btn {
+    width: 100%;
+    text-align: left;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    justify-content: flex-start;
+    background-color: transparent;
+}
+.sidebar-content .nav-btn.active {
+    background-color: rgba(220, 53, 69, 0.1); /* Fondo rojito sutil */
+    border-bottom: none; /* Le sacamos la rayita de abajo que tenía en el header */
+    border-left: 4px solid var(--river-red); /* Le ponemos una raya al costado */
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 10px 0;
+}
+
+.sidebar-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    border-radius: 8px;
+}
+.sidebar-theme-toggle:hover {
+    background-color: var(--border-color);
+}
+.theme-icon-container svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ==========================================
+   SWITCH DE MODO OSCURO (SOL Y LUNA)
+   ========================================== */
+.sidebar-theme-switch-container {
+    display: flex;
+    justify-content: center; /* Centra los íconos y el switch en el menú */
+    align-items: center;
+    gap: 15px; /* Espacio entre los dibujitos y la pastilla */
+    padding: 15px;
+}
+
+.theme-icon {
+    width: 22px;
+    height: 22px;
+    color: var(--text-muted); /* Gris apagado por defecto */
+    transition: all 0.3s ease;
+}
+
+/* Magia: El sol brilla si NO estamos en dark-mode */
+body:not(.dark-mode) .sun-icon {
+    color: #f39c12; /* Naranja/Amarillo */
+}
+
+/* Magia: La luna brilla si SÍ estamos en dark-mode */
+body.dark-mode .moon-icon {
+    color: #f1c40f; /* Amarillo brillante */
+    fill: rgba(241, 196, 15, 0.2); /* Relleno sutil */
+}
+
+/* ==========================================
+   INTERCAMBIO DE LOGOS (CLARO/OSCURO)
+   ========================================== */
+/* Estado normal (Modo Claro) */
+.logo-claro { display: block; }
+.logo-oscuro { display: none; }
+
+/* Estado en Modo Oscuro */
+body.dark-mode .logo-claro { display: none !important; }
+body.dark-mode .logo-oscuro { display: block !important; }
+
+/* ==========================================
+   MENÚ POR DEBAJO DEL HEADER Y TRANSICIÓN
+   ========================================== */
+/* 1. Obligamos al header a estar siempre por encima de TODO (capa 10000) */
+.main-header {
+    position: relative; 
+    z-index: 10000 !important;
+    background-color: var(--bg-color) !important; /* Asegura que el header sea sólido y tape el menú al pasar */
+}
+
+/* 2. El fondo oscurecido va por debajo del header pero arriba de la cancha */
+.sidebar-overlay {
+    z-index: 9998 !important;
+}
+
+/* 3. El menú lateral va por debajo del header (capa 9999) */
+.sidebar-menu {
+    z-index: 9999 !important;
+    padding-top: 80px !important; /* Empuja los botones para que no queden tapados por el header */
+}
+
+/* 4. Efectito de giro suave para cuando cambia de rayitas a X */
+.hamburger-btn svg {
+    transition: transform 0.3s ease;
+}
+.hamburger-btn.activo svg {
+    transform: rotate(90deg);
+}
+
+/* ==========================================
+   LÍNEA ROJA SEPARADORA DEL HEADER
+   ========================================== */
+.main-header {
+    border-bottom: 2px solid var(--river-red) !important;
+}
+
+/* ==========================================
+   ESTÉTICA SÚPER LIMPIA PARA EL MODO CLARO (FORZADO GLOBAL)
+   ========================================== */
+
+/* 1. Redefinimos las variables para el modo claro desde la raíz */
+body:not(.dark-mode) {
+    --bg-color: #ffffff !important; 
+    --panel-bg: #ffffff !important;
+    --card-bg: #ffffff !important;
+    --surface-color: #ffffff !important;
+    
+    background: #ffffff !important;
+}
+
+/* 2. Forzamos con 'background' a todos los paneles y tarjetas */
+body:not(.dark-mode) .app-layout,
+body:not(.dark-mode) .left-panel,
+body:not(.dark-mode) .right-panel,
+body:not(.dark-mode) .center-column,
+body:not(.dark-mode) .main-header,
+body:not(.dark-mode) .sidebar-menu,
+body:not(.dark-mode) .info-card,
+body:not(.dark-mode) .player-list,
+body:not(.dark-mode) .formations-list,
+body:not(.dark-mode) #rated-players-container {
+    background: #ffffff !important;
+}
+
+/* ==========================================
+   SIN LÍNEA INFERIOR + RECUPERAR BARRITA ROJA + BORDES RECTOS
+   ========================================== */
+.sidebar-content .nav-btn {
+    border-bottom: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    border-radius: 0 !important; /* Esto hace que el botón sea perfectamente rectangular */
+}
+
+/* Matamos la rayita inferior fantasma */
+.sidebar-content .nav-btn::after,
+.sidebar-content .nav-btn::before {
+    display: none !important;
+}
+
+/* Le devolvemos su borde izquierdo rojo solo al botón activo */
+.sidebar-content .nav-btn.active {
+    border-left: 4px solid var(--river-red) !important;
+    border-bottom: none !important; 
+    border-radius: 0 !important; /* Aseguramos que el fondo rojito no se redondee */
 }

@@ -21,6 +21,9 @@
   <meta name="twitter:image" content="https://rivertactico.com/miniatura.png">
   
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Precarga del logo oscuro para evitar el parpadeo de imagen rota -->
+  <link rel="preload" href="fotos/logo-blanco.png" as="image">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -29,18 +32,51 @@
   <header class="main-header">
     <div class="header-container">
       <div class="header-logo">
-        <img src="fotos/logo.png" alt="Logo de la banda" class="logo-img">
+        <img src="fotos/logo-blanco.png" alt="Logo de la banda" class="logo-img">
         <div class="logo-text">
           <span class="text-top">MI 11</span>
           <span class="text-bottom">RIVER</span>
         </div>
       </div>
-      <nav class="header-nav">
-        <button class="nav-btn active" id="btn-pizarra">Crear 11</button>
-        <button class="nav-btn" id="btn-partidos">Puntajes</button>
-      </nav>
+      
+      <!-- Botón de las 3 rayitas (Hamburguesa) / X (Cerrar) -->
+      <button class="hamburger-btn" id="btn-menu" title="Abrir Menú">
+        <!-- Ícono Hamburguesa -->
+        <svg class="icon-burger" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <!-- Ícono X (Cerrar) oculto por defecto -->
+        <svg class="icon-close" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
     </div>
   </header>
+
+  <!-- Fondo oscuro que aparece cuando abrís el menú -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- El menú lateral desplegable -->
+  <nav class="sidebar-menu" id="sidebar-menu">
+    <div class="sidebar-content">
+      <!-- Los botones de siempre, pero ahora en bloque -->
+      <button class="nav-btn active" id="btn-pizarra">Crear 11</button>
+      <button class="nav-btn" id="btn-partidos">Puntajes</button>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Switch de Tema (Sol - Luna) -->
+      <div class="sidebar-theme-switch-container">
+        <!-- Ícono del Sol -->
+        <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        
+        <!-- El Switch -->
+        <label class="switch">
+          <input type="checkbox" id="checkbox-tema">
+          <span class="slider round"></span>
+        </label>
+
+        <!-- Ícono de la Luna -->
+        <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </div>
+    </div>
+  </nav>
 
   <!-- =============================== -->
   <!-- VISTA 1: PIZARRA TÁCTICA        -->
@@ -92,13 +128,15 @@
       </div>
 
       <div class="pitch-actions">
-        <button class="icon-btn theme-toggle-btn" title="Cambiar Tema">
-          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        </button>
 
-        <button class="icon-btn" id="btn-toggle-fotos" title="Alternar Fotos/Camisetas">
+        <button class="icon-btn" id="btn-toggle-fotos" title="Alternar Dibujos / Fotos Reales / Camisetas">
+          <!-- 1. DIBUJO (Por defecto) -->
           <svg class="icon-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          
+          <!-- 2. FOTO REAL (Nuevo) -->
+          <svg class="icon-camera" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          
+          <!-- 3. CAMISETA -->
           <svg class="icon-shirt" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a8 8 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
         </button>
 
@@ -164,8 +202,8 @@
       <button class="btn-cerrar-panel-movil">✕ Cerrar Plantel</button>
       <div class="info-card">
         <h2>RIVER PLATE</h2>
-        <h3>VS ALDOSIVI</h3>
-        <h4>16avos. DE FINAL COPA ARGENTINA</h4>
+        <h3>VS BARRACAS</h3>
+        <h4>LIGA PROFESIONAL FECHA 1</h4>
         <h4>17-07-2026</h4>
       </div>
 
@@ -213,11 +251,6 @@
 
       <!-- Botones de la vista Puntuar -->
       <div class="pitch-actions">
-        <button class="icon-btn theme-toggle-btn" title="Cambiar Tema">
-          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        </button>
-
         <!-- NUEVO BOTÓN COMPARTIR PUNTAJES -->
         <button class="icon-btn" id="btn-compartir-puntaje" title="Compartir Mis Puntajes">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>

@@ -339,6 +339,19 @@
       }
     },
     {
+      "id": 53,
+      "nombre": "A. Correa",
+      "posicion": ["MCO", "MP", "MC", "MD", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "nuevo": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 11,
       "nombre": "F. Colidio",
       "posicion": ["MP", "EI", "DC"],
@@ -798,19 +811,6 @@
       "id": 201,
       "nombre": "T. Almada",
       "posicion": ["MCO", "MP", "MC"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 202,
-      "nombre": "A. Correa",
-      "posicion": ["MCO", "MP", "MC", "MD", "MI"],
       "numero": "-",
       "puntaje_promedio": 0,
       "nuevo": false,

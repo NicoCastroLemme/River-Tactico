@@ -162,6 +162,45 @@ const sofaScoreData = { 41: 7.2, 16: 6.8, 13: 7.0, 28: 6.5, 21: 5.5, 6: 7.5, 15:
 const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15: 7.0, 24: 6.5, 26: 9.0, 11: 10.0, 35: 8.5, 20: 6.0, 10: 7.5, 19: 6.5 };
 let promediosRealesCalculados = {}; // Arranca vacío, se llena en vivo de Firebase
 
+
+// ==========================================
+// MODO CLARO / OSCURO (CON SWITCH)
+// ==========================================
+const checkboxTema = document.getElementById('checkbox-tema');
+
+function actualizarTemaGlobal() {
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    // 1. Mantenemos el switch sincronizado
+    if (checkboxTema) {
+        checkboxTema.checked = isDark;
+    }
+    
+    // 2. Cambiamos el logo dependiendo del fondo
+    const logoImg = document.querySelector('.logo-img');
+    if (logoImg) {
+        logoImg.src = isDark ? 'fotos/logo-blanco.png' : 'fotos/logo.png';
+    }
+}
+
+// Escuchamos cada vez que el usuario mueve el switch
+if (checkboxTema) {
+    checkboxTema.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        actualizarTemaGlobal();
+    });
+}
+
+// Precargar el logo claro por JS para que no haya parpadeo al cambiar
+const preloadImg = new Image();
+preloadImg.src = 'fotos/logo.png';
+
+document.addEventListener('DOMContentLoaded', actualizarTemaGlobal);
+
 function obtenerDatosActivos() {
   if (modoPuntajeActual === 'sofascore') return sofaScoreData;
   if (modoPuntajeActual === 'millostats') return milloStatsData;
@@ -456,14 +495,18 @@ function marcarJugadorEnLista(jugador, fila) {
   fila.classList.add('selected');
 }
 
+// --- GENERADOR DE RUTAS (Soporta carpeta /reales/) ---
 function obtenerRutaFoto(idJugador) {
   const idNum = parseInt(idJugador); 
   
-  if (plantelPrimera.find(p => p.id === idNum)) return `fotos/primera/${idNum}.png`;
-  if (plantelReserva.find(p => p.id === idNum)) return `fotos/reserva/${idNum}.png`;
-  if (plantelRumores.find(p => p.id === idNum)) return `fotos/rumores/${idNum}.png`;
+  // Se fija si tenemos activado el modo fotos reales
+  const carpeta = document.body.classList.contains('modo-fotos-reales') ? 'fotos/reales' : 'fotos';
   
-  return `fotos/default2.png`; 
+  if (plantelPrimera.find(p => p.id === idNum)) return `${carpeta}/primera/${idNum}.png`;
+  if (plantelReserva.find(p => p.id === idNum)) return `${carpeta}/reserva/${idNum}.png`;
+  if (plantelRumores.find(p => p.id === idNum)) return `${carpeta}/rumores/${idNum}.png`;
+  
+  return `${carpeta}/default2.png`; // Nota: Si no tenés 'default2.png' en la carpeta /reales, copialo ahí también por si acaso!
 }
 
 function dibujarEsquema() {
@@ -891,13 +934,13 @@ function abrirModalSeleccion(posAbreviada, coords) {
 }
 
 document.addEventListener('DOMContentLoaded', inicializarApp);
-
+/*
 const themeBtns = document.querySelectorAll('.theme-toggle-btn');
 themeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
   });
-});
+});*/
 
 function verificarOnce() {
   const cantidadEnCancha = document.querySelectorAll('#pitch .player-token').length;
@@ -1877,20 +1920,62 @@ if (toggleSuplentes) {
   });
 }
 
+// ==========================================
+// CONTROL DE MODO VISUAL: 3 TIEMPOS (Dibujos > Reales > Camisetas)
+// ==========================================
 const btnToggleFotos = document.getElementById('btn-toggle-fotos');
 const iconUser = document.querySelector('.icon-user');
+const iconCamera = document.querySelector('.icon-camera');
 const iconShirt = document.querySelector('.icon-shirt');
+
+let estadoVisual = 0; // 0: Dibujos, 1: Fotos Reales, 2: Camisetas
 
 if (btnToggleFotos) {
   btnToggleFotos.addEventListener('click', () => {
-    document.body.classList.toggle('modo-camisetas');
+    // Suma 1 y vuelve a 0 cuando llega a 3 (0 -> 1 -> 2 -> 0)
+    estadoVisual = (estadoVisual + 1) % 3;
     
-    if (document.body.classList.contains('modo-camisetas')) {
-      iconUser.style.display = 'none';
-      iconShirt.style.display = 'block';
+    // 1. Apagamos todo para arrancar limpios
+    document.body.classList.remove('modo-camisetas', 'modo-fotos-reales');
+    if (iconUser) iconUser.style.display = 'none';
+    if (iconCamera) iconCamera.style.display = 'none';
+    if (iconShirt) iconShirt.style.display = 'none';
+
+    // 2. Encendemos el modo que toca
+    if (estadoVisual === 0) {
+      if (iconUser) iconUser.style.display = 'block';
+      actualizarSrcImagenesEnVivo(false); // Volvemos a dibujos
+    } 
+    else if (estadoVisual === 1) {
+      document.body.classList.add('modo-fotos-reales');
+      if (iconCamera) iconCamera.style.display = 'block';
+      actualizarSrcImagenesEnVivo(true); // Cambiamos a reales
+    } 
+    else if (estadoVisual === 2) {
+      document.body.classList.add('modo-camisetas');
+      if (iconShirt) iconShirt.style.display = 'block';
+      // Acá no tocamos el src de las fotos porque el CSS de modo-camisetas se encarga de taparlas
+    }
+  });
+}
+
+// Función ninja para cambiar las fotos que ya están puestas en la cancha
+function actualizarSrcImagenesEnVivo(haciaReales) {
+  // Buscamos todas las fotos de jugadores de la página
+  document.querySelectorAll('img.token-img, img.mvp-photo').forEach(img => {
+    const pathActual = img.getAttribute('src');
+    if (!pathActual) return;
+
+    if (haciaReales) {
+      // Si la ruta NO tiene la carpeta "reales", se la inyectamos
+      if (pathActual.includes('fotos/') && !pathActual.includes('fotos/reales/')) {
+        img.src = pathActual.replace('fotos/', 'fotos/reales/');
+      }
     } else {
-      iconUser.style.display = 'block';
-      iconShirt.style.display = 'none';
+      // Si volvemos a dibujos, le extirpamos la carpeta "reales" de la ruta
+      if (pathActual.includes('fotos/reales/')) {
+        img.src = pathActual.replace('fotos/reales/', 'fotos/');
+      }
     }
   });
 }
@@ -2166,3 +2251,41 @@ if (tabMiBoleta && tabPromedios) {
         cargarVistaPuntuacion();
     });
 }
+
+// ==========================================
+// CONTROL DEL MENÚ LATERAL (ACTUALIZADO)
+// ==========================================
+const btnMenu = document.getElementById('btn-menu');
+const sidebarMenu = document.getElementById('sidebar-menu');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+// Función para abrir/cerrar
+function toggleSidebar() {
+    if(sidebarMenu && sidebarOverlay) {
+        const isActive = sidebarMenu.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+        btnMenu.classList.toggle('activo'); // Para la animación de giro
+        
+        // Intercambiar íconos (Rayitas vs X)
+        const iconBurger = btnMenu.querySelector('.icon-burger');
+        const iconClose = btnMenu.querySelector('.icon-close');
+        
+        if (iconBurger && iconClose) {
+            iconBurger.style.display = isActive ? 'none' : 'block';
+            iconClose.style.display = isActive ? 'block' : 'none';
+        }
+    }
+}
+
+// Eventos de click
+if(btnMenu) btnMenu.addEventListener('click', toggleSidebar);
+if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+// Cuando elegís una opción, cerramos el menú
+document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if(sidebarMenu.classList.contains('active')) {
+            toggleSidebar(); // Reutilizamos la función para que también vuelva a poner las rayitas
+        }
+    });
+});
