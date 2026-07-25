@@ -347,7 +347,7 @@ async function inicializarApp() {
     cargarEstadoPizarra(); 
   } catch (error) {
     console.error("Error al cargar el plantel:", error);
-    alert("Hubo un error al cargar la base de datos de jugadores.");
+    mostrarToast("Error al cargar la base de datos.", "error");
   }
 }
 
@@ -1310,7 +1310,7 @@ async function cargarPromedioEnVivoParaGrilla(idPartido, elementoId) {
 }
 
 // ==========================================
-// RENDERIZADOR DE LA GRILLA (ACTUALIZADO)
+// RENDERIZADOR DE LA GRILLA (ACTUALIZADO: MUESTRA HORA FIJA)
 // ==========================================
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
@@ -1326,9 +1326,40 @@ function renderizarHistorial() {
         
         let htmlScore = '';
 
+        // --- LÓGICA PARA PARTIDO PENDIENTE (SÓLO MUESTRA HORA Y DÍA/MES) ---
         if (partido.estado === 'pendiente') {
-            htmlScore = `<div class="match-score-live" style="white-space: nowrap; font-size: 12px;">EN JUEGO</div>`;
-        } 
+            const fechaRaw = partido.fechaHora; // Ej: "2026-07-28T21:30:00"
+            let horaFormateada = "--:--"; 
+            let diaMesFormateado = "FECHA"; // Texto por defecto
+
+            if (fechaRaw) {
+                const dateObj = new Date(fechaRaw);
+                // Verificamos que la fecha sea válida
+                if (!isNaN(dateObj)) {
+                    // 1. Extraemos la hora
+                    const horas = dateObj.getHours().toString().padStart(2, '0');
+                    const minutos = dateObj.getMinutes().toString().padStart(2, '0');
+                    horaFormateada = `${horas}:${minutos}`;
+
+                    // 2. Extraemos el día y el mes
+                    const dia = dateObj.getDate().toString().padStart(2, '0');
+                    const meses = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+                    const mes = meses[dateObj.getMonth()]; // Busca el nombre del mes
+                    
+                    diaMesFormateado = `${dia} ${mes}`; // Ej: "28 JUL"
+                }
+            }
+
+            // Dibujamos el rectangulito gris con el DÍA/MES arriba y la HORA abajo
+            htmlScore = `
+                <div class="match-score" style="color: var(--text-main); border: 1px solid rgba(128,128,128,0.25); font-size: 14px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                    <span style="font-size: 9px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">${diaMesFormateado}</span>
+                    <span style="font-weight: bold;">${horaFormateada}</span>
+                </div>
+            `;
+        }
+        // --- FIN LÓGICA PENDIENTE ---
+        
         else if (modoVistaGrilla === 'mi_boleta') {
             if (partido.estado === 'abierto' && !yaVoto) {
                 htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
@@ -1403,7 +1434,6 @@ function renderizarHistorial() {
             viewPartidos.style.display = 'none';
             viewPuntuar.style.display = 'grid'; 
             
-            // MAGIA ACÁ: Sincronizamos la navegación para que abra en la pestaña correcta
             if (modoVistaGrilla === 'promedios') {
                 const tabInternaPromedios = document.getElementById('tab-promedios');
                 if (tabInternaPromedios) tabInternaPromedios.click();
@@ -1415,6 +1445,8 @@ function renderizarHistorial() {
 
         grid.appendChild(card);
     });
+
+    // IMPORTANTE: Ya no llamamos a iniciarContadores() acá al final
 }
 // ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
 const ultimoPartido = {
@@ -1823,7 +1855,7 @@ function ejecutarEnvioFinal() {
   })
   .catch(error => {
     console.error("Error enviando datos:", error);
-    alert("Hubo un error de conexión. ¡Intentá de nuevo!");
+    mostrarToast("Error de conexión. ¡Intentá de nuevo!", "error");
     btnEnviarBoleta.disabled = false;
   });
 }
@@ -2247,3 +2279,92 @@ document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
         }
     });
 });
+
+// ==========================================
+// SISTEMA DE NOTIFICACIONES TOAST
+// ==========================================
+function mostrarToast(mensaje, tipo = 'exito') {
+    // 1. Buscamos o creamos el contenedor invisible
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // 2. Creamos la notificación
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`; 
+    
+    // Le ponemos un emoji dependiendo si es error o éxito
+    const icono = tipo === 'error' ? '⚠️' : '✅';
+    toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
+    
+    // 3. Lo metemos en la pantalla
+    container.appendChild(toast);
+
+    // 4. Animación de entrada (esperamos un microsegundo para que CSS haga lo suyo)
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    // 5. Lo sacamos automáticamente a los 3 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        // Esperamos 300ms a que termine la animación de salida para borrar el elemento de la memoria
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+/*
+// ==========================================
+// MOTOR DE CUENTA REGRESIVA PARA PARTIDOS
+// ==========================================
+function actualizarContadores() {
+    const elementos = document.querySelectorAll('.contador-partido');
+    if (elementos.length === 0) return;
+
+    const ahora = new Date().getTime();
+
+    elementos.forEach(el => {
+        // Leemos la fecha exacta (Ej: "2026-07-28T21:30:00")
+        const fechaPartido = new Date(el.dataset.fecha).getTime();
+        
+        // Si la fecha está mal escrita en la BD, abortamos para no romper
+        if (isNaN(fechaPartido)) return; 
+        
+        const diferencia = fechaPartido - ahora;
+
+        if (diferencia > 0) {
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (dias > 0) {
+                el.innerHTML = `<span style="font-size:9px; color:var(--text-muted); line-height:1; display:block;">FALTAN</span><span style="font-size:13px; font-weight:bold; color:var(--text-main);">${dias}d ${horas}h</span>`;
+            } else {
+                const hStr = horas.toString().padStart(2, '0');
+                const mStr = minutos.toString().padStart(2, '0');
+                el.innerHTML = `<span style="font-size:9px; color:var(--text-muted); line-height:1; display:block;">HOY</span><span style="font-size:13px; font-weight:bold; color:var(--text-main);">${hStr}:${mStr}</span>`;
+            }
+        } 
+        else if (diferencia <= 0 && diferencia > -(1000 * 60 * 120)) {
+            // Pasaron menos de 2 horas (120 mins) -> EN JUEGO
+            el.innerHTML = "EN JUEGO";
+            el.className = "match-score match-score-live contador-partido";
+            el.style.fontSize = "12px";
+            el.style.border = "none";
+        } 
+        else {
+            // Ya terminó
+            el.innerHTML = "-";
+            el.className = "match-score contador-partido"; 
+            el.style.fontSize = "20px";
+            el.style.color = "var(--text-muted)";
+            el.style.border = "1px solid rgba(128,128,128,0.25)";
+        }
+    });
+}
+
+// Lo ejecutamos cada 1 minuto para que cambie solo
+setInterval(actualizarContadores, 60000);*/
+

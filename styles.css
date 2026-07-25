@@ -1385,3 +1385,73 @@ body:not(.dark-mode) #rated-players-container {
         padding-top: 25px;
     }
 }
+
+/* ==========================================
+   NOTIFICACIONES TOAST (CHAU ALERTS)
+   ========================================== */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 11000; /* Siempre por encima de modales y header */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Para no bloquear clics sin querer */
+}
+
+.toast {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 0; /* Recto, estilo River */
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    
+    /* Arranca escondido a la derecha */
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast.show {
+    transform: translateX(0); /* Entra a la pantalla */
+    opacity: 1;
+}
+
+.toast.error {
+    background-color: var(--river-red);
+    border-left: 4px solid #8b0000; /* Un rojo más oscuro de borde */
+}
+
+.toast.exito {
+    background-color: #00b853;
+    border-left: 4px solid #00662d; /* Un verde más oscuro de borde */
+}
+
+/* En celulares queda mejor centrado abajo */
+@media (max-width: 600px) {
+    #toast-container {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        align-items: center;
+    }
+    .toast {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        /* En celu entra desde abajo, no desde el costado */
+        transform: translateY(100%);
+    }
+    .toast.show {
+        transform: translateY(0);
+    }
+}

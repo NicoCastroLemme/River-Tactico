@@ -225,7 +225,7 @@
       "posicion": ["MCD", "MC"],
       "numero": 6,
       "puntaje_promedio": 0,
-      "lesionado": false,
+      "lesionado": true,
       "estadisticas": {
         "minutos": 66,
         "goles": 0,
@@ -341,7 +341,7 @@
       "id": 53,
       "nombre": "A. Correa",
       "posicion": ["MP", "MCO", "MC", "MD", "MI"],
-      "numero": "7",
+      "numero": "10",
       "puntaje_promedio": 0,
       "nuevo": true,
       "estadisticas": {
@@ -432,7 +432,7 @@
       "id": 7,
       "nombre": "M. Salas",
       "posicion": ["DC", "EI", "ED"],
-      "numero": "-",
+      "numero": "7",
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
