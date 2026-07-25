@@ -27,6 +27,18 @@
       }
     },
     {
+      "id": 57,
+      "nombre": "J. Martinet",
+      "posicion": ["ARQ"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles_recibidos": 0,
+        "vallas_invictas": 0
+      }
+    },
+    {
       "id": 21,
       "nombre": "M. Acuña",
       "posicion": ["LI", "MI"],
@@ -367,7 +379,7 @@
     {
       "id": 35,
       "nombre": "J. Freitas",
-      "posicion": ["MP", "DC", "ED", "EI"],
+      "posicion": ["MP", "DC", "ED", "EI", "MCO"],
       "numero": 35,
       "puntaje_promedio": 0,
       "lesionado": false,
@@ -460,18 +472,6 @@
     {
       "id": 100,
       "nombre": "F. Jaroszewicz",
-      "posicion": ["ARQ"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "estadisticas": {
-        "minutos": 0,
-        "goles_recibidos": 0,
-        "vallas_invictas": 0
-      }
-    },
-    {
-      "id": 101,
-      "nombre": "J. Martinet",
       "posicion": ["ARQ"],
       "numero": "-",
       "puntaje_promedio": 0,

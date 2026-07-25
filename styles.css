@@ -260,7 +260,7 @@ body.dark-mode .sort-tab.active { background: var(--text-main); color: var(--bg-
 }
 
 .icon-btn:hover:not(:disabled) {
-  background-color: var(--text-main);
+  background-color: var(--river-red);
   color: var(--bg-color);
   transform: translateY(-2px);
 }

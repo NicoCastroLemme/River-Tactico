@@ -940,6 +940,9 @@ if(btnLimpiar) {
   });
 }
 
+// ==========================================
+// DESCARGAR IMAGEN: MI 11 (PIZARRA)
+// ==========================================
 const btnCompartir = document.getElementById('btn-compartir');
 if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
@@ -952,26 +955,16 @@ if(btnCompartir) {
       useCORS: true,              
       backgroundColor: '#ffffff', 
     }).then(canvas => {
-      canvas.toBlob(function(blob) {
-        const file = new File([blob], "Mi_11_River.png", { type: "image/png" });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({
-            title: '¡Mirá mi 11 ideal de River!',
-            text: 'Armé mi formación en mi11river.com 🐔',
-            files: [file]
-          }).then(() => {
-            btnCompartir.innerHTML = contenidoOriginal; 
-          }).catch(error => {
-            btnCompartir.innerHTML = contenidoOriginal;
-          });
-        } else {
-          const enlace = document.createElement('a');
-          enlace.download = 'Mi_Formacion_River.png';
-          enlace.href = canvas.toDataURL('image/png');
-          enlace.click();
-          btnCompartir.innerHTML = contenidoOriginal; 
-        }
-      });
+      // Creamos un enlace invisible, le pegamos la imagen y forzamos el clic
+      const enlace = document.createElement('a');
+      enlace.download = 'Mi_11_River.png';
+      enlace.href = canvas.toDataURL('image/png');
+      enlace.click();
+      
+      btnCompartir.innerHTML = contenidoOriginal; 
+    }).catch(error => {
+      console.error("Error generando la imagen:", error);
+      btnCompartir.innerHTML = contenidoOriginal;
     });
   });
 }
@@ -2149,12 +2142,13 @@ if (buscadorModalElement) {
 }
 
 // --- MOTOR PARA COMPARTIR LA IMAGEN DE LOS PUNTAJES ---
+// ==========================================
+// DESCARGAR IMAGEN: MIS PUNTAJES
+// ==========================================
 const btnCompartirPuntaje = document.getElementById('btn-compartir-puntaje');
 if(btnCompartirPuntaje) {
   btnCompartirPuntaje.addEventListener('click', () => {
-    // Acá le apuntamos a la cancha de puntuación, no a la otra
     const canchaPuntaje = document.getElementById('pitch-rating');
-    
     const contenidoOriginal = btnCompartirPuntaje.innerHTML;
     btnCompartirPuntaje.innerHTML = '⏳';
     
@@ -2163,27 +2157,16 @@ if(btnCompartirPuntaje) {
       useCORS: true,              
       backgroundColor: '#ffffff'
     }).then(canvas => {
-      canvas.toBlob(function(blob) {
-        const file = new File([blob], "Mis_Puntajes_River.png", { type: "image/png" });
-        
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({
-            title: '¡Mirá mis puntajes de River!',
-            text: 'Yo ya puntué a los jugadores en mi11river.com 🐔',
-            files: [file]
-          }).then(() => {
-            btnCompartirPuntaje.innerHTML = contenidoOriginal; 
-          }).catch(error => {
-            btnCompartirPuntaje.innerHTML = contenidoOriginal;
-          });
-        } else {
-          const enlace = document.createElement('a');
-          enlace.download = 'Mis_Puntajes_River.png';
-          enlace.href = canvas.toDataURL('image/png');
-          enlace.click();
-          btnCompartirPuntaje.innerHTML = contenidoOriginal; 
-        }
-      });
+      // Descarga directa
+      const enlace = document.createElement('a');
+      enlace.download = 'Mis_Puntajes_River.png';
+      enlace.href = canvas.toDataURL('image/png');
+      enlace.click();
+      
+      btnCompartirPuntaje.innerHTML = contenidoOriginal; 
+    }).catch(error => {
+      console.error("Error generando la imagen:", error);
+      btnCompartirPuntaje.innerHTML = contenidoOriginal;
     });
   });
 }
