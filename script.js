@@ -1359,6 +1359,12 @@ function renderizarHistorial() {
             `;
         }
         // --- FIN LÓGICA PENDIENTE ---
+
+        // --- LÓGICA PARA PARTIDO EN JUEGO (ROJO, SIN VOTAR) ---
+        else if (partido.estado === 'en_juego') {
+            htmlScore = `<div class="match-score match-score-live" style="font-size: 11px; border: none; display: flex; align-items: center; justify-content: center; white-space: nowrap;">EN JUEGO</div>`;
+        }
+        // --- FIN LÓGICA EN JUEGO ---
         
         else if (modoVistaGrilla === 'mi_boleta') {
             if (partido.estado === 'abierto' && !yaVoto) {
@@ -1424,7 +1430,11 @@ function renderizarHistorial() {
         `;
 
         card.onclick = () => {
-            if (partido.estado === 'pendiente') return; 
+            // Si está pendiente O en juego, no los dejamos entrar a votar
+            if (partido.estado === 'pendiente' || partido.estado === 'en_juego') {
+                mostrarToast("El partido todavía no terminó", "error");
+                return; 
+            }
 
             partidoActualId = partido.id; 
             partidoActualEstado = partido.estado; 
@@ -1452,22 +1462,22 @@ function renderizarHistorial() {
 const ultimoPartido = {
   titulares: [
     { id: 41, pos: "ARQ", top: 80, left: 50 },
-    { id: 20, pos: "LD", top: 60, left: 85 },     
+    { id: 29, pos: "LD", top: 60, left: 85 },     
     { id: 28, pos: "DFC", top: 65, left: 62 },     
-    { id: 13, pos: "DFC", top: 65, left: 38 },     
+    { id: 45, pos: "DFC", top: 65, left: 38 },     
     { id: 21, pos: "LI", top: 60, left: 15 },      
-    { id: 15, pos: "MC", top: 48, left: 65 },     
-    { id: 6, pos: "MC", top: 48, left: 35 },      
-    { id: 11, pos: "EI", top: 33, left: 20 },       
-    { id: 26, pos: "MCO", top: 33, left: 50 },     
-    { id: 24, pos: "ED", top: 33, left: 80 },     
-    { id: 19, pos: "DC", top: 18, left: 50 }       
+    { id: 15, pos: "MC", top: 43, left: 62 },     
+    { id: 44, pos: "MC", top: 43, left: 38 },      
+    { id: 25, pos: "MI", top: 38, left: 15 },       
+    { id: 26, pos: "MD", top: 38, left: 85 },     
+    { id: 11, pos: "DC", top: 18, left: 35 },     
+    { id: 19, pos: "DC", top: 18, left: 65 }       
   ],
   suplentes: [
-    { id: 8, pos: "MC", jugo: true },            
+    { id: 35, pos: "MP", jugo: true },            
     { id: 18, pos: "DC", jugo: true },            
-    { id: 35, pos: "MP", jugo: true },          
-    { id: 25, pos: "EI", jugo: true },           
+    { id: 8, pos: "MP", jugo: true },          
+    { id: 53, pos: "EI", jugo: true },           
   ]
 };
 
