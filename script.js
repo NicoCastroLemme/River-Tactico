@@ -908,13 +908,6 @@ function abrirModalSeleccion(posAbreviada, coords) {
 }
 
 document.addEventListener('DOMContentLoaded', inicializarApp);
-/*
-const themeBtns = document.querySelectorAll('.theme-toggle-btn');
-themeBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-  });
-});*/
 
 function verificarOnce() {
   const cantidadEnCancha = document.querySelectorAll('#pitch .player-token').length;
@@ -1160,7 +1153,7 @@ if (btnPizarra) {
 
 // 2. Botón "Puntajes" (La Grilla de Partidos - Master)
 if (btnPartidos) {
-  btnPartidos.addEventListener('click', async () => { // <-- Le agregamos 'async' acá
+  btnPartidos.addEventListener('click', async () => { 
     btnPartidos.classList.add('active');
     if(btnPizarra) btnPizarra.classList.remove('active');
     
@@ -1178,10 +1171,6 @@ if (btnPartidos) {
 
 // ==========================================
 // MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
-// ==========================================
-
-// ==========================================
-// MOTOR DEL HISTORIAL (CONECTADO A FIREBASE)
 // ==========================================
 let historialPartidos = []; // Arranca vacío, se llena desde la nube
 
@@ -1455,8 +1444,6 @@ function renderizarHistorial() {
 
         grid.appendChild(card);
     });
-
-    // IMPORTANTE: Ya no llamamos a iniciarContadores() acá al final
 }
 // ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
 const ultimoPartido = {
@@ -1468,7 +1455,7 @@ const ultimoPartido = {
     { id: 21, pos: "LI", top: 60, left: 15 },      
     { id: 15, pos: "MC", top: 43, left: 62 },     
     { id: 44, pos: "MC", top: 43, left: 38 },      
-    { id: 25, pos: "MI", top: 38, left: 15 },       
+    { id: 25, pos: "MI", top: 38, left: 15 },        
     { id: 26, pos: "MD", top: 38, left: 85 },     
     { id: 11, pos: "DC", top: 18, left: 35 },     
     { id: 19, pos: "DC", top: 18, left: 65 }       
@@ -1477,7 +1464,7 @@ const ultimoPartido = {
     { id: 35, pos: "MP", jugo: true },            
     { id: 18, pos: "DC", jugo: true },            
     { id: 8, pos: "MP", jugo: true },          
-    { id: 53, pos: "EI", jugo: true },           
+    { id: 53, pos: "EI", jugo: true },            
   ]
 };
 
@@ -2325,58 +2312,6 @@ function mostrarToast(mensaje, tipo = 'exito') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
-/*
-// ==========================================
-// MOTOR DE CUENTA REGRESIVA PARA PARTIDOS
-// ==========================================
-function actualizarContadores() {
-    const elementos = document.querySelectorAll('.contador-partido');
-    if (elementos.length === 0) return;
-
-    const ahora = new Date().getTime();
-
-    elementos.forEach(el => {
-        // Leemos la fecha exacta (Ej: "2026-07-28T21:30:00")
-        const fechaPartido = new Date(el.dataset.fecha).getTime();
-        
-        // Si la fecha está mal escrita en la BD, abortamos para no romper
-        if (isNaN(fechaPartido)) return; 
-        
-        const diferencia = fechaPartido - ahora;
-
-        if (diferencia > 0) {
-            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-
-            if (dias > 0) {
-                el.innerHTML = `<span style="font-size:9px; color:var(--text-muted); line-height:1; display:block;">FALTAN</span><span style="font-size:13px; font-weight:bold; color:var(--text-main);">${dias}d ${horas}h</span>`;
-            } else {
-                const hStr = horas.toString().padStart(2, '0');
-                const mStr = minutos.toString().padStart(2, '0');
-                el.innerHTML = `<span style="font-size:9px; color:var(--text-muted); line-height:1; display:block;">HOY</span><span style="font-size:13px; font-weight:bold; color:var(--text-main);">${hStr}:${mStr}</span>`;
-            }
-        } 
-        else if (diferencia <= 0 && diferencia > -(1000 * 60 * 120)) {
-            // Pasaron menos de 2 horas (120 mins) -> EN JUEGO
-            el.innerHTML = "EN JUEGO";
-            el.className = "match-score match-score-live contador-partido";
-            el.style.fontSize = "12px";
-            el.style.border = "none";
-        } 
-        else {
-            // Ya terminó
-            el.innerHTML = "-";
-            el.className = "match-score contador-partido"; 
-            el.style.fontSize = "20px";
-            el.style.color = "var(--text-muted)";
-            el.style.border = "1px solid rgba(128,128,128,0.25)";
-        }
-    });
-}
-
-// Lo ejecutamos cada 1 minuto para que cambie solo
-setInterval(actualizarContadores, 60000);*/
 
 // ==========================================
 // SISTEMA DE RUTAS POR URL (LINKS COMPARTIBLES)
@@ -2399,17 +2334,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 50);
 
-    // 2. Actualizar el link silenciosamente cuando el usuario usa tu menú lateral
+    // 2. Actualizar el link silenciosamente y el TÍTULO DE PESTAÑA cuando el usuario usa tu menú lateral
     if (btnPizarra) {
         btnPizarra.addEventListener('click', () => {
             // history.replaceState cambia la URL sin recargar la página
             history.replaceState(null, null, '#crear-11');
+            document.title = "Crear 11 | Mi 11 River"; // ACÁ CAMBIA EL TÍTULO
         });
     }
     
     if (btnPartidos) {
         btnPartidos.addEventListener('click', () => {
             history.replaceState(null, null, '#puntajes');
+            document.title = "Puntuar Jugadores | Mi 11 River"; // ACÁ CAMBIA EL TÍTULO
         });
     }
 });
