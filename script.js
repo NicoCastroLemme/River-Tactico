@@ -1463,8 +1463,8 @@ const ultimoPartido = {
   suplentes: [
     { id: 35, pos: "MP", jugo: true },            
     { id: 18, pos: "DC", jugo: true },            
-    { id: 8, pos: "MP", jugo: true },          
-    { id: 53, pos: "EI", jugo: true },            
+    { id: 8, pos: "MC", jugo: true },          
+    { id: 53, pos: "MP", jugo: true },            
   ]
 };
 
