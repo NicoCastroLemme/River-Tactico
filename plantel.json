@@ -8,8 +8,8 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 90,
-        "goles_recibidos": 3,
+        "minutos": 180,
+        "goles_recibidos": 4,
         "vallas_invictas": 0
       }
     },
@@ -46,7 +46,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 90,
+        "minutos": 180,
         "goles": 0,
         "asistencias": 0
       }
@@ -241,7 +241,7 @@
       "lesionado": false,
       "nuevo": true,
       "estadisticas": {
-        "minutos": 50,
+        "minutos": 73,
         "goles": 0,
         "asistencias": 0
       }
@@ -254,7 +254,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 39,
+        "minutos": 84,
         "goles": 0,
         "asistencias": 0
       }
@@ -306,7 +306,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 90,
+        "minutos": 157,
         "goles": 0,
         "asistencias": 0
       }
@@ -332,7 +332,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 24,
+        "minutos": 69,
         "goles": 0,
         "asistencias": 1
       }
@@ -345,7 +345,7 @@
       "puntaje_promedio": 0,
       "nuevo": true,
       "estadisticas": {
-        "minutos": 0,
+        "minutos": 23,
         "goles": 0,
         "asistencias": 0
       }
@@ -358,7 +358,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 65,
+        "minutos": 132,
         "goles": 0,
         "asistencias": 0
       }
@@ -371,7 +371,7 @@
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 25,
+        "minutos": 70,
         "goles": 0,
         "asistencias": 0
       }
@@ -391,13 +391,13 @@
     },
     {
       "id": 18,
-      "nombre": "L. Beltran",
+      "nombre": "L. Beltrán",
       "posicion": ["DC", "MP", "MCO"],
       "numero": 47,
       "puntaje_promedio": 0,
       "lesionado": false,
       "estadisticas": {
-        "minutos": 51,
+        "minutos": 96,
         "goles": 0,
         "asistencias": 0
       }
