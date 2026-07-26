@@ -1919,41 +1919,37 @@ if (toggleSuplentes) {
 // ==========================================
 // CONTROL DE MODO VISUAL: 3 TIEMPOS (Dibujos > Reales > Camisetas)
 // ==========================================
-const btnToggleFotos = document.getElementById('btn-toggle-fotos');
-const iconUser = document.querySelector('.icon-user');
-const iconCamera = document.querySelector('.icon-camera');
-const iconShirt = document.querySelector('.icon-shirt');
+const botonesToggleFotos = document.querySelectorAll('#btn-toggle-fotos, .btn-toggle-fotos-puntajes');
 
 let estadoVisual = 0; // 0: Dibujos, 1: Fotos Reales, 2: Camisetas
 
-if (btnToggleFotos) {
-  btnToggleFotos.addEventListener('click', () => {
+botonesToggleFotos.forEach(btn => {
+  btn.addEventListener('click', () => {
     // Suma 1 y vuelve a 0 cuando llega a 3 (0 -> 1 -> 2 -> 0)
     estadoVisual = (estadoVisual + 1) % 3;
     
-    // 1. Apagamos todo para arrancar limpios
+    // 1. Apagamos todo y escondemos todos los íconos
     document.body.classList.remove('modo-camisetas', 'modo-fotos-reales');
-    if (iconUser) iconUser.style.display = 'none';
-    if (iconCamera) iconCamera.style.display = 'none';
-    if (iconShirt) iconShirt.style.display = 'none';
+    document.querySelectorAll('.icon-user, .icon-camera, .icon-shirt, .icon-user-p, .icon-camera-p, .icon-shirt-p').forEach(icon => {
+        icon.style.display = 'none';
+    });
 
-    // 2. Encendemos el modo que toca
+    // 2. Encendemos el modo que toca en AMBOS botones a la vez
     if (estadoVisual === 0) {
-      if (iconUser) iconUser.style.display = 'block';
+      document.querySelectorAll('.icon-user, .icon-user-p').forEach(i => i.style.display = 'block');
       actualizarSrcImagenesEnVivo(false); // Volvemos a dibujos
     } 
     else if (estadoVisual === 1) {
       document.body.classList.add('modo-fotos-reales');
-      if (iconCamera) iconCamera.style.display = 'block';
+      document.querySelectorAll('.icon-camera, .icon-camera-p').forEach(i => i.style.display = 'block');
       actualizarSrcImagenesEnVivo(true); // Cambiamos a reales
     } 
     else if (estadoVisual === 2) {
       document.body.classList.add('modo-camisetas');
-      if (iconShirt) iconShirt.style.display = 'block';
-      // Acá no tocamos el src de las fotos porque el CSS de modo-camisetas se encarga de taparlas
+      document.querySelectorAll('.icon-shirt, .icon-shirt-p').forEach(i => i.style.display = 'block');
     }
   });
-}
+});
 
 // Función ninja para cambiar las fotos que ya están puestas en la cancha
 function actualizarSrcImagenesEnVivo(haciaReales) {

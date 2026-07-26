@@ -241,30 +241,54 @@
         
         <!-- CARTELES FLOTANTES MOVIDOS ACÁ -->
         <div id="boleta-promedio" class="promedio-flotante">-</div>
+      </div> <!-- ACÁ CIERRA LA CANCHA -->
+
+      <!-- === BOTONES DE ACCIÓN (SOLO PC) === -->
+      <!-- Al tener la clase "solo-pc", desaparecen en el celu y no roban espacio -->
+      <div class="pitch-actions solo-pc" style="justify-content: center; gap: 25px; margin-top: 15px;">
+        
+        <button class="icon-btn btn-toggle-fotos-puntajes" title="Alternar Vista">
+          <svg class="icon-user-p" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <svg class="icon-camera-p" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          <svg class="icon-shirt-p" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a8 8 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+        </button>
+
+        <button class="icon-btn btn-descargar-puntajes" title="Descargar Mis Puntajes">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+
       </div>
 
       <!-- === SUPLENTES EN CELULAR (Abajo de la cancha) === -->
-      <!-- Cambiamos el margin-top de 15px a 0px para pegarlo a la cancha -->
-      <div class="banco-suplentes-container solo-movil" style="margin-top: 0px;">
+      <!-- Volvemos el margin a 0 y le ponemos flex-shrink: 0 para que sea imposible que se achique -->
+      <div class="banco-suplentes-container solo-movil" style="margin-top: 0px; flex-shrink: 0;">
         
-        <!-- Achicamos el margin-bottom de 15px a 5px para acercar el título a las fotos -->
-        <div style="display: grid; grid-template-columns: 32px 1fr 32px; align-items: center; margin-bottom: 5px; padding: 0 15px;">
+        <!-- Botones metidos en la línea del título (Solo para Celular, ocupan 0 espacio extra) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding: 0 15px;">
+          <div style="width: 80px;"></div>
           
-          <div></div>
+          <h4 style="margin: 0; color: var(--text-main); font-size: 14px; letter-spacing: 1px; text-align: center; flex-grow: 1;">SUPLENTES</h4>
           
-          <h4 style="margin: 0; color: var(--text-main); font-size: 14px; letter-spacing: 1px; text-align: center;">SUPLENTES</h4>
-          
-          <button class="icon-btn btn-descargar-puntajes" title="Descargar Mis Puntajes">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-          </button>
-          
+          <div style="display: flex; gap: 8px; width: 80px; justify-content: flex-end;">
+            <button class="icon-btn btn-toggle-fotos-puntajes" title="Alternar Vista">
+              <svg class="icon-user-p" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <svg class="icon-camera-p" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <svg class="icon-shirt-p" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a8 8 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+            </button>
+            <button class="icon-btn btn-descargar-puntajes" title="Descargar Mis Puntajes">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         
-        <!-- Achicamos el padding-bottom de 20px a 5px para no empujar la boleta hacia abajo -->
         <div class="bench-tokens" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; padding-bottom: 5px;"></div>
       </div>
 
