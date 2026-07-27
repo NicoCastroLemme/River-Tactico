@@ -447,7 +447,7 @@
       "posicion": ["DC"],
       "numero": 32,
       "puntaje_promedio": 0,
-      "lesionado": false,
+      "lesionado": true,
       "estadisticas": {
         "minutos": 0,
         "goles": 0,
@@ -496,6 +496,18 @@
       "id": 104,
       "nombre": "V. Lucero",
       "posicion": ["LI", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 133,
+      "nombre": "J. Pensotti",
+      "posicion": ["LI"],
       "numero": "-",
       "puntaje_promedio": 0,
       "estadisticas": {
@@ -589,6 +601,18 @@
       }
     },
     {
+      "id": 134,
+      "nombre": "B. Rodríguez",
+      "posicion": ["LD"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 115,
       "nombre": "A. De la Cuesta",
       "posicion": ["MCD", "MC"],
@@ -604,6 +628,18 @@
       "id": 116,
       "nombre": "S. Espíndola",
       "posicion": ["MCD", "MC"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 135,
+      "nombre": "S. Orizi",
+      "posicion": ["MCD"],
       "numero": "-",
       "puntaje_promedio": 0,
       "estadisticas": {
@@ -685,6 +721,18 @@
       }
     },
     {
+      "id": 132,
+      "nombre": "R. Fernández",
+      "posicion": ["MCO", "ED"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 123,
       "nombre": "J. Flores",
       "posicion": ["EI", "DC"],
@@ -747,6 +795,18 @@
     {
       "id": 128,
       "nombre": "S. Meloni",
+      "posicion": ["DC"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
+      "id": 136,
+      "nombre": "D. Laudano",
       "posicion": ["DC"],
       "numero": "-",
       "puntaje_promedio": 0,
