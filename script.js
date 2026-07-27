@@ -939,6 +939,16 @@ if(btnLimpiar) {
 const btnCompartir = document.getElementById('btn-compartir');
 if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
+    
+    // ---> LÍNEA NUEVA PARA GOOGLE ANALYTICS <---
+    // Le ponemos un "if" por si el usuario tiene AdBlock, así no se rompe la página
+    if (typeof gtag === 'function') {
+      gtag('event', 'descarga_11_ideal', {
+        'seccion': 'pizarra_tactica'
+      });
+    }
+    // -------------------------------------------
+
     const cancha = document.getElementById('pitch');
     const contenidoOriginal = btnCompartir.innerHTML;
     btnCompartir.innerHTML = '⏳';
