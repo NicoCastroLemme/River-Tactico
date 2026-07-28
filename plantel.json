@@ -922,7 +922,7 @@
     {
       "id": 207,
       "nombre": "T. Andrada",
-      "posicion": ["MCO", "ED", "MP"],
+      "posicion": ["MC", "MD", "MI"],
       "numero": "-",
       "puntaje_promedio": 0,
       "nuevo": false,
