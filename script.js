@@ -1438,6 +1438,8 @@ function renderizarHistorial() {
             partidoActualId = partido.id; 
             partidoActualEstado = partido.estado;
 
+            actualizarInfoTarjetaCancha(partido);
+
             ultimoPartido = partido.formacion;
             
             boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
@@ -2338,3 +2340,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function actualizarInfoTarjetaCancha(partido) {
+    const elRival = document.getElementById('cancha-rival');
+    const elCompetencia = document.getElementById('cancha-competencia');
+    const elFecha = document.getElementById('cancha-fecha');
+
+    if (!elRival || !elCompetencia || !elFecha) return;
+
+    // 1. Ponemos el rival en mayúsculas
+    elRival.innerText = partido.rival ? `VS ${partido.rival.toUpperCase()}` : 'VS ---';
+
+    // 2. Ponemos la competencia en mayúsculas
+    elCompetencia.innerText = partido.competencia ? partido.competencia.toUpperCase() : '';
+
+    // 3. FECHA BLINDADA (No tira NaN-NaN-NaN nunca más)
+    if (partido.fechaHora) {
+        // Separa solo la parte de la fecha (ignora la hora si la tiene)
+        const soloFecha = String(partido.fechaHora).split('T')[0].split(' ')[0];
+        
+        // Separa por guiones o por barras (/ o -)
+        const partes = soloFecha.split(/[-/]/);
+
+        if (partes.length === 3) {
+            // Si el año está primero (ej: 2026-07-25 -> año 2026, mes 07, dia 25)
+            if (partes[0].length === 4) {
+                elFecha.innerText = `${partes[2]}-${partes[1]}-${partes[0]}`;
+            } 
+            // Si el día ya está primero (ej: 25-07-2026 o 25/07/2026)
+            else {
+                elFecha.innerText = `${partes[0]}-${partes[1]}-${partes[2]}`;
+            }
+        } else {
+            // Si tiene algún otro texto raro, lo muestra tal cual
+            elFecha.innerText = soloFecha;
+        }
+    } else {
+        elFecha.innerText = '';
+    }
+}
