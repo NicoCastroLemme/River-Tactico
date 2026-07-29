@@ -1458,7 +1458,7 @@ function renderizarHistorial() {
     });
 }
 // ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
-const ultimoPartido = null;
+let ultimoPartido = null;
 
 function cargarVistaPuntuacion() {
   const pitchRating = document.getElementById('pitch-rating');
