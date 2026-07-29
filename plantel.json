@@ -252,7 +252,7 @@
       "posicion": ["MC", "MD", "MI"],
       "numero": "-",
       "puntaje_promedio": 0,
-      "nuevo": false,
+      "nuevo": true,
       "estadisticas": {
         "minutos": 0,
         "goles": 0,
