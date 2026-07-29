@@ -253,7 +253,7 @@ async function calcularPromediosDeFirebase() {
 
 // Escuchador de clics para cambiar de fuente de puntajes
 document.querySelectorAll('.source-tab').forEach(btn => {
-  btn.addEventListener('click', async (e) => { // <-- Le agregamos 'async'
+  btn.addEventListener('click', async (e) => {
     document.querySelectorAll('.source-tab').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     modoPuntajeActual = e.target.dataset.source;
@@ -310,7 +310,7 @@ function obtenerColorExacto(nota) {
 
   const colorRojo = [218, 41, 28];        
   const colorAmarillo = [229, 164, 0];   
-  const colorVerde = [0, 184, 83];       
+  const colorVerde = [0, 184, 83];        
 
   let r, g, b;
 
@@ -341,6 +341,10 @@ async function inicializarApp() {
     plantelRumores = datos.rumores || [];
 
     procesarApellidosDistintivos();
+
+    // ---> INICIAMOS LA PRECARGA DE IMÁGENES EN SILENCIO <---
+    const todosLosJugadores = [...plantelPrimera, ...plantelReserva, ...plantelRumores];
+    precargarImagenesJugadores(todosLosJugadores);
 
     dibujarEsquema();
     renderizarListaJugadores(plantelPrimera);
@@ -495,18 +499,20 @@ function marcarJugadorEnLista(jugador, fila) {
   fila.classList.add('selected');
 }
 
-// --- GENERADOR DE RUTAS (Soporta carpeta /reales/) ---
+// --- GENERADOR DE RUTAS (NUEVO: Sin subcarpetas + Soporte de Camisetas) ---
 function obtenerRutaFoto(idJugador) {
+  // 1. Si está activo el modo camisetas, devolvemos la camiseta para todos
+  if (document.body.classList.contains('modo-camisetas')) {
+      return 'fotos/camiseta.png';
+  }
+
   const idNum = parseInt(idJugador); 
   
-  // Se fija si tenemos activado el modo fotos reales
-  const carpeta = document.body.classList.contains('modo-fotos-reales') ? 'fotos/reales' : 'fotos';
+  // 2. Elegimos entre reales o dibujadas
+  const subcarpeta = document.body.classList.contains('modo-fotos-reales') ? 'reales' : 'dibujadas';
   
-  if (plantelPrimera.find(p => p.id === idNum)) return `${carpeta}/primera/${idNum}.png`;
-  if (plantelReserva.find(p => p.id === idNum)) return `${carpeta}/reserva/${idNum}.png`;
-  if (plantelRumores.find(p => p.id === idNum)) return `${carpeta}/rumores/${idNum}.png`;
-  
-  return `${carpeta}/default2.png`; // Nota: Si no tenés 'default2.png' en la carpeta /reales, copialo ahí también por si acaso!
+  // 3. Devolvemos directo la foto por ID
+  return `fotos/${subcarpeta}/${idNum}.png`;
 }
 
 function dibujarEsquema() {
@@ -761,7 +767,6 @@ function ubicarJugadorLibre(coords) {
     abrirModalSeleccion(posAbreviada, coords);
   };
 
-  // MAGIA: El evento siempre vive acá, desde el momento en que se crea el jugador.
   cartelSuplente.onclick = (e) => {
       e.stopPropagation();
       const idSuplente = cartelSuplente.dataset.id;
@@ -941,7 +946,6 @@ if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
     
     // ---> LÍNEA NUEVA PARA GOOGLE ANALYTICS <---
-    // Le ponemos un "if" por si el usuario tiene AdBlock, así no se rompe la página
     if (typeof gtag === 'function') {
       gtag('event', 'descarga_11_ideal', {
         'seccion': 'pizarra_tactica'
@@ -958,7 +962,6 @@ if(btnCompartir) {
       useCORS: true,              
       backgroundColor: null, 
     }).then(canvas => {
-      // Creamos un enlace invisible, le pegamos la imagen y forzamos el clic
       const enlace = document.createElement('a');
       enlace.download = 'Mi_11_River.png';
       enlace.href = canvas.toDataURL('image/png');
@@ -1174,7 +1177,6 @@ if (btnPartidos) {
     if(viewPuntuar) viewPuntuar.style.display = 'none';
     viewPartidos.style.display = 'block'; 
     
-    // MAGIA: Trae los datos de Firebase y dibuja la pantalla
     await descargarHistorialDeFirebase();
   });
 }
@@ -1194,12 +1196,10 @@ async function descargarHistorialDeFirebase() {
         const datos = await respuesta.json();
         
         if (datos) {
-            // Convertimos el JSON de la nube en una lista para la pantalla
             historialPartidos = Object.keys(datos).map(key => {
                 return { id: key, ...datos[key] };
             });
             
-            // Ordenamos para que el partido más nuevo quede siempre arriba
             historialPartidos.sort((a, b) => {
                 const numA = parseInt(a.id.replace('p', '')) || 0;
                 const numB = parseInt(b.id.replace('p', '')) || 0;
@@ -1209,7 +1209,7 @@ async function descargarHistorialDeFirebase() {
             historialPartidos = [];
         }
         
-        renderizarHistorial(); // Dibujamos las tarjetas
+        renderizarHistorial();
     } catch (error) {
         console.error("Error cargando partidos:", error);
         if (grid) grid.innerHTML = '<div style="color:#da291c; text-align:center; padding: 40px;">Error al cargar. Verificá tu conexión.</div>';
@@ -1230,14 +1230,14 @@ if (tabGrillaMiBoleta && tabGrillaPromedios) {
         tabGrillaMiBoleta.classList.add('active');
         tabGrillaPromedios.classList.remove('active');
         modoVistaGrilla = 'mi_boleta';
-        renderizarHistorial(); // Volvemos a dibujar las tarjetas
+        renderizarHistorial();
     });
 
     tabGrillaPromedios.addEventListener('click', () => {
         tabGrillaPromedios.classList.add('active');
         tabGrillaMiBoleta.classList.remove('active');
         modoVistaGrilla = 'promedios';
-        renderizarHistorial(); // Volvemos a dibujar las tarjetas
+        renderizarHistorial();
     });
 }
 
@@ -1280,7 +1280,6 @@ async function cargarPromedioEnVivoParaGrilla(idPartido, elementoId) {
         let cantidadJugadoresPuntuados = 0;
 
         Object.keys(sumasPorJugador).forEach(idJugador => {
-            // EL SECRETO ESTABA ACÁ: Imitar el recorte de decimales que hace la cancha adentro
             let promedioCrudo = sumasPorJugador[idJugador] / conteosPorJugador[idJugador];
             let promedioRecortado = parseFloat(promedioCrudo.toFixed(1)); 
             
@@ -1325,31 +1324,26 @@ function renderizarHistorial() {
         
         let htmlScore = '';
 
-        // --- LÓGICA PARA PARTIDO PENDIENTE (SÓLO MUESTRA HORA Y DÍA/MES) ---
         if (partido.estado === 'pendiente') {
-            const fechaRaw = partido.fechaHora; // Ej: "2026-07-28T21:30:00"
+            const fechaRaw = partido.fechaHora; 
             let horaFormateada = "--:--"; 
-            let diaMesFormateado = "FECHA"; // Texto por defecto
+            let diaMesFormateado = "FECHA"; 
 
             if (fechaRaw) {
                 const dateObj = new Date(fechaRaw);
-                // Verificamos que la fecha sea válida
                 if (!isNaN(dateObj)) {
-                    // 1. Extraemos la hora
                     const horas = dateObj.getHours().toString().padStart(2, '0');
                     const minutos = dateObj.getMinutes().toString().padStart(2, '0');
                     horaFormateada = `${horas}:${minutos}`;
 
-                    // 2. Extraemos el día y el mes
                     const dia = dateObj.getDate().toString().padStart(2, '0');
                     const meses = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-                    const mes = meses[dateObj.getMonth()]; // Busca el nombre del mes
+                    const mes = meses[dateObj.getMonth()]; 
                     
-                    diaMesFormateado = `${dia} ${mes}`; // Ej: "28 JUL"
+                    diaMesFormateado = `${dia} ${mes}`; 
                 }
             }
 
-            // Dibujamos el rectangulito gris con el DÍA/MES arriba y la HORA abajo
             htmlScore = `
                 <div class="match-score" style="color: var(--text-main); border: 1px solid rgba(128,128,128,0.25); font-size: 14px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                     <span style="font-size: 9px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">${diaMesFormateado}</span>
@@ -1357,14 +1351,9 @@ function renderizarHistorial() {
                 </div>
             `;
         }
-        // --- FIN LÓGICA PENDIENTE ---
-
-        // --- LÓGICA PARA PARTIDO EN JUEGO (ROJO, SIN VOTAR) ---
         else if (partido.estado === 'en_juego') {
             htmlScore = `<div class="match-score match-score-live" style="font-size: 11px; border: none; display: flex; align-items: center; justify-content: center; white-space: nowrap;">EN JUEGO</div>`;
         }
-        // --- FIN LÓGICA EN JUEGO ---
-        
         else if (modoVistaGrilla === 'mi_boleta') {
             if (partido.estado === 'abierto' && !yaVoto) {
                 htmlScore = `<div class="match-score-live">PUNTUAR</div>`;
@@ -1408,7 +1397,7 @@ function renderizarHistorial() {
 
         let golesRiver = "";
         let golesRival = "";
-        if (partido.resultado.includes('-')) {
+        if (partido.resultado && partido.resultado.includes('-')) {
             let partes = partido.resultado.split('-');
             golesRiver = partes[0].trim();
             golesRival = partes[1].trim();
@@ -1429,7 +1418,6 @@ function renderizarHistorial() {
         `;
 
         card.onclick = () => {
-            // Si está pendiente O en juego, no los dejamos entrar a votar
             if (partido.estado === 'pendiente' || partido.estado === 'en_juego') {
                 mostrarToast("El partido todavía no terminó", "error");
                 return; 
@@ -1440,7 +1428,11 @@ function renderizarHistorial() {
 
             actualizarInfoTarjetaCancha(partido);
 
-            ultimoPartido = partido.formacion;
+            if (partido.formacion && Array.isArray(partido.formacion.titulares)) {
+                ultimoPartido = partido.formacion;
+            } else {
+                ultimoPartido = formacionPorDefecto;
+            }
             
             boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
             
@@ -1459,8 +1451,31 @@ function renderizarHistorial() {
         grid.appendChild(card);
     });
 }
-// ACÁ ACTUALIZÁS EL EQUIPO REAL CADA SEMANA
-let ultimoPartido = null;
+
+// BLINDAJE ANTI-CRASH PARA FORMAR POR DEFECTO SI UN PARTIDO VIEJO NO TIENE FORMACIÓN
+const formacionPorDefecto = {
+  titulares: [
+    { id: 41, pos: "ARQ", top: 80, left: 50 },
+    { id: 29, pos: "LD", top: 60, left: 85 },     
+    { id: 28, pos: "DFC", top: 65, left: 62 },     
+    { id: 45, pos: "DFC", top: 65, left: 38 },     
+    { id: 21, pos: "LI", top: 60, left: 15 },      
+    { id: 15, pos: "MC", top: 43, left: 62 },     
+    { id: 44, pos: "MC", top: 43, left: 38 },      
+    { id: 25, pos: "MI", top: 38, left: 15 },        
+    { id: 26, pos: "MD", top: 38, left: 85 },     
+    { id: 11, pos: "DC", top: 18, left: 35 },     
+    { id: 19, pos: "DC", top: 18, left: 65 }       
+  ],
+  suplentes: [
+    { id: 35, pos: "MP", jugo: true },            
+    { id: 18, pos: "DC", jugo: true },            
+    { id: 8,  pos: "MC", jugo: true },          
+    { id: 53, pos: "MP", jugo: true }            
+  ]
+};
+
+let ultimoPartido = formacionPorDefecto;
 
 function cargarVistaPuntuacion() {
   const pitchRating = document.getElementById('pitch-rating');
@@ -1497,7 +1512,6 @@ function cargarVistaPuntuacion() {
     `;
 
     if (modoPuntajeActual === 'mis_puntajes') {
-      // Bloqueamos si ya votó O si el partido fue cerrado por el admin
       if (!yaVoto && partidoActualEstado === 'abierto') {
         token.style.cursor = 'pointer';
         token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
@@ -1535,7 +1549,6 @@ function cargarVistaPuntuacion() {
           htmlNotaFlotante = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
         }
         if (modoPuntajeActual === 'mis_puntajes') {
-          // Aplicamos la misma traba que en los titulares
           if (!yaVoto && partidoActualEstado === 'abierto') {
             token.style.cursor = 'pointer';
             token.onclick = () => abrirModalNota(p.id, jugadorBD.nombre);
@@ -1619,7 +1632,6 @@ function guardarNota(nota) {
   boletaPuntajes[jugadorPuntuandoActual] = nota;
   modalPuntaje.classList.remove('active');
   
-  // MAGIA: Guardamos la boleta específica de ESTE partido
   localStorage.setItem(`rivertactico_puntajes_${partidoActualId}`, JSON.stringify(boletaPuntajes));
 
   const cantidadPuntuados = Object.keys(boletaPuntajes).length;
@@ -1669,7 +1681,7 @@ function actualizarBoletaEnVivo() {
     btnEnviar.innerText = 'MODO LECTURA';
     btnEnviar.disabled = true;
   } else if (partidoActualEstado === 'cerrado') {
-    btnEnviar.innerText = 'PARTIDO CERRADO 🔒'; /* <--- TEXTO NUEVO */
+    btnEnviar.innerText = 'PARTIDO CERRADO 🔒'; 
     btnEnviar.disabled = true;
   } else if (yaVoto) {
     btnEnviar.innerText = 'PUNTAJES ENVIADOS ✓';
@@ -1814,7 +1826,6 @@ function ejecutarEnvioFinal() {
   const modalExito = document.getElementById('modal-exito');
   const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
   
-  // Solo lo deshabilitamos para evitar doble clic, pero no cambiamos el texto
   btnEnviarBoleta.disabled = true;
 
   const paqueteDeVotos = {
@@ -1822,11 +1833,8 @@ function ejecutarEnvioFinal() {
     puntajes: boletaPuntajes
   };
 
-  // MAGIA PRO: Estructuramos la base de datos armando la ruta exacta
-  // Quedará guardado en: /votos/p_actual/user_123abc.json
   const urlFirebase = `https://mi-11-river-default-rtdb.firebaseio.com/votos/${partidoActualId}/${userId}.json`; 
 
-  // Usamos PUT en lugar de POST para que sobreescriba exactamente la carpeta de este usuario
   fetch(urlFirebase, {
     method: 'PUT',
     headers: {
@@ -1840,7 +1848,6 @@ function ejecutarEnvioFinal() {
       modalExito.classList.add('active');
     }
     
-    // Marcamos que ya votó específicamente EN ESTE PARTIDO
     localStorage.setItem(`rivertactico_ya_voto_${partidoActualId}`, 'true');
     cargarVistaPuntuacion(); 
   })
@@ -1919,49 +1926,63 @@ let estadoVisual = 0; // 0: Dibujos, 1: Fotos Reales, 2: Camisetas
 
 botonesToggleFotos.forEach(btn => {
   btn.addEventListener('click', () => {
-    // Suma 1 y vuelve a 0 cuando llega a 3 (0 -> 1 -> 2 -> 0)
     estadoVisual = (estadoVisual + 1) % 3;
     
-    // 1. Apagamos todo y escondemos todos los íconos
     document.body.classList.remove('modo-camisetas', 'modo-fotos-reales');
     document.querySelectorAll('.icon-user, .icon-camera, .icon-shirt, .icon-user-p, .icon-camera-p, .icon-shirt-p').forEach(icon => {
         icon.style.display = 'none';
     });
 
-    // 2. Encendemos el modo que toca en AMBOS botones a la vez
     if (estadoVisual === 0) {
       document.querySelectorAll('.icon-user, .icon-user-p').forEach(i => i.style.display = 'block');
-      actualizarSrcImagenesEnVivo(false); // Volvemos a dibujos
+      actualizarSrcImagenesEnVivo('dibujada');
     } 
     else if (estadoVisual === 1) {
       document.body.classList.add('modo-fotos-reales');
       document.querySelectorAll('.icon-camera, .icon-camera-p').forEach(i => i.style.display = 'block');
-      actualizarSrcImagenesEnVivo(true); // Cambiamos a reales
+      actualizarSrcImagenesEnVivo('real');
     } 
     else if (estadoVisual === 2) {
       document.body.classList.add('modo-camisetas');
       document.querySelectorAll('.icon-shirt, .icon-shirt-p').forEach(i => i.style.display = 'block');
+      actualizarSrcImagenesEnVivo('camiseta');
     }
   });
 });
 
-// Función ninja para cambiar las fotos que ya están puestas en la cancha
-function actualizarSrcImagenesEnVivo(haciaReales) {
-  // Buscamos todas las fotos de jugadores de la página
+// NUEVO: Función para cambiar las fotos en tiempo real (Soporta Camiseta / Real / Dibujada)
+function actualizarSrcImagenesEnVivo(modo) {
   document.querySelectorAll('img.token-img, img.mvp-photo').forEach(img => {
     const pathActual = img.getAttribute('src');
     if (!pathActual) return;
 
-    if (haciaReales) {
-      // Si la ruta NO tiene la carpeta "reales", se la inyectamos
-      if (pathActual.includes('fotos/') && !pathActual.includes('fotos/reales/')) {
-        img.src = pathActual.replace('fotos/', 'fotos/reales/');
-      }
-    } else {
-      // Si volvemos a dibujos, le extirpamos la carpeta "reales" de la ruta
-      if (pathActual.includes('fotos/reales/')) {
-        img.src = pathActual.replace('fotos/reales/', 'fotos/');
-      }
+    // Si queremos ver las CAMISETAS
+    if (modo === 'camiseta') {
+        img.src = 'fotos/camiseta.png';
+        return;
+    }
+
+    // Extraer el ID exacto de la imagen actual mirando el número del archivo (ej: 41.png -> 41)
+    const partesRuta = pathActual.split('/');
+    const nombreArchivo = partesRuta[partesRuta.length - 1]; // "41.png" o "camiseta.png"
+    const idExtraido = parseInt(nombreArchivo); // Obtiene el número del archivo
+
+    // Si había una camiseta puesta y no tenemos el ID a mano en el nombre de archivo,
+    // buscamos el token padre y leemos su ID de rating-token-X o token-X
+    let idFinal = idExtraido;
+    if (isNaN(idFinal)) {
+       const tokenPadre = img.closest('.player-token');
+       if (tokenPadre && tokenPadre.id) {
+           idFinal = parseInt(tokenPadre.id.replace('rating-token-', '').replace('token-', ''));
+       }
+    }
+
+    if (!isNaN(idFinal)) {
+        if (modo === 'real') {
+            img.src = `fotos/reales/${idFinal}.png`;
+        } else if (modo === 'dibujada') {
+            img.src = `fotos/dibujadas/${idFinal}.png`;
+        }
     }
   });
 }
@@ -2166,7 +2187,6 @@ if (buscadorModalElement) {
 // ==========================================
 document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
   boton.addEventListener('click', (e) => {
-    // Buscamos el botón específico que se tocó para ponerle el relojito
     const btnTocado = e.currentTarget;
     const canchaPuntaje = document.getElementById('pitch-rating');
     const contenidoOriginal = btnTocado.innerHTML;
@@ -2176,7 +2196,7 @@ document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
     html2canvas(canchaPuntaje, {
       scale: 3,                 
       useCORS: true,              
-      backgroundColor: null // Transparente, como charlamos recién
+      backgroundColor: null
     }).then(canvas => {
       const enlace = document.createElement('a');
       enlace.download = 'Mis_Puntajes_River.png';
@@ -2185,7 +2205,7 @@ document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
       
       btnTocado.innerHTML = contenidoOriginal; 
     }).catch(error => {
-      console.error("Error generando la imagen:", error);
+      console.error("Error generating image:", error);
       btnTocado.innerHTML = contenidoOriginal;
     });
   });
@@ -2196,35 +2216,27 @@ document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
 // ==========================================
 const tabMiBoleta = document.getElementById('tab-mi-boleta');
 const tabPromedios = document.getElementById('tab-promedios');
-// (Ya no declaramos btnEnviarBoleta acá porque ya existe más arriba en tu código)
 
 if (tabMiBoleta && tabPromedios) {
-    // 1. Clic en "Mi Boleta"
     tabMiBoleta.addEventListener('click', () => {
         tabMiBoleta.classList.add('active');
         tabPromedios.classList.remove('active');
         
-        // Volvemos al modo de tu boleta local
         modoPuntajeActual = 'mis_puntajes';
         
         if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'block';
         cargarVistaPuntuacion();
     });
 
-    // 2. Clic en "Promedio Hinchas"
     tabPromedios.addEventListener('click', async () => { 
         tabPromedios.classList.add('active');
         tabMiBoleta.classList.remove('active');
         
-        // Le avisamos al sistema que ahora tiene que leer de la base de datos
         modoPuntajeActual = 'promedio_usuarios';
         
         if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'none';
         
-        // Trae los datos, hace la matemática y espera sin cambiar textos
         await calcularPromediosDeFirebase();
-        
-        // Dibuja la cancha con los promedios reales
         cargarVistaPuntuacion();
     });
 }
@@ -2236,14 +2248,12 @@ const btnMenu = document.getElementById('btn-menu');
 const sidebarMenu = document.getElementById('sidebar-menu');
 const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-// Función para abrir/cerrar
 function toggleSidebar() {
     if(sidebarMenu && sidebarOverlay) {
         const isActive = sidebarMenu.classList.toggle('active');
         sidebarOverlay.classList.toggle('active');
-        btnMenu.classList.toggle('activo'); // Para la animación de giro
+        btnMenu.classList.toggle('activo'); 
         
-        // Intercambiar íconos (Rayitas vs X)
         const iconBurger = btnMenu.querySelector('.icon-burger');
         const iconClose = btnMenu.querySelector('.icon-close');
         
@@ -2254,15 +2264,13 @@ function toggleSidebar() {
     }
 }
 
-// Eventos de click
 if(btnMenu) btnMenu.addEventListener('click', toggleSidebar);
 if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-// Cuando elegís una opción, cerramos el menú
 document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         if(sidebarMenu.classList.contains('active')) {
-            toggleSidebar(); // Reutilizamos la función para que también vuelva a poner las rayitas
+            toggleSidebar(); 
         }
     });
 });
@@ -2271,7 +2279,6 @@ document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
 // SISTEMA DE NOTIFICACIONES TOAST
 // ==========================================
 function mostrarToast(mensaje, tipo = 'exito') {
-    // 1. Buscamos o creamos el contenedor invisible
     let container = document.getElementById('toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -2279,26 +2286,20 @@ function mostrarToast(mensaje, tipo = 'exito') {
         document.body.appendChild(container);
     }
 
-    // 2. Creamos la notificación
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`; 
     
-    // Le ponemos un emoji dependiendo si es error o éxito
     const icono = tipo === 'error' ? '⚠️' : '✅';
     toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
     
-    // 3. Lo metemos en la pantalla
     container.appendChild(toast);
 
-    // 4. Animación de entrada (esperamos un microsegundo para que CSS haga lo suyo)
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
 
-    // 5. Lo sacamos automáticamente a los 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');
-        // Esperamos 300ms a que termine la animación de salida para borrar el elemento de la memoria
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
@@ -2310,33 +2311,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPizarra = document.getElementById('btn-pizarra');
     const btnPartidos = document.getElementById('btn-partidos');
 
-    // 1. Leer el link cuando alguien entra por primera vez
     const rutaActual = window.location.hash;
     
-    // Le damos un respiro mínimo de 50ms para que termine de cargar tu app normal
     setTimeout(() => {
         if (rutaActual === '#puntajes') {
-            // Si el link dice #puntajes, simulamos un clic en tu botón del menú
             if (btnPartidos) btnPartidos.click();
         } else if (rutaActual === '#crear-11') {
-            // Si el link dice #crear-11, abrimos la pizarra
             if (btnPizarra) btnPizarra.click();
         }
     }, 50);
 
-    // 2. Actualizar el link silenciosamente y el TÍTULO DE PESTAÑA cuando el usuario usa tu menú lateral
     if (btnPizarra) {
         btnPizarra.addEventListener('click', () => {
-            // history.replaceState cambia la URL sin recargar la página
             history.replaceState(null, null, '#crear-11');
-            document.title = "Crear 11 | Mi 11 River"; // ACÁ CAMBIA EL TÍTULO
+            document.title = "Crear 11 | Mi 11 River"; 
         });
     }
     
     if (btnPartidos) {
         btnPartidos.addEventListener('click', () => {
             history.replaceState(null, null, '#puntajes');
-            document.title = "Puntuar Jugadores | Mi 11 River"; // ACÁ CAMBIA EL TÍTULO
+            document.title = "Puntuar Jugadores | Mi 11 River"; 
         });
     }
 });
@@ -2348,34 +2343,38 @@ function actualizarInfoTarjetaCancha(partido) {
 
     if (!elRival || !elCompetencia || !elFecha) return;
 
-    // 1. Ponemos el rival en mayúsculas
     elRival.innerText = partido.rival ? `VS ${partido.rival.toUpperCase()}` : 'VS ---';
-
-    // 2. Ponemos la competencia en mayúsculas
     elCompetencia.innerText = partido.competencia ? partido.competencia.toUpperCase() : '';
 
-    // 3. FECHA BLINDADA (No tira NaN-NaN-NaN nunca más)
     if (partido.fechaHora) {
-        // Separa solo la parte de la fecha (ignora la hora si la tiene)
         const soloFecha = String(partido.fechaHora).split('T')[0].split(' ')[0];
-        
-        // Separa por guiones o por barras (/ o -)
         const partes = soloFecha.split(/[-/]/);
 
         if (partes.length === 3) {
-            // Si el año está primero (ej: 2026-07-25 -> año 2026, mes 07, dia 25)
             if (partes[0].length === 4) {
                 elFecha.innerText = `${partes[2]}-${partes[1]}-${partes[0]}`;
             } 
-            // Si el día ya está primero (ej: 25-07-2026 o 25/07/2026)
             else {
                 elFecha.innerText = `${partes[0]}-${partes[1]}-${partes[2]}`;
             }
         } else {
-            // Si tiene algún otro texto raro, lo muestra tal cual
             elFecha.innerText = soloFecha;
         }
     } else {
         elFecha.innerText = '';
     }
+}
+
+// --- PRECARGA OCULTA DE IMÁGENES (Sin subcarpetas + Camiseta suelta) ---
+function precargarImagenesJugadores(listaJugadores) {
+    const imgCamiseta = new Image(); 
+    imgCamiseta.src = 'fotos/camiseta.png';
+
+    listaJugadores.forEach(jugador => {
+        const rutaReal = `fotos/reales/${jugador.id}.png`;     
+        const rutaDibujo = `fotos/dibujadas/${jugador.id}.png`;
+
+        const img1 = new Image(); img1.src = rutaReal;
+        const img2 = new Image(); img2.src = rutaDibujo;
+    });
 }
