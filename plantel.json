@@ -247,6 +247,19 @@
       }
     },
     {
+      "id": 207,
+      "nombre": "T. Andrada",
+      "posicion": ["MC", "MD", "MI"],
+      "numero": "-",
+      "puntaje_promedio": 0,
+      "nuevo": false,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 15,
       "nombre": "F. Vera",
       "posicion": ["MC", "MCD", "MD"],
@@ -910,19 +923,6 @@
       "id": 206,
       "nombre": "R. Garro",
       "posicion": ["MCO", "MC", "MP"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 207,
-      "nombre": "T. Andrada",
-      "posicion": ["MC", "MD", "MI"],
       "numero": "-",
       "puntaje_promedio": 0,
       "nuevo": false,
