@@ -1390,7 +1390,7 @@ function renderizarHistorial() {
             }
         } 
         else if (modoVistaGrilla === 'promedios') {
-            if (partido.estado === 'abierto') {
+            if (partido.estado === 'abierto' || partido.estado === 'cerrado') {
                 const idUnico = `live-score-${partido.id}`;
                 htmlScore = `<div id="${idUnico}" class="match-score" style="color: transparent; border-color: transparent;"></div>`;
                 cargarPromedioEnVivoParaGrilla(partido.id, idUnico);
