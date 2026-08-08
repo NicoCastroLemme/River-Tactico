@@ -1139,47 +1139,77 @@ function actualizarBoxScore() {
 }
 
 // ==========================================
-// NAVEGACIÓN PRINCIPAL: PATRÓN MASTER-DETAIL
+// CONTROL CENTRALIZADO DE NAVEGACIÓN (HOME / PIZARRA / PARTIDOS)
 // ==========================================
+const btnInicio = document.getElementById('btn-inicio');
 const btnPizarra = document.getElementById('btn-pizarra');
 const btnPartidos = document.getElementById('btn-partidos');
 
+const viewInicio = document.getElementById('view-inicio');
 const viewPizarra = document.getElementById('view-pizarra');
 const viewPartidos = document.getElementById('view-partidos');
 const viewPuntuar = document.getElementById('view-puntuar');
 
-let teniaCamisetasActivadas = false;
+const cardHomePizarra = document.getElementById('card-home-pizarra');
+const cardHomePuntajes = document.getElementById('card-home-puntajes');
+const logoHeader = document.querySelector('.logo-img') || document.querySelector('.logo-container');
+// Función principal que apaga todo y prende SOLO la vista que le pedís
+function mostrarVista(vistaDeseada) {
+    // 1. Apagamos todas las pantallas
+    if (viewInicio) viewInicio.style.display = 'none';
+    if (viewPizarra) viewPizarra.style.display = 'none';
+    if (viewPartidos) viewPartidos.style.display = 'none';
+    if (viewPuntuar) viewPuntuar.style.display = 'none';
 
-// 1. Botón "Crear 11" (La Pizarra)
-if (btnPizarra) {
-  btnPizarra.addEventListener('click', () => {
-    btnPizarra.classList.add('active');
+    // 2. Le sacamos el estado "activo" a los botones del menú
+    if (btnInicio) btnInicio.classList.remove('active');
+    if (btnPizarra) btnPizarra.classList.remove('active');
     if (btnPartidos) btnPartidos.classList.remove('active');
-    
-    viewPizarra.style.display = 'grid';
-    if(viewPartidos) viewPartidos.style.display = 'none';
-    if(viewPuntuar) viewPuntuar.style.display = 'none';
-    
-    if (teniaCamisetasActivadas) document.body.classList.add('modo-camisetas');
-  });
+
+    // 3. Encendemos únicamente la vista que corresponde
+    if (vistaDeseada === 'inicio') {
+        if (viewInicio) viewInicio.style.display = 'block';
+        if (btnInicio) btnInicio.classList.add('active');
+        history.replaceState(null, null, window.location.pathname); // Limpia el # de la URL
+        document.title = "Mi 11 River | Inicio";
+    } 
+    else if (vistaDeseada === 'pizarra') {
+        if (viewPizarra) viewPizarra.style.display = 'grid';
+        if (btnPizarra) btnPizarra.classList.add('active');
+        if (typeof teniaCamisetasActivadas !== 'undefined' && teniaCamisetasActivadas) {
+            document.body.classList.add('modo-camisetas');
+        }
+        history.replaceState(null, null, '#crear-11');
+        document.title = "Crear 11 | Mi 11 River";
+    } 
+    else if (vistaDeseada === 'partidos') {
+        if (viewPartidos) viewPartidos.style.display = 'block';
+        if (btnPartidos) btnPartidos.classList.add('active');
+        if (typeof teniaCamisetasActivadas !== 'undefined') {
+            teniaCamisetasActivadas = document.body.classList.contains('modo-camisetas');
+        }
+        document.body.classList.remove('modo-camisetas');
+        descargarHistorialDeFirebase();
+        history.replaceState(null, null, '#puntajes');
+        document.title = "Puntuar Jugadores | Mi 11 River";
+    }
 }
 
-// 2. Botón "Puntajes" (La Grilla de Partidos - Master)
-if (btnPartidos) {
-  btnPartidos.addEventListener('click', async () => { 
-    btnPartidos.classList.add('active');
-    if(btnPizarra) btnPizarra.classList.remove('active');
-    
-    teniaCamisetasActivadas = document.body.classList.contains('modo-camisetas');
-    document.body.classList.remove('modo-camisetas');
-
-    if(viewPizarra) viewPizarra.style.display = 'none';
-    if(viewPuntuar) viewPuntuar.style.display = 'none';
-    viewPartidos.style.display = 'block'; 
-    
-    await descargarHistorialDeFirebase();
-  });
+// --- CONECTAMOS LOS CLICS DE LOS BOTONES Y LAS TARJETAS ---
+if (btnInicio) btnInicio.addEventListener('click', () => mostrarVista('inicio'));
+if (btnPizarra) btnPizarra.addEventListener('click', () => mostrarVista('pizarra'));
+if (btnPartidos) btnPartidos.addEventListener('click', () => mostrarVista('partidos'));
+if (logoHeader) {
+    logoHeader.addEventListener('click', () => mostrarVista('inicio'));
 }
+if (cardHomePizarra) cardHomePizarra.addEventListener('click', () => mostrarVista('pizarra'));
+if (cardHomePuntajes) cardHomePuntajes.addEventListener('click', () => mostrarVista('partidos'));
+
+// --- AL CARGAR LA PÁGINA: FORZAMOS ARRANCAR EN INICIO ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Si entran directo a la web, siempre los recibe el Inicio y limpia cualquier # del link
+    mostrarVista('inicio');
+});
 
 // ==========================================
 // MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
@@ -2304,36 +2334,29 @@ function mostrarToast(mensaje, tipo = 'exito') {
     }, 3000);
 }
 
-// ==========================================
-// SISTEMA DE RUTAS POR URL (LINKS COMPARTIBLES)
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    const btnPizarra = document.getElementById('btn-pizarra');
-    const btnPartidos = document.getElementById('btn-partidos');
+  const btnPizarra = document.getElementById('btn-pizarra');
+  const btnPartidos = document.getElementById('btn-partidos');
+  const rutaActual = window.location.hash;
 
-    const rutaActual = window.location.hash;
-    
-    setTimeout(() => {
-        if (rutaActual === '#puntajes') {
-            if (btnPartidos) btnPartidos.click();
-        } else if (rutaActual === '#crear-11') {
-            if (btnPizarra) btnPizarra.click();
-        }
-    }, 50);
+  // 1. Apagamos los botones activos del menú por defecto para que arranquen neutros
+  if (btnPizarra) btnPizarra.classList.remove('active');
+  if (btnPartidos) btnPartidos.classList.remove('active');
 
-    if (btnPizarra) {
-        btnPizarra.addEventListener('click', () => {
-            history.replaceState(null, null, '#crear-11');
-            document.title = "Crear 11 | Mi 11 River"; 
-        });
+  // 2. Por defecto, prendemos SÓLO el INICIO
+  if (viewInicio) viewInicio.style.display = 'block';
+  if (viewPizarra) viewPizarra.style.display = 'none';
+  if (viewPartidos) viewPartidos.style.display = 'none';
+  if (viewPuntuar) viewPuntuar.style.display = 'none';
+
+  // 3. SOLO saltamos de pantalla si el link tiene explícitamente #puntajes o #crear-11
+  setTimeout(() => {
+    if (rutaActual === '#puntajes' && btnPartidos) {
+      btnPartidos.click(); 
+    } else if (rutaActual === '#crear-11' && btnPizarra) {
+      btnPizarra.click(); 
     }
-    
-    if (btnPartidos) {
-        btnPartidos.addEventListener('click', () => {
-            history.replaceState(null, null, '#puntajes');
-            document.title = "Puntuar Jugadores | Mi 11 River"; 
-        });
-    }
+  }, 50);
 });
 
 function actualizarInfoTarjetaCancha(partido) {

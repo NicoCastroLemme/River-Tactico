@@ -318,6 +318,7 @@ body.dark-mode .action-btn { color: var(--text-main); }
 body.dark-mode .main-header { background-color: #1e1e1e; }
 
 .logo-img {
+  cursor: pointer;
   height: 40px; /* Esta es la altura estándar para barras de navegación */
   width: auto;  /* Mantiene las proporciones de tu logo sin deformarlo */
   display: block;
@@ -1454,4 +1455,134 @@ body:not(.dark-mode) #rated-players-container {
     .toast.show {
         transform: translateY(0);
     }
+}
+
+/* ==========================================
+   ESTILOS PANTALLA DE INICIO (HOME)
+   ========================================== */
+.home-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 15px;
+  text-align: center;
+}
+
+.home-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  color: var(--text-main);
+}
+
+.home-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+}
+
+/* Grilla de 2 columnas */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Tarjetas principales - ESTILO RECTO CON FOTO DE FONDO */
+.home-card {
+  background-color: var(--bg-card, #1e1e1e);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0; /* <-- Cero bordes redondeados */
+  padding: 35px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 300px; /* Un poco más de alto para lucir la foto */
+
+  /* Configuración de imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* --- IMÁGENES DE FONDO + DEGRADADO OSCURO DE PROTECCIÓN --- */
+#card-home-pizarra {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(18, 18, 18, 0.95) 100%),
+    url('fotos/fondo-pizarra.jpg'); /* <-- Poné tu imagen en la carpeta fotos/ */
+}
+
+#card-home-puntajes {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(18, 18, 18, 0.95) 100%),
+    url('fotos/fondo-puntajes.jpg'); /* <-- Poné tu imagen en la carpeta fotos/ */
+}
+
+/* Efecto hover agresivo al pasar el mouse */
+.home-card:hover {
+  transform: translateY(-5px);
+  border-color: #da291c; /* Rojo River */
+  box-shadow: 0 10px 25px rgba(218, 41, 28, 0.3);
+}
+
+.home-card-badge {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #da291c;
+  background: rgba(218, 41, 28, 0.15);
+  padding: 4px 10px;
+  border-radius: 0; /* <-- Cero bordes redondeados */
+  margin-bottom: 15px;
+}
+
+.home-card-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.home-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: var(--text-main);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* Sombra al texto por las dudas */
+}
+
+.home-card p {
+  font-size: 0.9rem;
+  color: #ffffff;
+  line-height: 1.4;
+  margin-bottom: 25px;
+}
+
+/* Botón de acción dentro de la tarjeta */
+.btn-home-action {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 0; /* <-- Cero bordes redondeados */
+  background: #da291c;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.home-card:hover .btn-home-action {
+  background: #b81d13;
+}
+
+#view-inicio {
+  display: block; /* Arranca visible */
+}
+
+#view-pizarra,
+#view-partidos,
+#view-puntuar {
+  display: none; /* Arrancan ocultas */
 }

@@ -65,6 +65,7 @@
   <nav class="sidebar-menu" id="sidebar-menu">
     <div class="sidebar-content">
       <!-- Los botones de siempre, pero ahora en bloque -->
+       <button class="nav-btn" id="btn-inicio">INICIO</button>
       <button class="nav-btn active" id="btn-pizarra">Crear 11</button>
       <button class="nav-btn" id="btn-partidos">Puntajes</button>
 
@@ -86,6 +87,32 @@
       </div>
     </div>
   </nav>
+
+  <!-- ========================================== -->
+  <!-- PANTALLA DE INICIO (HOME) -->
+  <!-- ========================================== -->
+  <div id="view-inicio" class="view-section">
+    <div class="home-container"><!--
+      <div class="home-header">
+        <h1>¡Bienvenido a Mi 11 River!</h1>
+        <p>Elegí qué querés hacer hoy:</p>
+      </div>-->
+
+      <div class="home-grid">
+        <!-- BLOQUE 1: CREAR 11 -->
+        <div class="home-card" id="card-home-pizarra">
+          <p>Armá tu formación táctica con los jugadores de primera, reserva y rumores del mercado de pases.</p>
+          <button class="btn-home-action">CREÁ TU 11 ➔</button>
+        </div>
+
+        <!-- BLOQUE 2: PUNTUAR JUGADORES -->
+        <div class="home-card" id="card-home-puntajes">
+          <p>Calificá el rendimiento del equipo después de cada partido de River y compará tus notas con el promedio del hincha.</p>
+          <button class="btn-home-action">PUNTUAR JUGADORES ➔</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- =============================== -->
   <!-- VISTA 1: PIZARRA TÁCTICA        -->
