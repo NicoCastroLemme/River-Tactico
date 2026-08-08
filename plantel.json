@@ -264,7 +264,7 @@
       "id": 207,
       "nombre": "T. Andrada",
       "posicion": ["MC", "MD", "MI"],
-      "numero": "-",
+      "numero": "50",
       "puntaje_promedio": 0,
       "nuevo": true,
       "estadisticas": {
