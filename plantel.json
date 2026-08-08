@@ -52,6 +52,20 @@
       }
     },
     {
+      "id": 3,
+      "nombre": "F. Ortega",
+      "posicion": ["LI"],
+      "numero": 3,
+      "puntaje_promedio": 0,
+      "lesionado": false,
+      "nuevo": true,
+      "estadisticas": {
+        "minutos": 0,
+        "goles": 0,
+        "asistencias": 0
+      }
+    },
+    {
       "id": 51,
       "nombre": "M. Viña",
       "posicion": ["LI"],
@@ -325,19 +339,6 @@
       }
     },
     {
-      "id": 39,
-      "nombre": "S. Lencina",
-      "posicion": ["MCO", "MD", "ED", "MC"],
-      "numero": 39,
-      "puntaje_promedio": 0,
-      "lesionado": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
       "id": 25,
       "nombre": "L. Pereyra",
       "posicion": ["MCO", "MI", "MC", "EI"],
@@ -364,14 +365,14 @@
       }
     },
     {
-      "id": 11,
-      "nombre": "F. Colidio",
-      "posicion": ["MP", "EI", "DC"],
-      "numero": 11,
+      "id": 201,
+      "nombre": "T. Almada",
+      "posicion": ["MCO", "MP", "MC"],
+      "numero": "-",
       "puntaje_promedio": 0,
-      "lesionado": false,
+      "nuevo": true,
       "estadisticas": {
-        "minutos": 132,
+        "minutos": 0,
         "goles": 0,
         "asistencias": 0
       }
@@ -385,19 +386,6 @@
       "lesionado": false,
       "estadisticas": {
         "minutos": 70,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 38,
-      "nombre": "I. Subiabre",
-      "posicion": ["MP", "MCO", "EI", "ED"],
-      "numero": 38,
-      "puntaje_promedio": 0,
-      "lesionado": false,
-      "estadisticas": {
-        "minutos": 0,
         "goles": 0,
         "asistencias": 0
       }
@@ -435,19 +423,6 @@
       "numero": 9,
       "puntaje_promedio": 0,
       "lesionado": true,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 7,
-      "nombre": "M. Salas",
-      "posicion": ["DC", "EI", "ED"],
-      "numero": "7",
-      "puntaje_promedio": 0,
-      "lesionado": false,
       "estadisticas": {
         "minutos": 0,
         "goles": 0,
@@ -868,19 +843,6 @@
   ],
   "rumores": [
     {
-      "id": 201,
-      "nombre": "T. Almada",
-      "posicion": ["MCO", "MP", "MC"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
       "id": 203,
       "nombre": "E. Barco",
       "posicion": ["MCO", "MP", "MC", "EI", "MI"],
@@ -894,48 +856,9 @@
       }
     },
     {
-      "id": 204,
-      "nombre": "E. Palacios",
-      "posicion": ["MC", "MCD", "MD", "MI"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 205,
-      "nombre": "F. Medina",
-      "posicion": ["DFC", "LI"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
       "id": 206,
       "nombre": "R. Garro",
       "posicion": ["MCO", "MC", "MP"],
-      "numero": "-",
-      "puntaje_promedio": 0,
-      "nuevo": false,
-      "estadisticas": {
-        "minutos": 0,
-        "goles": 0,
-        "asistencias": 0
-      }
-    },
-    {
-      "id": 208,
-      "nombre": "F. Mastantuono",
-      "posicion": ["ED", "MCO", "MP"],
       "numero": "-",
       "puntaje_promedio": 0,
       "nuevo": false,
