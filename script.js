@@ -1550,15 +1550,19 @@ function cargarVistaPuntuacion() {
   fichasViejas.forEach(f => f.remove());
 
   ultimoPartido.titulares.forEach(p => {
-    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+    // BLINDAJE 1: Usamos == en lugar de === por si en Firebase lo guardaste como texto ("41" vs 41)
+    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id == p.id);
     if (!jugadorBD) return;
 
     const token = document.createElement('div');
     token.className = 'player-token'; 
     token.id = `rating-token-${p.id}`; 
     
-    token.style.top = `${p.top}%`;
-    token.style.left = `${p.left}%`;
+    // BLINDAJE 2: Si te olvidaste de escribir las coordenadas en Firebase, los centra al 50%
+    const topVal = p.top !== undefined ? p.top : 50;
+    const leftVal = p.left !== undefined ? p.left : 50;
+    token.style.top = String(topVal).includes('%') ? topVal : `${topVal}%`;
+    token.style.left = String(leftVal).includes('%') ? leftVal : `${leftVal}%`;
 
     let htmlNotaFlotante = '';
     if (datosActivos[p.id]) {
@@ -1591,7 +1595,8 @@ function cargarVistaPuntuacion() {
     contenedor.innerHTML = ''; 
     
     ultimoPartido.suplentes.forEach(p => {
-      const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+      // BLINDAJE 1: Usamos == también para los suplentes
+      const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id == p.id);
       if (!jugadorBD) return;
 
       const token = document.createElement('div');
@@ -1642,9 +1647,11 @@ function cargarVistaPuntuacion() {
       tokenDT.className = 'player-token'; 
       tokenDT.id = `rating-token-${dt.id}`; 
       
-      // Lo anclamos con las coordenadas que le mandes desde Firebase
-      tokenDT.style.top = `${dt.top}%`;
-      tokenDT.style.left = `${dt.left}%`;
+      // BLINDAJE 2: Coordenadas por defecto para el DT también
+      const topVal = dt.top !== undefined ? dt.top : 85;
+      const leftVal = dt.left !== undefined ? dt.left : 10;
+      tokenDT.style.top = String(topVal).includes('%') ? topVal : `${topVal}%`;
+      tokenDT.style.left = String(leftVal).includes('%') ? leftVal : `${leftVal}%`;
 
       let htmlNotaFlotanteDT = '';
       if (datosActivos[dt.id]) {
