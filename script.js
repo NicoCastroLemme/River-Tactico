@@ -443,6 +443,8 @@ function renderizarListaJugadores(plantelSeleccionado) {
   jugadorSeleccionado = null; 
   
   plantelSeleccionado.forEach(jugador => {
+    if (jugador.id == 999) return;
+
     const row = document.createElement('div');
     row.className = 'player-row';
     row.id = `row-${jugador.id}`;
@@ -499,20 +501,15 @@ function marcarJugadorEnLista(jugador, fila) {
   fila.classList.add('selected');
 }
 
-// --- GENERADOR DE RUTAS (NUEVO: Sin subcarpetas + Soporte de Camisetas) ---
 function obtenerRutaFoto(idJugador) {
-  // 1. Si está activo el modo camisetas, devolvemos la camiseta para todos
-  if (document.body.classList.contains('modo-camisetas')) {
+  // Al DT (ID 999) no le ponemos la foto genérica de la camiseta, muestra siempre su cara
+  if (document.body.classList.contains('modo-camisetas') && idJugador != 999) {
       return 'fotos/camiseta.png';
   }
 
+  // Por ahora ocultamos las dibujadas y forzamos a cargar siempre las reales
   const idNum = parseInt(idJugador); 
-  
-  // 2. Elegimos entre reales o dibujadas
-  const subcarpeta = document.body.classList.contains('modo-fotos-reales') ? 'reales' : 'dibujadas';
-  
-  // 3. Devolvemos directo la foto por ID
-  return `fotos/${subcarpeta}/${idNum}.png`;
+  return `fotos/reales/${idNum}.png`;
 }
 
 function dibujarEsquema() {
@@ -823,7 +820,8 @@ function abrirModalSeleccion(posAbreviada, coords) {
       
     const idsOcupados = [...idsTitulares, ...idsSuplentes];
 
-    const disponibles = plantelSeleccionado.filter(p => !idsOcupados.includes(p.id));
+    const disponibles = plantelSeleccionado.filter(p => !idsOcupados.includes(p.id) && p.id != 999);
+
     const recomendados = [];
     const resto = [];
 
@@ -1509,24 +1507,24 @@ let ultimoPartido = formacionPorDefecto;
 
 function cargarVistaPuntuacion() {
   const pitchRating = document.getElementById('pitch-rating');
-  const benchList = document.getElementById('bench-list');
   const datosActivos = obtenerDatosActivos(); 
-  
   const yaVoto = localStorage.getItem(`rivertactico_ya_voto_${partidoActualId}`) === 'true';
 
   const fichasViejas = pitchRating.querySelectorAll('.player-token');
   fichasViejas.forEach(f => f.remove());
 
   ultimoPartido.titulares.forEach(p => {
-    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+    const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id == p.id);
     if (!jugadorBD) return;
 
     const token = document.createElement('div');
     token.className = 'player-token'; 
     token.id = `rating-token-${p.id}`; 
     
-    token.style.top = `${p.top}%`;
-    token.style.left = `${p.left}%`;
+    const topVal = p.top !== undefined ? p.top : 50;
+    const leftVal = p.left !== undefined ? p.left : 50;
+    token.style.top = String(topVal).includes('%') ? topVal : `${topVal}%`;
+    token.style.left = String(leftVal).includes('%') ? leftVal : `${leftVal}%`;
 
     let htmlNotaFlotante = '';
     if (datosActivos[p.id]) {
@@ -1550,21 +1548,20 @@ function cargarVistaPuntuacion() {
       }
     }
     
-    pitchRating.appendChild(token);
+    if (pitchRating) pitchRating.appendChild(token);
   });
 
   const benchContainers = document.querySelectorAll('.bench-tokens');
   
   benchContainers.forEach(contenedor => {
     contenedor.innerHTML = ''; 
-    
     ultimoPartido.suplentes.forEach(p => {
-      const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id === p.id);
+      const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(j => j.id == p.id);
       if (!jugadorBD) return;
 
       const token = document.createElement('div');
       token.className = 'player-token';
-      
+      token.id = `bench-token-${p.id}`; // <--- ESTA ES LA LÍNEA MÁGICA QUE FALTABA
       token.style.position = 'relative';
       token.style.top = 'auto';
       token.style.left = 'auto';
@@ -1597,7 +1594,6 @@ function cargarVistaPuntuacion() {
         <img src="${obtenerRutaFoto(p.id)}" class="token-img" onerror="this.onerror=null; this.src='fotos/default2.png'">
         <div class="token-name">${jugadorBD.apellidoProcesado}</div>
       `;
-      
       contenedor.appendChild(token);
     });
   });
@@ -1948,26 +1944,26 @@ if (toggleSuplentes) {
 }
 
 // ==========================================
-// CONTROL DE MODO VISUAL: 3 TIEMPOS (Dibujos > Reales > Camisetas)
+// CONTROL DE MODO VISUAL: 2 TIEMPOS (Reales > Camisetas)
 // ==========================================
 const botonesToggleFotos = document.querySelectorAll('#btn-toggle-fotos, .btn-toggle-fotos-puntajes');
 
-let estadoVisual = 0; // 0: Dibujos, 1: Fotos Reales, 2: Camisetas
+let estadoVisual = 1; // 1 = Fotos Reales
+
+document.querySelectorAll('.icon-user, .icon-user-p').forEach(i => i.style.display = 'none');
+document.querySelectorAll('.icon-camera, .icon-camera-p').forEach(i => i.style.display = 'block');
 
 botonesToggleFotos.forEach(btn => {
   btn.addEventListener('click', () => {
-    estadoVisual = (estadoVisual + 1) % 3;
+    // Alternamos solo entre 1 (Reales) y 2 (Camisetas)
+    estadoVisual = estadoVisual === 1 ? 2 : 1;
     
     document.body.classList.remove('modo-camisetas', 'modo-fotos-reales');
     document.querySelectorAll('.icon-user, .icon-camera, .icon-shirt, .icon-user-p, .icon-camera-p, .icon-shirt-p').forEach(icon => {
         icon.style.display = 'none';
     });
 
-    if (estadoVisual === 0) {
-      document.querySelectorAll('.icon-user, .icon-user-p').forEach(i => i.style.display = 'block');
-      actualizarSrcImagenesEnVivo('dibujada');
-    } 
-    else if (estadoVisual === 1) {
+    if (estadoVisual === 1) {
       document.body.classList.add('modo-fotos-reales');
       document.querySelectorAll('.icon-camera, .icon-camera-p').forEach(i => i.style.display = 'block');
       actualizarSrcImagenesEnVivo('real');
@@ -1980,38 +1976,33 @@ botonesToggleFotos.forEach(btn => {
   });
 });
 
-// NUEVO: Función para cambiar las fotos en tiempo real (Soporta Camiseta / Real / Dibujada)
 function actualizarSrcImagenesEnVivo(modo) {
   document.querySelectorAll('img.token-img, img.mvp-photo').forEach(img => {
     const pathActual = img.getAttribute('src');
     if (!pathActual) return;
 
-    // Si queremos ver las CAMISETAS
-    if (modo === 'camiseta') {
-        img.src = 'fotos/camiseta.png';
-        return;
-    }
-
-    // Extraer el ID exacto de la imagen actual mirando el número del archivo (ej: 41.png -> 41)
     const partesRuta = pathActual.split('/');
-    const nombreArchivo = partesRuta[partesRuta.length - 1]; // "41.png" o "camiseta.png"
-    const idExtraido = parseInt(nombreArchivo); // Obtiene el número del archivo
+    const nombreArchivo = partesRuta[partesRuta.length - 1]; 
+    let idFinal = nombreArchivo.replace('.png', ''); 
 
-    // Si había una camiseta puesta y no tenemos el ID a mano en el nombre de archivo,
-    // buscamos el token padre y leemos su ID de rating-token-X o token-X
-    let idFinal = idExtraido;
-    if (isNaN(idFinal)) {
+    // Si tiene la camiseta, recuperamos el ID a partir del padre
+    if (idFinal === 'camiseta') {
        const tokenPadre = img.closest('.player-token');
        if (tokenPadre && tokenPadre.id) {
-           idFinal = parseInt(tokenPadre.id.replace('rating-token-', '').replace('token-', ''));
+           // MAGIA: Corta la palabra por guiones y se queda con el final (el ID numérico limpio)
+           idFinal = tokenPadre.id.split('-').pop();
+       } else if (img.classList.contains('mvp-photo')) {
+           // Paracaídas especial para la foto del MVP en la boleta
+           actualizarBoletaEnVivo();
+           return;
        }
     }
 
-    if (!isNaN(idFinal)) {
-        if (modo === 'real') {
+    if (idFinal && idFinal !== 'camiseta') {
+        if (modo === 'camiseta' && idFinal != 999) {
+            img.src = 'fotos/camiseta.png';
+        } else if (modo === 'real') {
             img.src = `fotos/reales/${idFinal}.png`;
-        } else if (modo === 'dibujada') {
-            img.src = `fotos/dibujadas/${idFinal}.png`;
         }
     }
   });
