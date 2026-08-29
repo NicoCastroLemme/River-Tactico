@@ -2349,3 +2349,111 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 50);
 });
+
+// ==========================================
+// CONTROL DEL MENÚ LATERAL (SIDEBAR)
+// ==========================================
+const btnMenu = document.getElementById('btn-menu');
+const sidebarMenu = document.getElementById('sidebar-menu');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+function toggleSidebar() {
+    if(sidebarMenu && sidebarOverlay) {
+        const isActive = sidebarMenu.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+        if (btnMenu) btnMenu.classList.toggle('activo'); 
+        
+        if (btnMenu) {
+            const iconBurger = btnMenu.querySelector('.icon-burger');
+            const iconClose = btnMenu.querySelector('.icon-close');
+            
+            if (iconBurger && iconClose) {
+                iconBurger.style.display = isActive ? 'none' : 'block';
+                iconClose.style.display = isActive ? 'block' : 'none';
+            }
+        }
+    }
+}
+
+if(btnMenu) btnMenu.addEventListener('click', toggleSidebar);
+if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if(sidebarMenu && sidebarMenu.classList.contains('active')) {
+            toggleSidebar(); 
+        }
+    });
+});
+
+// ==========================================
+// FUNCIONES DE SISTEMA (TOAST, CANCHA Y PRECARGA)
+// ==========================================
+function mostrarToast(mensaje, tipo = 'exito') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`; 
+    
+    const icono = tipo === 'error' ? '⚠️' : '✅';
+    toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
+    
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function actualizarInfoTarjetaCancha(partido) {
+    const elRival = document.getElementById('cancha-rival');
+    const elCompetencia = document.getElementById('cancha-competencia');
+    const elFecha = document.getElementById('cancha-fecha');
+
+    if (!elRival || !elCompetencia || !elFecha) return;
+
+    elRival.innerText = partido.rival ? `VS ${partido.rival.toUpperCase()}` : 'VS ---';
+    elCompetencia.innerText = partido.competencia ? partido.competencia.toUpperCase() : '';
+
+    if (partido.fechaHora) {
+        const soloFecha = String(partido.fechaHora).split('T')[0].split(' ')[0];
+        const partes = soloFecha.split(/[-/]/);
+
+        if (partes.length === 3) {
+            if (partes[0].length === 4) {
+                elFecha.innerText = `${partes[2]}-${partes[1]}-${partes[0]}`;
+            } 
+            else {
+                elFecha.innerText = `${partes[0]}-${partes[1]}-${partes[2]}`;
+            }
+        } else {
+            elFecha.innerText = soloFecha;
+        }
+    } else {
+        elFecha.innerText = '';
+    }
+}
+
+// --- PRECARGA OCULTA DE IMÁGENES ---
+function precargarImagenesJugadores(listaJugadores) {
+    const imgCamiseta = new Image(); 
+    imgCamiseta.src = 'fotos/camiseta.png';
+
+    listaJugadores.forEach(jugador => {
+        const rutaReal = `fotos/reales/${jugador.id}.png`;     
+        const rutaDibujo = `fotos/dibujadas/${jugador.id}.png`;
+
+        const img1 = new Image(); img1.src = rutaReal;
+        const img2 = new Image(); img2.src = rutaDibujo;
+    });
+}
