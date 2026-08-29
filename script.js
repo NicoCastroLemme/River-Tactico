@@ -152,7 +152,6 @@ const pitch = document.getElementById('pitch');
 const boxScoreContainer = document.getElementById('box-score-container');
 
 // --- VARIABLES DE MEMORIA PARA PUNTAJES ---
-// Ahora arranca vacía, la llenamos cuando el usuario elige el partido
 let boletaPuntajes = {};
 let jugadorPuntuandoActual = null;
 
@@ -160,7 +159,7 @@ let jugadorPuntuandoActual = null;
 let modoPuntajeActual = 'mis_puntajes'; 
 const sofaScoreData = { 41: 7.2, 16: 6.8, 13: 7.0, 28: 6.5, 21: 5.5, 6: 7.5, 15: 7.1, 24: 6.9, 26: 8.8, 11: 9.6, 35: 8.2, 20: 6.5, 10: 7.0, 19: 6.8 };
 const milloStatsData = { 41: 6.5, 16: 6.0, 13: 7.5, 28: 5.5, 21: 3.0, 6: 8.0, 15: 7.0, 24: 6.5, 26: 9.0, 11: 10.0, 35: 8.5, 20: 6.0, 10: 7.5, 19: 6.5 };
-let promediosRealesCalculados = {}; // Arranca vacío, se llena en vivo de Firebase
+let promediosRealesCalculados = {};
 
 
 // ==========================================
@@ -171,19 +170,16 @@ const checkboxTema = document.getElementById('checkbox-tema');
 function actualizarTemaGlobal() {
     const isDark = document.body.classList.contains('dark-mode');
     
-    // 1. Mantenemos el switch sincronizado
     if (checkboxTema) {
         checkboxTema.checked = isDark;
     }
     
-    // 2. Cambiamos el logo dependiendo del fondo
     const logoImg = document.querySelector('.logo-img');
     if (logoImg) {
         logoImg.src = isDark ? 'fotos/logo-blanco.png' : 'fotos/logo.png';
     }
 }
 
-// Escuchamos cada vez que el usuario mueve el switch
 if (checkboxTema) {
     checkboxTema.addEventListener('change', (e) => {
         if (e.target.checked) {
@@ -195,7 +191,6 @@ if (checkboxTema) {
     });
 }
 
-// Precargar el logo claro por JS para que no haya parpadeo al cambiar
 const preloadImg = new Image();
 preloadImg.src = 'fotos/logo.png';
 
@@ -208,7 +203,6 @@ function obtenerDatosActivos() {
   return boletaPuntajes;
 }
 
-// MAGIA: Función que descarga todos los votos de UN partido y saca el promedio matemático
 async function calcularPromediosDeFirebase() {
   const urlFirebase = `https://mi-11-river-default-rtdb.firebaseio.com/votos/${partidoActualId}.json`;
   
@@ -216,17 +210,15 @@ async function calcularPromediosDeFirebase() {
     const respuesta = await fetch(urlFirebase);
     const datosDeUsuarios = await respuesta.json();
     
-    promediosRealesCalculados = {}; // Limpiamos la memoria antes de calcular
+    promediosRealesCalculados = {}; 
     
-    if (!datosDeUsuarios) return; // Si nadie votó todavía, salimos silenciosamente
+    if (!datosDeUsuarios) return; 
 
     const sumas = {};
     const conteos = {};
 
-    // Recorremos cada usuario ("user_123": { puntajes: {...} })
     Object.values(datosDeUsuarios).forEach(votoUsuario => {
       if (votoUsuario.puntajes) {
-        // Recorremos las notas que puso ese usuario (41: "7.5", 11: "9.0")
         Object.entries(votoUsuario.puntajes).forEach(([idJugador, notaStr]) => {
           const nota = parseFloat(notaStr);
           if (!isNaN(nota)) {
@@ -241,7 +233,6 @@ async function calcularPromediosDeFirebase() {
       }
     });
 
-    // Matemática final: Suma total dividida por cantidad de votos
     Object.keys(sumas).forEach(idJugador => {
       promediosRealesCalculados[idJugador] = (sumas[idJugador] / conteos[idJugador]).toFixed(1);
     });
@@ -251,28 +242,25 @@ async function calcularPromediosDeFirebase() {
   }
 }
 
-// Escuchador de clics para cambiar de fuente de puntajes
 document.querySelectorAll('.source-tab').forEach(btn => {
   btn.addEventListener('click', async (e) => {
     document.querySelectorAll('.source-tab').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     modoPuntajeActual = e.target.dataset.source;
     
-    // Si tocan el promedio de hinchas, calculamos en vivo
     if (modoPuntajeActual === 'promedio_usuarios') {
       const textoOriginal = e.target.innerText;
-      e.target.innerText = 'Calculando... ⏳'; // Feedback visual de nivel pro
+      e.target.innerText = 'Calculando... ⏳'; 
       
-      await calcularPromediosDeFirebase(); // Esperamos a que termine la matemática
+      await calcularPromediosDeFirebase(); 
       
-      e.target.innerText = textoOriginal; // Volvemos el texto a la normalidad
+      e.target.innerText = textoOriginal; 
     }
     
-    cargarVistaPuntuacion(); // Dibujamos las notas nuevas en la cancha
+    cargarVistaPuntuacion(); 
   });
 });
 
-// --- ESCANER INTELIGENTE DE APELLIDOS E INICIALES ---
 function procesarApellidosDistintivos() {
   const todos = [...plantelPrimera, ...plantelReserva, ...plantelRumores];
   const conteoApellidos = {};
@@ -303,7 +291,6 @@ function procesarApellidosDistintivos() {
   });
 }
 
-// --- MOTOR DE INTERPOLACIÓN DE COLOR ---
 function obtenerColorExacto(nota) {
   const n = parseFloat(nota);
   if (isNaN(n)) return 'var(--text-muted)';
@@ -342,7 +329,6 @@ async function inicializarApp() {
 
     procesarApellidosDistintivos();
 
-    // ---> INICIAMOS LA PRECARGA DE IMÁGENES EN SILENCIO <---
     const todosLosJugadores = [...plantelPrimera, ...plantelReserva, ...plantelRumores];
     precargarImagenesJugadores(todosLosJugadores);
 
@@ -499,19 +485,19 @@ function marcarJugadorEnLista(jugador, fila) {
   fila.classList.add('selected');
 }
 
-// --- GENERADOR DE RUTAS (NUEVO: Sin subcarpetas + Soporte de Camisetas) ---
+// --- GENERADOR DE RUTAS (Detecta automáticamente números vs letras para el DT) ---
 function obtenerRutaFoto(idJugador) {
-  // 1. Si está activo el modo camisetas, devolvemos la camiseta para todos
-  if (document.body.classList.contains('modo-camisetas')) {
+  const esJugadorEspecial = isNaN(parseInt(idJugador)); // Si tiene letras (ej: "dt", "dt_biscay"), es NaN (true)
+
+  if (document.body.classList.contains('modo-camisetas') && !esJugadorEspecial) {
       return 'fotos/camiseta.png';
   }
 
-  const idNum = parseInt(idJugador); 
-  
-  // 2. Elegimos entre reales o dibujadas
   const subcarpeta = document.body.classList.contains('modo-fotos-reales') ? 'reales' : 'dibujadas';
   
-  // 3. Devolvemos directo la foto por ID
+  if (esJugadorEspecial) return `fotos/${subcarpeta}/${idJugador}.png`;
+  
+  const idNum = parseInt(idJugador); 
   return `fotos/${subcarpeta}/${idNum}.png`;
 }
 
@@ -547,7 +533,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     if (formacionActual === nombreFormacion) return;
     if (!coleccionFormaciones[nombreFormacion]) return;
 
-    // 1. En vez de borrar los jugadores, LOS GUARDAMOS (guardamos el elemento DOM entero)
     const jugadoresData = [];
     document.querySelectorAll('#pitch .player-token').forEach(token => {
         const id = token.id.replace('token-', '');
@@ -558,19 +543,16 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
            if (cartelSuplente && !cartelSuplente.classList.contains('oculto')) {
               idSuplente = cartelSuplente.dataset.id;
            }
-           // Guardamos la info del jugador y su ficha visual
            jugadoresData.push({ titular: jugador, idSuplente: idSuplente, elementoDOM: token });
         }
     });
 
-    // 2. Cambiamos el botón activo en el menú
     document.querySelectorAll('.btn-formation').forEach(btn => btn.classList.remove('active'));
     botonClicked.classList.add('active');
 
     formacionActual = nombreFormacion;
     posicionesTacticas = JSON.parse(JSON.stringify(coleccionFormaciones[formacionActual]));
 
-    // 3. Borramos y redibujamos SOLO las crucecitas de fondo (+) y la lista del boxscore
     document.querySelectorAll('.placeholder').forEach(el => el.remove());
     boxScoreContainer.innerHTML = '';
     
@@ -583,7 +565,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
             placeholder.innerText = '+'; 
             placeholder.dataset.pos = pos; 
             
-            // ---> LA LÍNEA MÁGICA: Nacen invisibles para no ensuciar la animación
             placeholder.style.opacity = '0'; 
             
             placeholder.onclick = () => ubicarJugadorLibre(coords);
@@ -596,7 +577,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
         });
     });
 
-    // 4. Lógica de cálculo de los nuevos lugares
     let slotsDisponibles = [];
     Object.entries(posicionesTacticas).forEach(([puesto, coordsArray]) => {
         coordsArray.forEach(coords => {
@@ -604,7 +584,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
         });
     });
 
-    // Buscamos el lugar ideal para cada jugador
     jugadoresData.forEach(pack => {
         const jugador = pack.titular;
         jugador.ubicado = false;
@@ -621,7 +600,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
         }
     });
 
-    // Si sobra alguno (ej: pasás a una formación sin extremos), lo metemos donde haya hueco
     jugadoresData.forEach(pack => {
         const jugador = pack.titular;
         if (!jugador.ubicado) {
@@ -639,18 +617,15 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
         }
     });
 
-    // 5. ¡LA MAGIA! En vez de crear fichas nuevas, DESLIZAMOS las que ya existen
     jugadoresData.forEach(pack => {
         if (pack.titular.slotAsignado) {
             const coords = pack.titular.slotAsignado.coords;
-            const token = pack.elementoDOM; // Recuperamos la ficha del HTML
+            const token = pack.elementoDOM; 
             
-            // Actualizamos su base de datos interna
             token.dataset.pos = pack.titular.slotAsignado.puesto; 
             token.dataset.slotTop = coords.top;
             token.dataset.slotLeft = coords.left;
             
-            // Al cambiarle el top y el left, el CSS se encarga de deslizarlo suavecito
             token.style.top = coords.top;
             token.style.left = coords.left;
         }
@@ -660,7 +635,6 @@ function cambiarFormacion(nombreFormacion, botonClicked) {
     actualizarBoxScore();
     guardarEstadoPizarra();
     
-    // Le damos un respiro de medio segundo para que terminen de viajar antes de apagar las cruces
     setTimeout(actualizarPlaceholders, 400); 
 }
 
@@ -945,13 +919,11 @@ const btnCompartir = document.getElementById('btn-compartir');
 if(btnCompartir) {
   btnCompartir.addEventListener('click', () => {
     
-    // ---> LÍNEA NUEVA PARA GOOGLE ANALYTICS <---
     if (typeof gtag === 'function') {
       gtag('event', 'descarga_11_ideal', {
         'seccion': 'pizarra_tactica'
       });
     }
-    // -------------------------------------------
 
     const cancha = document.getElementById('pitch');
     const contenidoOriginal = btnCompartir.innerHTML;
@@ -1153,6 +1125,7 @@ const viewPuntuar = document.getElementById('view-puntuar');
 const cardHomePizarra = document.getElementById('card-home-pizarra');
 const cardHomePuntajes = document.getElementById('card-home-puntajes');
 const logoHeader = document.querySelector('.logo-img') || document.querySelector('.logo-container');
+
 // Función principal que apaga todo y prende SOLO la vista que le pedís
 function mostrarVista(vistaDeseada) {
     // 1. Apagamos todas las pantallas
@@ -1204,12 +1177,6 @@ if (logoHeader) {
 }
 if (cardHomePizarra) cardHomePizarra.addEventListener('click', () => mostrarVista('pizarra'));
 if (cardHomePuntajes) cardHomePuntajes.addEventListener('click', () => mostrarVista('partidos'));
-
-// --- AL CARGAR LA PÁGINA: FORZAMOS ARRANCAR EN INICIO ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Si entran directo a la web, siempre los recibe el Inicio y limpia cualquier # del link
-    mostrarVista('inicio');
-});
 
 // ==========================================
 // MOTOR DEL HISTORIAL (DATOS Y RENDERIZADO)
@@ -1458,6 +1425,9 @@ function renderizarHistorial() {
 
             actualizarInfoTarjetaCancha(partido);
 
+            // CAMBIA LA URL EN SILENCIO (Para compartir el link)
+            history.replaceState(null, null, `#partido-${partidoActualId}`);
+
             if (partido.formacion && Array.isArray(partido.formacion.titulares)) {
                 ultimoPartido = partido.formacion;
             } else {
@@ -1466,8 +1436,10 @@ function renderizarHistorial() {
             
             boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
             
-            viewPartidos.style.display = 'none';
-            viewPuntuar.style.display = 'grid'; 
+            // Apagar todas y mostrar solo Puntuacion
+            document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+            const viewPuntuar = document.getElementById('view-puntuar');
+            if (viewPuntuar) viewPuntuar.style.display = 'grid'; 
             
             if (modoVistaGrilla === 'promedios') {
                 const tabInternaPromedios = document.getElementById('tab-promedios');
@@ -1480,6 +1452,51 @@ function renderizarHistorial() {
 
         grid.appendChild(card);
     });
+}
+
+// --- ABRIR PARTIDO DIRECTO POR ID DESDE UN LINK COMPARTIDO ---
+async function abrirPartidoDesdeURL(idPartidoBuscado) {
+    if (historialPartidos.length === 0) {
+        await descargarHistorialDeFirebase();
+    }
+
+    const partidoEncontrado = historialPartidos.find(p => p.id === idPartidoBuscado);
+
+    if (partidoEncontrado) {
+        if (partidoEncontrado.estado === 'pendiente' || partidoEncontrado.estado === 'en_juego') {
+            mostrarToast("Este partido todavía no se puede puntuar", "error");
+            mostrarVista('partidos');
+            return;
+        }
+
+        partidoActualId = partidoEncontrado.id; 
+        partidoActualEstado = partidoEncontrado.estado;
+        actualizarInfoTarjetaCancha(partidoEncontrado);
+
+        if (partidoEncontrado.formacion && Array.isArray(partidoEncontrado.formacion.titulares)) {
+            ultimoPartido = partidoEncontrado.formacion;
+        } else {
+            ultimoPartido = formacionPorDefecto;
+        }
+        
+        boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
+        
+        document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+        const viewPuntuar = document.getElementById('view-puntuar');
+        if (viewPuntuar) viewPuntuar.style.display = 'grid'; 
+
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const btnPartidos = document.getElementById('btn-partidos');
+        if (btnPartidos) btnPartidos.classList.add('active');
+
+        const tabInternaBoleta = document.getElementById('tab-mi-boleta');
+        if (tabInternaBoleta) tabInternaBoleta.click();
+        
+        document.title = `Puntuar River vs ${partidoEncontrado.rival || ''} | Mi 11 River`;
+    } else {
+        mostrarToast("Partido no encontrado", "error");
+        mostrarVista('partidos');
+    }
 }
 
 // BLINDAJE ANTI-CRASH PARA FORMAR POR DEFECTO SI UN PARTIDO VIEJO NO TIENE FORMACIÓN
@@ -1602,6 +1619,44 @@ function cargarVistaPuntuacion() {
     });
   });
 
+  // --- DIBUJAR AL TÉCNICO (DT) DINÁMICO ---
+  if (ultimoPartido.tecnico) {
+      const dt = ultimoPartido.tecnico; 
+      
+      const tokenDT = document.createElement('div');
+      tokenDT.className = 'player-token'; 
+      tokenDT.id = `rating-token-${dt.id}`; 
+      
+      // Lo anclamos con las coordenadas que le mandes desde Firebase
+      tokenDT.style.top = `${dt.top}%`;
+      tokenDT.style.left = `${dt.left}%`;
+
+      let htmlNotaFlotanteDT = '';
+      if (datosActivos[dt.id]) {
+        const nota = parseFloat(datosActivos[dt.id]).toFixed(1);
+        const colorCalibrado = obtenerColorExacto(nota);
+        htmlNotaFlotanteDT = `<div class="nota-flotante" style="color: ${colorCalibrado}; border-color: ${colorCalibrado};">${nota}</div>`;
+      }
+
+      tokenDT.innerHTML = `
+        ${htmlNotaFlotanteDT}
+        <div style="position:absolute; top:-8px; background:#da291c; color:white; font-size:9px; padding:2px 6px; border-radius:3px; font-weight:bold; z-index:10; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">DT</div>
+        <img src="${obtenerRutaFoto(dt.id)}" class="token-img" style="border: 2px solid #e5a400;" onerror="this.onerror=null; this.src='fotos/default2.png'">
+        <div class="token-name">${dt.nombre}</div>
+      `;
+
+      if (modoPuntajeActual === 'mis_puntajes') {
+        if (!yaVoto && partidoActualEstado === 'abierto') {
+          tokenDT.style.cursor = 'pointer';
+          tokenDT.onclick = () => abrirModalNota(dt.id, dt.nombre);
+        } else {
+          tokenDT.style.cursor = 'default'; 
+        }
+      }
+      
+      if (pitchRating) pitchRating.appendChild(tokenDT);
+  }
+  
   actualizarBoletaEnVivo();
 }
 
@@ -1731,23 +1786,35 @@ function actualizarBoletaEnVivo() {
       const nota = parseFloat(notaStr);
       sumaTotal += nota;
       
-      if (nota > mvpNota) {
+      // El DT no puede salir MVP, solo los jugadores
+      if (nota > mvpNota && (!ultimoPartido.tecnico || id !== String(ultimoPartido.tecnico.id))) {
         mvpNota = nota;
         mvpId = id;
       }
 
-      const jugadorPartido = [...ultimoPartido.titulares, ...ultimoPartido.suplentes].find(j => j.id == id);
-      
-      if (jugadorPartido) {
-        const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
-        const nombreReal = jugadorBD ? jugadorBD.nombre : 'Desconocido';
+      let nombreReal = 'Desconocido';
+      let posReal = '';
 
-        jugadoresPuntuadosObj.push({ 
-            id: id,
-            name: nombreReal,
-            pos: jugadorPartido.pos,
-            notaFinal: nota 
-        });
+      // Vemos si existe un técnico en el JSON y si el ID coincide
+      if (ultimoPartido.tecnico && id === String(ultimoPartido.tecnico.id)) {
+          nombreReal = ultimoPartido.tecnico.nombre;
+          posReal = 'DT';
+      } else {
+          const jugadorPartido = [...ultimoPartido.titulares, ...ultimoPartido.suplentes].find(j => j.id == id);
+          if (jugadorPartido) {
+            const jugadorBD = [...plantelPrimera, ...plantelReserva, ...plantelRumores].find(p => p.id == id);
+            nombreReal = jugadorBD ? jugadorBD.nombre : 'Desconocido';
+            posReal = jugadorPartido.pos;
+          }
+      }
+
+      if (posReal !== '') {
+          jugadoresPuntuadosObj.push({ 
+              id: id,
+              name: nombreReal,
+              pos: posReal,
+              notaFinal: nota 
+          });
       }
     }
     
@@ -1778,7 +1845,7 @@ function actualizarBoletaEnVivo() {
     if (boletaSortMode === 'puntaje') {
       jugadoresPuntuadosObj.sort((a, b) => b.notaFinal - a.notaFinal);
     } else {
-      const ordenPos = ['ARQ', 'LD', 'DFC', 'LI', 'MCD', 'MC', 'VOL', 'MD', 'MCO', 'MI', 'ED', 'DC', 'EI'];
+      const ordenPos = ['DT', 'ARQ', 'LD', 'DFC', 'LI', 'MCD', 'MC', 'VOL', 'MD', 'MCO', 'MI', 'ED', 'DC', 'EI'];
       jugadoresPuntuadosObj.sort((a, b) => {
         let pesoA = ordenPos.indexOf(a.pos);
         let pesoB = ordenPos.indexOf(b.pos);
@@ -1822,14 +1889,18 @@ const btnConfirmarEnvio = document.getElementById('btn-confirmar-envio');
 if (btnEnviarBoleta) {
   btnEnviarBoleta.onclick = () => {
     const suplentesQueJugaron = ultimoPartido.suplentes.filter(s => s.jugo).length;
-    const totalAEvaluar = ultimoPartido.titulares.length + suplentesQueJugaron;
+    
+    // MAGIA: Sumamos +1 SOLO si este partido trae el objeto "tecnico"
+    const sumaDT = ultimoPartido.tecnico ? 1 : 0; 
+    const totalAEvaluar = ultimoPartido.titulares.length + suplentesQueJugaron + sumaDT; 
+    
     const puntuados = Object.keys(boletaPuntajes).length;
 
     if (puntuados < totalAEvaluar) {
       const faltantes = totalAEvaluar - puntuados;
       
       document.getElementById('modal-advertencia-texto').innerText = 
-        `Ojo: Te faltó puntuar a ${faltantes} jugador(es).\n\n¿Querés enviar tu boleta de todos modos?`;
+        `Ojo: Te faltó puntuar a ${faltantes} integrante(s).\n\n¿Querés enviar tu boleta de todos modos?`;
       
       modalAdvertencia.classList.add('active');
       return; 
@@ -1857,6 +1928,7 @@ function ejecutarEnvioFinal() {
   const btnEnviarBoleta = document.getElementById('btn-enviar-boleta');
   
   btnEnviarBoleta.disabled = true;
+  btnEnviarBoleta.innerText = "ENVIANDO... ⏳"; 
 
   const paqueteDeVotos = {
     fecha: new Date().toISOString(),
@@ -1872,7 +1944,12 @@ function ejecutarEnvioFinal() {
     },
     body: JSON.stringify(paqueteDeVotos)
   })
-  .then(respuesta => respuesta.json())
+  .then(respuesta => {
+    if (!respuesta.ok) {
+        throw new Error("Firebase rechazó la escritura");
+    }
+    return respuesta.json();
+  })
   .then(datos => {
     if (modalExito) {
       modalExito.classList.add('active');
@@ -1883,8 +1960,9 @@ function ejecutarEnvioFinal() {
   })
   .catch(error => {
     console.error("Error enviando datos:", error);
-    mostrarToast("Error de conexión. ¡Intentá de nuevo!", "error");
-    btnEnviarBoleta.disabled = false;
+    mostrarToast("Error: No se pudo guardar en la base de datos.", "error");
+    btnEnviarBoleta.innerText = "ENVIAR PUNTAJES"; 
+    btnEnviarBoleta.disabled = false; 
   });
 }
 
@@ -1980,35 +2058,28 @@ botonesToggleFotos.forEach(btn => {
   });
 });
 
-// NUEVO: Función para cambiar las fotos en tiempo real (Soporta Camiseta / Real / Dibujada)
 function actualizarSrcImagenesEnVivo(modo) {
   document.querySelectorAll('img.token-img, img.mvp-photo').forEach(img => {
     const pathActual = img.getAttribute('src');
     if (!pathActual) return;
 
-    // Si queremos ver las CAMISETAS
-    if (modo === 'camiseta') {
-        img.src = 'fotos/camiseta.png';
-        return;
-    }
-
-    // Extraer el ID exacto de la imagen actual mirando el número del archivo (ej: 41.png -> 41)
     const partesRuta = pathActual.split('/');
-    const nombreArchivo = partesRuta[partesRuta.length - 1]; // "41.png" o "camiseta.png"
-    const idExtraido = parseInt(nombreArchivo); // Obtiene el número del archivo
+    const nombreArchivo = partesRuta[partesRuta.length - 1]; 
+    let idFinal = nombreArchivo.replace('.png', ''); 
 
-    // Si había una camiseta puesta y no tenemos el ID a mano en el nombre de archivo,
-    // buscamos el token padre y leemos su ID de rating-token-X o token-X
-    let idFinal = idExtraido;
-    if (isNaN(idFinal)) {
+    if (idFinal === 'camiseta') {
        const tokenPadre = img.closest('.player-token');
        if (tokenPadre && tokenPadre.id) {
-           idFinal = parseInt(tokenPadre.id.replace('rating-token-', '').replace('token-', ''));
+           idFinal = tokenPadre.id.replace('rating-token-', '').replace('token-', '');
        }
     }
 
-    if (!isNaN(idFinal)) {
-        if (modo === 'real') {
+    const esJugadorEspecial = isNaN(parseInt(idFinal));
+
+    if (idFinal) {
+        if (modo === 'camiseta' && !esJugadorEspecial) {
+            img.src = 'fotos/camiseta.png';
+        } else if (modo === 'real') {
             img.src = `fotos/reales/${idFinal}.png`;
         } else if (modo === 'dibujada') {
             img.src = `fotos/dibujadas/${idFinal}.png`;
@@ -2211,7 +2282,6 @@ if (buscadorModalElement) {
   buscadorModalElement.addEventListener('input', aplicarFiltroModal);
 }
 
-// --- MOTOR PARA COMPARTIR LA IMAGEN DE LOS PUNTAJES ---
 // ==========================================
 // DESCARGAR IMAGEN: MIS PUNTAJES (Soporta múltiples botones)
 // ==========================================
@@ -2242,162 +2312,25 @@ document.querySelectorAll('.btn-descargar-puntajes').forEach(boton => {
 });
 
 // ==========================================
-// CONTROL DE PESTAÑAS: MI BOLETA / PROMEDIOS
+// AL CARGAR LA PÁGINA (CONTROL DE URL)
 // ==========================================
-const tabMiBoleta = document.getElementById('tab-mi-boleta');
-const tabPromedios = document.getElementById('tab-promedios');
-
-if (tabMiBoleta && tabPromedios) {
-    tabMiBoleta.addEventListener('click', () => {
-        tabMiBoleta.classList.add('active');
-        tabPromedios.classList.remove('active');
-        
-        modoPuntajeActual = 'mis_puntajes';
-        
-        if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'block';
-        cargarVistaPuntuacion();
-    });
-
-    tabPromedios.addEventListener('click', async () => { 
-        tabPromedios.classList.add('active');
-        tabMiBoleta.classList.remove('active');
-        
-        modoPuntajeActual = 'promedio_usuarios';
-        
-        if(btnEnviarBoleta) btnEnviarBoleta.style.display = 'none';
-        
-        await calcularPromediosDeFirebase();
-        cargarVistaPuntuacion();
-    });
-}
-
-// ==========================================
-// CONTROL DEL MENÚ LATERAL (ACTUALIZADO)
-// ==========================================
-const btnMenu = document.getElementById('btn-menu');
-const sidebarMenu = document.getElementById('sidebar-menu');
-const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-function toggleSidebar() {
-    if(sidebarMenu && sidebarOverlay) {
-        const isActive = sidebarMenu.classList.toggle('active');
-        sidebarOverlay.classList.toggle('active');
-        btnMenu.classList.toggle('activo'); 
-        
-        const iconBurger = btnMenu.querySelector('.icon-burger');
-        const iconClose = btnMenu.querySelector('.icon-close');
-        
-        if (iconBurger && iconClose) {
-            iconBurger.style.display = isActive ? 'none' : 'block';
-            iconClose.style.display = isActive ? 'block' : 'none';
-        }
-    }
-}
-
-if(btnMenu) btnMenu.addEventListener('click', toggleSidebar);
-if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
-
-document.querySelectorAll('.sidebar-content .nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        if(sidebarMenu.classList.contains('active')) {
-            toggleSidebar(); 
-        }
-    });
-});
-
-// ==========================================
-// SISTEMA DE NOTIFICACIONES TOAST
-// ==========================================
-function mostrarToast(mensaje, tipo = 'exito') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${tipo}`; 
-    
-    const icono = tipo === 'error' ? '⚠️' : '✅';
-    toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
-    
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  const btnPizarra = document.getElementById('btn-pizarra');
-  const btnPartidos = document.getElementById('btn-partidos');
-  const rutaActual = window.location.hash;
+    const rutaActual = window.location.hash;
 
-  // 1. Apagamos los botones activos del menú por defecto para que arranquen neutros
-  if (btnPizarra) btnPizarra.classList.remove('active');
-  if (btnPartidos) btnPartidos.classList.remove('active');
-
-  // 2. Por defecto, prendemos SÓLO el INICIO
-  if (viewInicio) viewInicio.style.display = 'block';
-  if (viewPizarra) viewPizarra.style.display = 'none';
-  if (viewPartidos) viewPartidos.style.display = 'none';
-  if (viewPuntuar) viewPuntuar.style.display = 'none';
-
-  // 3. SOLO saltamos de pantalla si el link tiene explícitamente #puntajes o #crear-11
-  setTimeout(() => {
-    if (rutaActual === '#puntajes' && btnPartidos) {
-      btnPartidos.click(); 
-    } else if (rutaActual === '#crear-11' && btnPizarra) {
-      btnPizarra.click(); 
-    }
-  }, 50);
-});
-
-function actualizarInfoTarjetaCancha(partido) {
-    const elRival = document.getElementById('cancha-rival');
-    const elCompetencia = document.getElementById('cancha-competencia');
-    const elFecha = document.getElementById('cancha-fecha');
-
-    if (!elRival || !elCompetencia || !elFecha) return;
-
-    elRival.innerText = partido.rival ? `VS ${partido.rival.toUpperCase()}` : 'VS ---';
-    elCompetencia.innerText = partido.competencia ? partido.competencia.toUpperCase() : '';
-
-    if (partido.fechaHora) {
-        const soloFecha = String(partido.fechaHora).split('T')[0].split(' ')[0];
-        const partes = soloFecha.split(/[-/]/);
-
-        if (partes.length === 3) {
-            if (partes[0].length === 4) {
-                elFecha.innerText = `${partes[2]}-${partes[1]}-${partes[0]}`;
-            } 
-            else {
-                elFecha.innerText = `${partes[0]}-${partes[1]}-${partes[2]}`;
-            }
-        } else {
-            elFecha.innerText = soloFecha;
+    setTimeout(() => {
+        // Si el link empieza con "#partido-", extraemos el ID y lo abrimos
+        if (rutaActual.startsWith('#partido-')) {
+            const idBuscado = rutaActual.replace('#partido-', '');
+            abrirPartidoDesdeURL(idBuscado);
+        } 
+        else if (rutaActual === '#puntajes') {
+            mostrarVista('partidos');
+        } 
+        else if (rutaActual === '#crear-11') {
+            mostrarVista('pizarra');
+        } 
+        else {
+            mostrarVista('inicio');
         }
-    } else {
-        elFecha.innerText = '';
-    }
-}
-
-// --- PRECARGA OCULTA DE IMÁGENES (Sin subcarpetas + Camiseta suelta) ---
-function precargarImagenesJugadores(listaJugadores) {
-    const imgCamiseta = new Image(); 
-    imgCamiseta.src = 'fotos/camiseta.png';
-
-    listaJugadores.forEach(jugador => {
-        const rutaReal = `fotos/reales/${jugador.id}.png`;     
-        const rutaDibujo = `fotos/dibujadas/${jugador.id}.png`;
-
-        const img1 = new Image(); img1.src = rutaReal;
-        const img2 = new Image(); img2.src = rutaDibujo;
-    });
-}
+    }, 50);
+});
