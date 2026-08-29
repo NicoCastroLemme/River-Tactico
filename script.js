@@ -1305,7 +1305,7 @@ async function cargarPromedioEnVivoParaGrilla(idPartido, elementoId) {
 }
 
 // ==========================================
-// RENDERIZADOR DE LA GRILLA (ACTUALIZADO: MUESTRA HORA FIJA)
+// RENDERIZADOR DE LA GRILLA (CON ESCUDO ANTI-CRASH)
 // ==========================================
 function renderizarHistorial() {
     const grid = document.getElementById('grid-partidos');
@@ -1428,16 +1428,23 @@ function renderizarHistorial() {
             // CAMBIA LA URL EN SILENCIO (Para compartir el link)
             history.replaceState(null, null, `#partido-${partidoActualId}`);
 
-            if (partido.formacion && Array.isArray(partido.formacion.titulares)) {
+            if (partido.formacion) {
                 ultimoPartido = partido.formacion;
             } else {
                 ultimoPartido = formacionPorDefecto;
             }
             
+            // ---> EL ESCUDO DE HIERRO: Si Firebase borró las listas vacías, las recreamos <---
+            if (!ultimoPartido.titulares) ultimoPartido.titulares = [];
+            if (!ultimoPartido.suplentes) ultimoPartido.suplentes = [];
+            
             boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
             
-            // Apagar todas y mostrar solo Puntuacion
-            document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+            // Apagamos todas de forma explícita por si falla la clase CSS
+            if (viewInicio) viewInicio.style.display = 'none';
+            if (viewPizarra) viewPizarra.style.display = 'none';
+            if (viewPartidos) viewPartidos.style.display = 'none';
+            
             const viewPuntuar = document.getElementById('view-puntuar');
             if (viewPuntuar) viewPuntuar.style.display = 'grid'; 
             
@@ -1473,15 +1480,23 @@ async function abrirPartidoDesdeURL(idPartidoBuscado) {
         partidoActualEstado = partidoEncontrado.estado;
         actualizarInfoTarjetaCancha(partidoEncontrado);
 
-        if (partidoEncontrado.formacion && Array.isArray(partidoEncontrado.formacion.titulares)) {
+        if (partidoEncontrado.formacion) {
             ultimoPartido = partidoEncontrado.formacion;
         } else {
             ultimoPartido = formacionPorDefecto;
         }
         
+        // ---> EL ESCUDO DE HIERRO <---
+        if (!ultimoPartido.titulares) ultimoPartido.titulares = [];
+        if (!ultimoPartido.suplentes) ultimoPartido.suplentes = [];
+        
         boletaPuntajes = JSON.parse(localStorage.getItem(`rivertactico_puntajes_${partidoActualId}`)) || {};
         
-        document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+        // Apagamos explícitamente
+        if (viewInicio) viewInicio.style.display = 'none';
+        if (viewPizarra) viewPizarra.style.display = 'none';
+        if (viewPartidos) viewPartidos.style.display = 'none';
+        
         const viewPuntuar = document.getElementById('view-puntuar');
         if (viewPuntuar) viewPuntuar.style.display = 'grid'; 
 
